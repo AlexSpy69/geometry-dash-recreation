@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from geometry_dash_recreation.constants import *
 import geometry_dash_recreation.sprites as sprites
+import geometry_dash_recreation.controls as controls
 
 # Pygame-Initialisierung
 pygame.init()
@@ -16,13 +17,19 @@ pygame.display.set_caption("Geometry Dash Recreation")
 cube = sprites.Cube()
 player_spr = pygame.sprite.GroupSingle(cube)
 
+event = False
+click = False
+gravity = 1
+
 mode = "game"
 
+# Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
 def game_func() -> None:
     global mode
     for event in pygame.event.get():
         if event.type == QUIT:
             mode = "exit"
+    
     player_spr.draw(screen)
 
 # Die Mainloop-Funktion, die in jedem Frame aufgerufen wird und für bestimmte
