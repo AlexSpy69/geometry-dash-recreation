@@ -2,7 +2,6 @@ import pygame
 from pygame.locals import *
 from geometry_dash_recreation.constants import *
 import geometry_dash_recreation.sprites as sprites
-import geometry_dash_recreation.controls as controls
 
 # Pygame-Initialisierung
 pygame.init()
@@ -10,26 +9,48 @@ pygame.mixer.init()
 pygame.font.init()
 
 # Spielfenster
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("Geometry Dash Recreation")
 
 # Sprites
-cube = sprites.Cube()
-player_spr = pygame.sprite.GroupSingle(cube)
+ground = sprites.Ground()                        # Der "Boden" im Spiel.
+background = sprites.Background()                # Der Hintergrund, der sich nach links bewegt.
+bg_gr = pygame.sprite.Group(ground, background)  # Die Group, in der der Boden und der Hintergrund stehen.
 
-event = False
-click = False
-gravity = 1
+cube = sprites.Cube()                          # Der Cube-Sprite im Spiel
+player_spr = pygame.sprite.GroupSingle(cube)   # Die Spieler-Sprite-"Gruppe", die nur einen Sprite enthalten kann.
 
-mode = "game"
+ev = False     # True, wenn der Spieler die linke Maustaste gedrückt hält, und False, wenn er sie nicht gedrückt hält
+click = False  # True, wenn der Spieler die linke Maustaste drückt, wird aber im nächsten Durchgang der Mainloop direkt auf False gesetzt
+gravity = 1    # Die Richtung der Gravitation: Bei 1 fällt der Spieler nach unten, bei -1 nach oben.
+
+mode = "game"  # Der "Zustand" des Spiels.
+
+# Level
+level_gr = pygame.sprite.Group()  # Group mit allen Objekten im Level.
 
 # Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
 def game_func() -> None:
-    global mode
+    global mode, ev, click, gravity
     for event in pygame.event.get():
         if event.type == QUIT:
             mode = "exit"
+        elif event.type == MOUSEBUTTONDOWN:
+            ev = True
+            click = True
+        elif event.type == MOUSEBUTTONUP:
+            ev = False
     
+    match player_spr.sprite.controls(ev, click, gravity, ground, level_gr):
+        case 0:
+            pass
+    
+    click = False
+
+    bg_gr.update()
+    player_spr.update()
+    
+    bg_gr.draw(screen)
     player_spr.draw(screen)
 
 # Die Mainloop-Funktion, die in jedem Frame aufgerufen wird und für bestimmte
@@ -53,8 +74,9 @@ def main_proc() -> None:
                 pass
             case 1:
                 break
-        pygame.display.flip()
+        pygame.display.update()
         clock.tick(FPS)
 
+# Die FUnktion, die von __main__.py  aufgerufen wird.
 def main():
     main_proc()
