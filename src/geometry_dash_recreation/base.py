@@ -13,9 +13,9 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREE
 pygame.display.set_caption("Geometry Dash Recreation")
 
 # Sprites
-ground = sprites.Ground()                        # Der "Boden" im Spiel.
 background = sprites.Background()                # Der Hintergrund, der sich nach links bewegt.
-bg_gr = pygame.sprite.Group(ground, background)  # Die Group, in der der Boden und der Hintergrund stehen.
+ground = sprites.Ground()                        # Der "Boden" im Spiel.
+bg_gr = pygame.sprite.Group(background, ground)  # Die Group, in der der Boden und der Hintergrund stehen.
 
 cube = sprites.Cube()                          # Der Cube-Sprite im Spiel
 player_spr = pygame.sprite.GroupSingle(cube)   # Die Spieler-Sprite-"Gruppe", die nur einen Sprite enthalten kann.
