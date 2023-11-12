@@ -1,2 +1,3 @@
-# geometry dash recreation
+# geometry-dash-recreation
+
  Recreation of Geometry Dash
