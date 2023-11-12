@@ -53,7 +53,7 @@ class Background(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         self.image = pygame.image.load("assets/textures/bg/background.png").convert()
-        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH*4, SCREEN_HEIGHT*2))
+        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH*2, SCREEN_HEIGHT*2))
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT/4
 
