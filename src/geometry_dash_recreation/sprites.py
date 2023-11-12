@@ -16,7 +16,7 @@ class Cube(pygame.sprite.Sprite):
 
         self.vel = 0
     
-    def controls(self, ev, click, gravity, ground, level_gr):
+    def controls(self, ev, click, gravity, ground, level_gr) -> int:
         # Springen
         if ev:
             if self.hitbox.bottom == ground.rect.top:
@@ -36,7 +36,7 @@ class Cube(pygame.sprite.Sprite):
         
         return 0
 
-    def update(self):
+    def update(self) -> None:
         self.rect.x, self.rect.y = self.hitbox.x, self.hitbox.y
 
 # Background-Sprites
@@ -57,7 +57,7 @@ class Background(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT/4
 
-    def update(self):
+    def update(self) -> None:
         self.rect.x -= DELTA_TIME    # Bewegen des Hintergrunds nach links
 
 # Component-Sprite (für die Hindernisse im Spiel)
@@ -81,5 +81,5 @@ class Component(pygame.sprite.Sprite):
 
         self.color = ""     # Wird als Indentifikation für Rings und Portale verwendet.
     
-    def update(self):
+    def update(self) -> None:
         pass
