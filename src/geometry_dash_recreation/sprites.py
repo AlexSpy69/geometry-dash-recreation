@@ -1,3 +1,4 @@
+from typing import Any
 import pygame
 from pygame.sprite import AbstractGroup
 from geometry_dash_recreation.constants import *
@@ -35,9 +36,10 @@ class Cube(pygame.sprite.Sprite):
             self.vel = 0
         
         return 0
-
-    def update(self) -> None:
+    
+    def update(self, *args: Any, **kwargs: Any) -> None:
         self.rect.x, self.rect.y = self.hitbox.x, self.hitbox.y
+        return super().update(*args, **kwargs) 
 
 # Background-Sprites
 class Ground(pygame.sprite.Sprite):
@@ -57,8 +59,9 @@ class Background(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT/4
 
-    def update(self) -> None:
+    def update(self, *args: Any, **kwargs: Any) -> None:
         self.rect.x -= DELTA_TIME    # Bewegen des Hintergrunds nach links
+        return super().update(*args, **kwargs)
 
 # Component-Sprite (für die Hindernisse im Spiel)
 class Component(pygame.sprite.Sprite):
@@ -81,5 +84,5 @@ class Component(pygame.sprite.Sprite):
 
         self.color = ""     # Wird als Indentifikation für Rings und Portale verwendet.
     
-    def update(self) -> None:
-        pass
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        return super().update(*args, **kwargs)

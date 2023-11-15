@@ -16,3 +16,4 @@ PLAYER_POS = (UNIT * 5,
               GROUND_HEIGHT)    # Ursprüngliche Position des Spielers auf dem Bildschirm
 VEL_ADD = 2                     # Stärke der Einwirkung der Gravitation
 JUMP_VEL = 25                   # Stärke des Sprungs des Spielers
+LEVEL_SCROLL_SPEED = DELTA_TIME*2

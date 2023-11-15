@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from geometry_dash_recreation.constants import *
 import geometry_dash_recreation.sprites as sprites
+import geometry_dash_recreation.level as level
 
 # Pygame-Initialisierung
 pygame.init()
@@ -24,10 +25,12 @@ ev = False     # True, wenn der Spieler die linke Maustaste gedrückt hält, und
 click = False  # True, wenn der Spieler die linke Maustaste drückt, wird aber im nächsten Durchgang der Mainloop direkt auf False gesetzt
 gravity = 1    # Die Richtung der Gravitation: Bei 1 fällt der Spieler nach unten, bei -1 nach oben.
 
-mode = "game"  # Der "Zustand" des Spiels.
+mode = "set level"  # Der "Zustand" des Spiels.
 
 # Level
-level_gr = pygame.sprite.Group()  # Group mit allen Objekten im Level.
+#level.save_level("levels/start", level.LevelGroup())
+level_gr = level.open_level("levels/start")  # Group mit allen Objekten im Level.
+level_error_msg = ""
 
 # Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
 def game_func() -> None:
@@ -48,20 +51,51 @@ def game_func() -> None:
     click = False
 
     bg_gr.update()
+    level_gr.update()
     player_spr.update()
     
     bg_gr.draw(screen)
+    level_gr.draw(screen)
     player_spr.draw(screen)
+
+def set_level() -> str:
+    def proc() -> None:
+        global mode, level_gr, player_spr, ev, click, gravity
+        # Gamemode
+        exec(f"player_spr.add({level_gr.data['gamemode']})")
+        # Physik
+        ev, click, gravity = False, False, 1
+    
+    try:
+        proc()
+    except Exception as e:
+        return str(e)
+    
+    return ""
+
+def level_error() -> None:
+    global mode, level_error_msg
+    print(level_error_msg)
+    mode = "exit"
 
 # Die Mainloop-Funktion, die in jedem Frame aufgerufen wird und für bestimmte
 # Ereignisse einen Exit-Code zurückgibt.
 def main_loop() -> int:
-    global mode
+    global mode, level_error_msg
     match mode:
         case "game":
             game_func()
         case "exit":
             return 1
+        case "set level":
+            level_error_msg = set_level()
+            if level_error_msg != "":
+                mode = "level error"
+            else:
+                mode = "game"
+        case "level error":
+            level_error()
+    
     return 0
 
 # Die Hauptfunktion, die nur einmal aufgerufen wird. Der while-Loop ruft
@@ -76,6 +110,7 @@ def main_proc() -> None:
                 break
         pygame.display.update()
         clock.tick(FPS)
+    pygame.quit()
 
 # Die FUnktion, die von __main__.py  aufgerufen wird.
 def main():
