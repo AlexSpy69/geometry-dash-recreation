@@ -66,23 +66,28 @@ class Background(pygame.sprite.Sprite):
 # Component-Sprite (für die Hindernisse im Spiel)
 class Component(pygame.sprite.Sprite):
     def __init__(self, imgfile="assets/textures/transparent.png",
-                 xsize=1, ysize=1, hb_mul=1, *groups: AbstractGroup) -> None:
+                 pos=[0, 0], size=[1, 1], hb_mul=1, type="deco", color="yellow", 
+                 *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         self.image = pygame.image.load(imgfile).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (UNIT*xsize, UNIT*ysize))
+        self.image = pygame.transform.scale(self.image, (UNIT*size[0], UNIT*size[1]))
         self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = pos[0]*UNIT, pos[1]*UNIT  # Position des Komponenten
         self.hitbox = self.rect
-        self.hitbox.width = UNIT*xsize*hb_mul    # Der Hitbox kann um einen bestimmten Faktor vergrößert
-        self.hitbox.height = UNIT*ysize*hb_mul   # oder verkleinert werden
+        self.hitbox.width, self.hitbox.height = \
+            self.rect.width*hb_mul, self.rect.height*hb_mul
+        # Der Hitbox kann um einen bestimmten Faktor vergrößert oder verkleinert werden
 
-        self.type = ""      # platform: Man kann darauf landen und davon abspringen
+        self.type = type    # platform: Man kann darauf landen und davon abspringen
                             # hazard: Man stirbt, wenn man es berührt
                             # deco: Es zählt als Dekoration und wird vom Spieler ignioriert
                             # ring: Rings, von denen man abspringen kann, wenn man die Maustaste drückt
                             # gravportal: Portale, die die Gravitationsrichtung wechseln
                             # formportal: Portale, die den Spielmodus wechseln
 
-        self.color = ""     # Wird als Indentifikation für Rings und Portale verwendet.
+        self.color = color  # Wird als Indentifikation für Rings und Portale verwendet.
     
     def update(self, *args: Any, **kwargs: Any) -> None:
+        self.rect.x -= LEVEL_SCROLL_SPEED
+        self.hitbox.x -= LEVEL_SCROLL_SPEED
         return super().update(*args, **kwargs)

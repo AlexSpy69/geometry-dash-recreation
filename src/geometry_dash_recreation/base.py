@@ -3,6 +3,7 @@ from pygame.locals import *
 from geometry_dash_recreation.constants import *
 import geometry_dash_recreation.sprites as sprites
 import geometry_dash_recreation.level as level
+import geometry_dash_recreation.convert as convert
 
 # Pygame-Initialisierung
 pygame.init()
@@ -28,8 +29,10 @@ gravity = 1    # Die Richtung der Gravitation: Bei 1 fällt der Spieler nach unt
 mode = "set level"  # Der "Zustand" des Spiels.
 
 # Level
-#level.save_level("levels/start", level.LevelGroup())
-level_gr = level.open_level("levels/start")  # Group mit allen Objekten im Level.
+#level.save_level_data("levels/start", level.convert.Level())
+level_gr_unconverted = level.open_level_data(START_LEVEL)
+print(level_gr_unconverted)
+level_gr = convert.data_to_group(level_gr_unconverted)  # Group mit allen Objekten im Level.
 level_error_msg = ""
 
 # Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
@@ -62,7 +65,7 @@ def set_level() -> str:
     def proc() -> None:
         global mode, level_gr, player_spr, ev, click, gravity
         # Gamemode
-        exec(f"player_spr.add({level_gr.data['gamemode']})")
+        exec(f"player_spr.add({level_gr_unconverted['data']['gamemode']})")
         # Physik
         ev, click, gravity = False, False, 1
     
