@@ -17,13 +17,20 @@ class Cube(pygame.sprite.Sprite):
 
         self.vel = 0
     
-    def controls(self, ev, click, gravity, ground, level_gr) -> int:
+    def jump(self, gravity) -> None:
+        self.vel = -JUMP_VEL * gravity
+    
+    def death_touch(self, sprite: pygame.sprite.Sprite) -> bool:
+        return self.hitbox.bottom - DEATH_ACCURACY >= sprite.hitbox.top
+    
+    def controls(self, ev, click, gravity, ground: pygame.sprite.Sprite, level_gr: pygame.sprite.Group) -> int:
         # Springen
         if ev:
             if self.hitbox.bottom == ground.rect.top:
-                self.vel = -JUMP_VEL * gravity
+                self.jump(gravity)
             for sprite in level_gr:
-                pass
+                if self.hitbox.colliderect(sprite.rect.move(0, -1)):
+                    self.jump(gravity)
         
         # Einwirkung der Gravitation
         self.hitbox.y += self.vel * DELTA_TIME
@@ -34,6 +41,18 @@ class Cube(pygame.sprite.Sprite):
             while self.hitbox.colliderect(ground.rect):
                 self.hitbox.y -= DELTA_TIME * gravity
             self.vel = 0
+        
+        # Landen auf Level-Komponenten
+        for sprite in level_gr:
+            if sprite.type == "platform":
+                if self.hitbox.colliderect(sprite.hitbox) and gravity == 1:
+                    if self.death_touch(sprite):
+                        return 1
+                    while self.hitbox.colliderect(sprite.hitbox):
+                        self.hitbox.y -= DELTA_TIME * gravity
+                    self.vel = 0
+            elif sprite.type == "hazard":
+                return 1
         
         return 0
     
@@ -49,7 +68,7 @@ class Ground(pygame.sprite.Sprite):
         self.image = pygame.image.load("assets/textures/bg/ground.jpg").convert()
         self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = 0, SCREEN_HEIGHT-GROUND_HEIGHT
+        self.rect.left, self.rect.top = 0, GROUND_HEIGHT
 
 class Background(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:

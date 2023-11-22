@@ -50,6 +50,8 @@ def game_func() -> None:
     match player_spr.sprite.controls(ev, click, gravity, ground, level_gr):
         case 0:
             pass
+        case 1:
+            mode = "death"
     
     click = False
 
@@ -98,6 +100,8 @@ def main_loop() -> int:
                 mode = "game"
         case "level error":
             level_error()
+        case "death":
+            return 1
     
     return 0
 
