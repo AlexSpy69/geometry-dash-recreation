@@ -16,7 +16,7 @@ class Level(dict):
 
 class CompSprite(dict):
     def __init__(self, imgfile="assets/textures/transparent.png",
-                 pos=[0, 0], size=[1, 1], hb_mul=1, type="deco", color="yellow") -> None:
+                 pos=[0, 0], size=[1, 1], hb_mul=1.0, type="deco", color="yellow") -> None:
         super().__init__()
         self["imgfile"] = imgfile
         self["pos"] = pos

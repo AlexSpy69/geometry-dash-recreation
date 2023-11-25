@@ -52,7 +52,8 @@ class Cube(pygame.sprite.Sprite):
                         self.hitbox.y -= DELTA_TIME * gravity
                     self.vel = 0
             elif sprite.type == "hazard":
-                return 1
+                if self.hitbox.colliderect(sprite.hitbox):
+                    return 1
         
         return 0
     
@@ -85,7 +86,7 @@ class Background(pygame.sprite.Sprite):
 # Component-Sprite (für die Hindernisse im Spiel)
 class Component(pygame.sprite.Sprite):
     def __init__(self, imgfile="assets/textures/transparent.png",
-                 pos=[0, 0], size=[1, 1], hb_mul=1, type="deco", color="yellow", 
+                 pos=[0, 0], size=[1, 1], hb_mul=1.0, type="deco", color="yellow", 
                  *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         self.image = pygame.image.load(imgfile).convert_alpha()

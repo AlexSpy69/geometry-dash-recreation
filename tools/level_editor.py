@@ -21,7 +21,7 @@ def iter() -> None:
     elif inp[0] == "add":
         if inp[1] == "comp":
             current_level["sprites"].append(convert.CompSprite(imgfile=inp[2], pos=[int(inp[3]), int(inp[4])],
-                                                               size=[int(inp[5]), int(inp[6])], hb_mul=int(inp[7]),
+                                                               size=[int(inp[5]), int(inp[6])], hb_mul=float(inp[7]),
                                                                type=inp[8], color=inp[9]))
     elif inp[0] == "remove":
         if inp[1] == "all":
