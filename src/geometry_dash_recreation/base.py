@@ -4,6 +4,7 @@ from geometry_dash_recreation.constants import *
 import geometry_dash_recreation.sprites as sprites
 import geometry_dash_recreation.level as level
 import geometry_dash_recreation.convert as convert
+import geometry_dash_recreation.level_select as level_select
 
 # Pygame-Initialisierung
 pygame.init()
@@ -26,21 +27,19 @@ ev = False     # True, wenn der Spieler die linke Maustaste gedrückt hält, und
 click = False  # True, wenn der Spieler die linke Maustaste drückt, wird aber im nächsten Durchgang der Mainloop direkt auf False gesetzt
 gravity = 1    # Die Richtung der Gravitation: Bei 1 fällt der Spieler nach unten, bei -1 nach oben.
 
-mode = "set level"  # Der "Zustand" des Spiels.
+mode = "level select"  # Der "Zustand" des Spiels.
 
 # Level
-#level.save_level_data("levels/start", level.convert.Level())
-level_gr_unconverted = level.open_level_data(START_LEVEL)
-print(level_gr_unconverted)
-level_gr = convert.data_to_group(level_gr_unconverted)  # Group mit allen Objekten im Level.
-level_error_msg = ""
+#level.save_level_data("levels/start", level.convert.Level())""
+level_gr = pygame.sprite.Group()
+current_level_name = ""
 
 # Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
 def game_func() -> None:
     global mode, ev, click, gravity
     for event in pygame.event.get():
         if event.type == QUIT:
-            mode = "exit"
+            mode = "level select"
         elif event.type == MOUSEBUTTONDOWN:
             ev = True
             click = True
@@ -59,13 +58,17 @@ def game_func() -> None:
     level_gr.update()
     player_spr.update()
     
+    screen.fill((0, 0, 0))
     bg_gr.draw(screen)
     level_gr.draw(screen)
     player_spr.draw(screen)
 
-def set_level() -> str:
+# Wird aufgerufen, um das Level zu initialisieren
+def init_level() -> str:
     def proc() -> None:
-        global mode, level_gr, player_spr, ev, click, gravity
+        global mode, level_gr, player_spr, ev, click, gravity, current_level_name
+        level_gr_unconverted = level.open_level_data(current_level_name)
+        level_gr = convert.data_to_group(level_gr_unconverted)
         # Gamemode
         exec(f"player_spr.add({level_gr_unconverted['data']['gamemode']})")
         # Physik
@@ -83,6 +86,13 @@ def level_error() -> None:
     print(level_error_msg)
     mode = "exit"
 
+def lvl_select() -> None:
+    global mode, current_level_name
+    l = level_select.loop(screen)
+    if l != "":
+        current_level_name = l
+        mode = "init level"
+
 # Die Mainloop-Funktion, die in jedem Frame aufgerufen wird und für bestimmte
 # Ereignisse einen Exit-Code zurückgibt.
 def main_loop() -> int:
@@ -90,10 +100,12 @@ def main_loop() -> int:
     match mode:
         case "game":
             game_func()
+        case "level select":
+            lvl_select()
         case "exit":
             return 1
-        case "set level":
-            level_error_msg = set_level()
+        case "init level":
+            level_error_msg = init_level()
             if level_error_msg != "":
                 mode = "level error"
             else:
@@ -101,13 +113,15 @@ def main_loop() -> int:
         case "level error":
             level_error()
         case "death":
-            return 1
+            pygame.time.wait(500)
+            mode = "init level"
     
     return 0
 
 # Die Hauptfunktion, die nur einmal aufgerufen wird. Der while-Loop ruft
 # die Mainloop-Funktion auf und verwaltet ihre Exit-Codes.
 def main_proc() -> None:
+    global clock
     clock = pygame.time.Clock()
     while True:
         match main_loop():
@@ -119,6 +133,6 @@ def main_proc() -> None:
         clock.tick(FPS)
     pygame.quit()
 
-# Die FUnktion, die von __main__.py  aufgerufen wird.
+# Die Funktion, die von __main__.py  aufgerufen wird.
 def main():
     main_proc()

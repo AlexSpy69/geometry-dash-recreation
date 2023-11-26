@@ -15,6 +15,6 @@ PLAYER_POS = (UNIT * 5,
               GROUND_HEIGHT)    # Ursprüngliche Position des Spielers auf dem Bildschirm
 VEL_ADD = 2                     # Stärke der Einwirkung der Gravitation
 JUMP_VEL = 25                   # Stärke des Sprungs des Spielers
-LEVEL_SCROLL_SPEED = DELTA_TIME*6  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
+LEVEL_SCROLL_SPEED = DELTA_TIME*12  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
 START_LEVEL = "levels/start"    # Das Level, mit dem das Spiel automatisch beginnt
 DEATH_ACCURACY = 20 / DELTA_TIME

@@ -28,10 +28,7 @@ def iter() -> None:
             for sprite in current_level:
                 sprite.kill()
     elif inp[0] == "edit":
-        if inp[1] == "info":
-            current_level.info[inp[2]] = inp[3]
-        if inp[1] == "data":
-            current_level.data[inp[2]] = inp[3]
+        current_level[inp[1]][inp[2]] = inp[3]
     elif inp[0] == "print":
         print(current_level)
     elif inp[0] == "exit":

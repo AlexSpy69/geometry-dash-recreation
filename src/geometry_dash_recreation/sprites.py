@@ -109,5 +109,5 @@ class Component(pygame.sprite.Sprite):
     
     def update(self, *args: Any, **kwargs: Any) -> None:
         self.rect.x -= LEVEL_SCROLL_SPEED
-        self.hitbox.x -= LEVEL_SCROLL_SPEED
+        self.hitbox.x = self.rect.x
         return super().update(*args, **kwargs)
