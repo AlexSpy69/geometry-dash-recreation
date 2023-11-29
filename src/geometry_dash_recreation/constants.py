@@ -9,12 +9,14 @@ FPS = 60                        # Bilder pro Sekunde
 DELTA_TIME = 60 / FPS           # Abstand zwischen zwei Frames in Sekunden multipliziert mit 60
 SCREEN_WIDTH = width            # Fensterbreite
 SCREEN_HEIGHT = height          # Fensterhöhe
+RESIZE = SCREEN_HEIGHT/1080
 UNIT = SCREEN_HEIGHT * 0.08     # Einheit
-GROUND_HEIGHT = UNIT * 10        # Höhe des Bodens
+GROUND_HEIGHT = UNIT * 10       # Höhe des Bodens
 PLAYER_POS = (UNIT * 5,
               GROUND_HEIGHT)    # Ursprüngliche Position des Spielers auf dem Bildschirm
 VEL_ADD = 2                     # Stärke der Einwirkung der Gravitation
-JUMP_VEL = 25                   # Stärke des Sprungs des Spielers
-LEVEL_SCROLL_SPEED = DELTA_TIME*12  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
+JUMP_VEL = 27                   # Stärke des Sprungs des Spielers
+LEVEL_SCROLL_SPEED = DELTA_TIME*14*RESIZE  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
+BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
 START_LEVEL = "levels/start"    # Das Level, mit dem das Spiel automatisch beginnt
 DEATH_ACCURACY = 20 / DELTA_TIME

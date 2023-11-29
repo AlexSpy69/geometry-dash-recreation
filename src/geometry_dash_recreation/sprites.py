@@ -33,7 +33,7 @@ class Cube(pygame.sprite.Sprite):
                     self.jump(gravity)
         
         # Einwirkung der Gravitation
-        self.hitbox.y += self.vel * DELTA_TIME
+        self.hitbox.y += self.vel * DELTA_TIME * RESIZE
         self.vel += VEL_ADD * gravity * DELTA_TIME
 
         # Landen auf dem Boden
@@ -75,12 +75,15 @@ class Background(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         self.image = pygame.image.load("assets/textures/bg/background.png").convert()
-        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH*2, SCREEN_HEIGHT*2))
+        self.image = pygame.transform.scale(self.image, (SCREEN_HEIGHT*2*(16/9), SCREEN_HEIGHT*2))
         self.rect = self.image.get_rect()
+        self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT/4
+    
+    def reset(self):
         self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT/4
 
     def update(self, *args: Any, **kwargs: Any) -> None:
-        self.rect.x -= DELTA_TIME    # Bewegen des Hintergrunds nach links
+        self.rect.x -= BACKGROUND_SCROLL_SPEED    # Bewegen des Hintergrunds nach links
         return super().update(*args, **kwargs)
 
 # Component-Sprite (für die Hindernisse im Spiel)

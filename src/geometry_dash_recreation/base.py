@@ -69,6 +69,8 @@ def init_level() -> str:
         global mode, level_gr, player_spr, ev, click, gravity, current_level_name
         level_gr_unconverted = level.open_level_data(current_level_name)
         level_gr = convert.data_to_group(level_gr_unconverted)
+        # Sprites
+        background.reset()
         # Gamemode
         exec(f"player_spr.add({level_gr_unconverted['data']['gamemode']})")
         # Physik
