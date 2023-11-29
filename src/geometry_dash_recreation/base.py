@@ -45,6 +45,13 @@ def game_func() -> None:
             click = True
         elif event.type == MOUSEBUTTONUP:
             ev = False
+        elif event.type == KEYDOWN:
+            if event.key == K_SPACE or event.key == K_UP:
+                ev = True
+                click = True
+        elif event.type == KEYUP:
+            if event.key == K_SPACE or event.key == K_UP:
+                ev = False
     
     match player_spr.sprite.controls(ev, click, gravity, ground, level_gr):
         case 0:
