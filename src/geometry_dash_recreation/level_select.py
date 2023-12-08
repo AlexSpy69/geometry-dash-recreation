@@ -97,7 +97,7 @@ def loop(screen: pygame.Surface) -> str:
     else:
         levelname_text = fonts.pusab_big.render(f'{level_nr + 1}/{len(level_list)}) {level_info["name"]}', True, (0, 255, 0))
 
-    difficulty_text = fonts.aller_normal.render(f'Difficulty: {level_info["difficulty:"]}', True,
+    difficulty_text = fonts.aller_normal.render(f'Difficulty: {level_info["difficulty"]}', True,
                                                (255, 255, 255))
     creator_text = fonts.aller_normal.render(f'Created by: {level_info["creator"]}', True, (255, 255, 255))
 

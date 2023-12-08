@@ -11,9 +11,9 @@ print("Geometry Dash Level Editor Tool")
 
 current_level = convert.Level()
 
-def iter() -> None:
-    global current_level
-    inp = input("> ").split()
+def execute(command) -> None:
+    global current_level, opened
+    inp = command.split()
     if inp[0] == "open":
         current_level = level.open_level_data(inp[1])
     elif inp[0] == "save":
@@ -28,7 +28,7 @@ def iter() -> None:
             for sprite in current_level:
                 sprite.kill()
     elif inp[0] == "edit":
-        current_level[inp[1]][inp[2]] = inp[3]
+        current_level[inp[1]][inp[2]] = inp[3].replace("_", " ")
     elif inp[0] == "print":
         print(current_level)
     elif inp[0] == "exit":
@@ -36,8 +36,18 @@ def iter() -> None:
     else:
         print("Command not found")
 
-while True:
-    try:
-        iter()
-    except Exception as e:
-        print(str(e))
+if len(sys.argv) == 1:
+    while True:
+        try:
+            execute(input("> "))
+        except Exception as e:
+            print(str(e))
+else:
+    if sys.argv[1] == "script":
+        with open(sys.argv[2]) as f:
+            for line in f.readlines():
+                try:
+                    execute(line)
+                except Exception as e:
+                    print(str(e))
+                    break

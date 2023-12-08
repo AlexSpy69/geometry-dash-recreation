@@ -1,0 +1,7 @@
+save levels/level_script_example_out
+add comp assets/textures/components/spikes/RegularSpike01.png 40 9 1 1 1 hazard yellow
+edit info name Level_Script_Example
+edit info creator Alex
+edit info difficulty Easy
+print
+save levels/level_script_example_out
