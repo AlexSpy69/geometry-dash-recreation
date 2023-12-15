@@ -12,7 +12,7 @@ print("Geometry Dash Level Editor Tool")
 current_level = convert.Level()
 
 def execute(command) -> None:
-    global current_level, opened
+    global current_level
     inp = command.split()
     if inp[0] == "open":
         current_level = level.open_level_data(inp[1])
@@ -20,13 +20,12 @@ def execute(command) -> None:
         level.save_level_data(inp[1], current_level)
     elif inp[0] == "add":
         if inp[1] == "comp":
-            current_level["sprites"].append(convert.CompSprite(imgfile=inp[2], pos=[int(inp[3]), int(inp[4])],
-                                                               size=[int(inp[5]), int(inp[6])], hb_mul=float(inp[7]),
+            current_level["sprites"].append(convert.CompSprite(imgfile=inp[2], pos=[float(inp[3]), float(inp[4])],
+                                                               size=[float(inp[5]), float(inp[6])], hb_mul=float(inp[7]),
                                                                type=inp[8], color=inp[9]))
     elif inp[0] == "remove":
         if inp[1] == "all":
-            for sprite in current_level:
-                sprite.kill()
+            current_level["sprites"] = []
     elif inp[0] == "edit":
         current_level[inp[1]][inp[2]] = inp[3].replace("_", " ")
     elif inp[0] == "print":

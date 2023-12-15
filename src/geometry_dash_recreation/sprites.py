@@ -20,8 +20,8 @@ class Cube(pygame.sprite.Sprite):
         self.vel = 0
         self.angle = 0
     
-    def jump(self, gravity) -> None:
-        self.vel = -JUMP_VEL * gravity
+    def jump(self, mul) -> None:
+        self.vel = -JUMP_VEL * mul
     
     def death_touch(self, sprite: pygame.sprite.Sprite) -> bool:
         return self.hitbox.bottom - DEATH_ACCURACY >= sprite.hitbox.top
@@ -32,8 +32,14 @@ class Cube(pygame.sprite.Sprite):
             if self.hitbox.bottom == ground.rect.top:
                 self.jump(gravity)
             for sprite in level_gr:
-                if self.hitbox.colliderect(sprite.hitbox.move(0, -1)):
+                if self.hitbox.colliderect(sprite.hitbox.move(0, -1)) and sprite.type == "platform":
                     self.jump(gravity)
+        
+        if click:
+            for sprite in level_gr:
+                if self.hitbox.colliderect(sprite.hitbox.move(0, -1)):
+                    if sprite.type == "ring":
+                        self.jump(gravity * RING_VEL[sprite.color])
         
         # Einwirkung der Gravitation
         self.hitbox.y += self.vel * DELTA_TIME * RESIZE
@@ -59,6 +65,9 @@ class Cube(pygame.sprite.Sprite):
             elif sprite.type == "hazard":
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -1)):
                     return 1
+            elif sprite.type == "pad":
+                if self.hitbox.colliderect(sprite.hitbox.move(0, -1)):
+                    self.jump(gravity * PAD_VEL[sprite.color])
         
         self.angle = 0 if self.angle == 360 else self.angle
 
@@ -97,7 +106,7 @@ class Background(pygame.sprite.Sprite):
 # Component-Sprite (für die Hindernisse im Spiel)
 class Component(pygame.sprite.Sprite):
     def __init__(self, imgfile="assets/textures/transparent.png",
-                 pos=[0, 0], size=[1, 1], hb_mul=1.0, type="deco", color="yellow", 
+                 pos=[0.0, 0.0], size=[1.0, 1.0], hb_mul=1.0, type="deco", color="yellow", 
                  *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         self.image = pygame.image.load(imgfile).convert_alpha()
