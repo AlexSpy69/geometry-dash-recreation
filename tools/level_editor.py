@@ -20,9 +20,9 @@ def execute(command) -> None:
         level.save_level_data(inp[1], current_level)
     elif inp[0] == "add":
         if inp[1] == "comp":
-            current_level["sprites"].append(convert.CompSprite(imgfile=inp[2], pos=[float(inp[3]), float(inp[4])],
-                                                               size=[float(inp[5]), float(inp[6])], hb_mul=float(inp[7]),
-                                                               type=inp[8], color=inp[9]))
+            current_level["sprites"].append(convert.CompSprite(imgfile="assets/textures/components/" + inp[2],
+                                                               pos=[float(inp[3]),float(inp[4])], size=[float(inp[5]), float(inp[6])],
+                                                               hb_mul=float(inp[7]), type=inp[8], color=inp[9]))
     elif inp[0] == "remove":
         if inp[1] == "all":
             current_level["sprites"] = []

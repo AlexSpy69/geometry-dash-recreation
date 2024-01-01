@@ -1,14 +1,27 @@
 save levels/level_script_example_out
 remove all
-add comp assets/textures/components/spikes/RegularSpike01.png 40 9 1 1 0.5 hazard yellow
-add comp assets/textures/components/special/rings/YellowRing.png 30 7 1 1 2 ring yellow
-add comp assets/textures/components/special/rings/RedRing.png 23 8 1 1 2 ring red
-add comp assets/textures/components/special/rings/MagentaRing.png 38 7 1 1 2 ring magenta
-add comp assets/textures/components/special/pads/YellowPad.png 45 9.8 1 0.2 1 pad yellow
-add comp assets/textures/components/special/pads/MagentaPad.png 55 9.8 1 0.2 1 pad magenta
-add comp assets/textures/components/special/pads/RedPad.png 65 9.8 1 0.2 1 pad red
+add comp spikes/RegularSpike01.png 40 9 1 1 0.5 hazard yellow
+add comp special/rings/YellowRing.png 30 7 1 1 2 ring yellow
+add comp special/rings/RedRing.png 23 8 1 1 2 ring red
+add comp special/rings/MagentaRing.png 38 7 1 1 2 ring magenta
+add comp special/pads/YellowPad.png 45 9.8 1 0.2 1 pad yellow
+add comp special/pads/MagentaPad.png 55 9.8 1 0.2 1 pad magenta
+add comp special/pads/RedPad.png 65 9.8 1 0.2 1 pad red
+add comp special/rings/CyanRing.png 72 7 1 1 2 ring cyan
+add comp special/rings/CyanRing.png 74 3 1 1 2 ring cyan
+add comp blocks/RegularBlock01.png 74 1 1 1 1 platform yellow
+add comp blocks/RegularBlock01.png 75 1 1 1 1 platform yellow
+add comp blocks/RegularBlock01.png 76 1 1 1 1 platform yellow
+add comp blocks/RegularBlock01.png 77 1 1 1 1 platform yellow
+add comp blocks/RegularBlock01.png 78 1 1 1 1 platform yellow
+add comp blocks/RegularBlock01.png 79 1 1 1 1 platform yellow
+add comp blocks/RegularBlock01.png 80 1 1 1 1 platform yellow
+add comp blocks/RegularBlock01.png 81 1 1 1 1 platform yellow
+add comp blocks/RegularBlock01.png 82 1 1 1 1 platform yellow
+add comp special/rings/CyanRing.png 84 3 1 1 2 ring cyan
 edit info name Level_Script_Example
 edit info creator Alex
 edit info difficulty Easy
+edit data end 90
 print
 save levels/level_script_example_out

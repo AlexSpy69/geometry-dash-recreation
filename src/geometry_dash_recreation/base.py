@@ -32,11 +32,12 @@ mode = "level select"  # Der "Zustand" des Spiels.
 # Level
 #level.save_level_data("levels/start", level.convert.Level())""
 level_gr = pygame.sprite.Group()
+level_gr_unconverted = convert.Level()
 current_level_name = ""
 
 # Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
 def game_func() -> None:
-    global mode, ev, click, gravity
+    global mode, ev, click, gravity, level_gr, level_gr_unconverted
     for event in pygame.event.get():
         if event.type == QUIT:
             mode = "level select"
@@ -53,11 +54,15 @@ def game_func() -> None:
             if event.key == K_SPACE or event.key == K_UP:
                 ev = False
     
-    match player_spr.sprite.controls(ev, click, gravity, ground, level_gr):
+    match player_spr.sprite.controls(ev, click, gravity, ground, level_gr, level_gr_unconverted):
         case 0:
             pass
         case 1:
             mode = "death"
+        case 2:
+            mode = "win"
+        case 3:
+            gravity = gravity * -1
     
     click = False
 
@@ -72,14 +77,16 @@ def game_func() -> None:
 
 # Wird aufgerufen, um das Level zu initialisieren
 def init_level() -> str:
+    global mode, level_gr, level_gr_unconverted, player_spr, ev, click, gravity, current_level_name
     def proc() -> None:
-        global mode, level_gr, player_spr, ev, click, gravity, current_level_name
+        global mode, level_gr, level_gr_unconverted, player_spr, ev, click, gravity, current_level_name
         level_gr_unconverted = level.open_level_data(current_level_name)
         level_gr = convert.data_to_group(level_gr_unconverted)
         # Sprites
         background.reset()
         # Gamemode
         exec(f"player_spr.add({level_gr_unconverted['data']['gamemode']})")
+        player_spr.sprite.reset()
         # Physik
         ev, click, gravity = False, False, 1
     
@@ -124,6 +131,9 @@ def main_loop() -> int:
         case "death":
             pygame.time.wait(500)
             mode = "init level"
+        case "win":
+            print("You won")
+            mode = "level select"
     
     return 0
 

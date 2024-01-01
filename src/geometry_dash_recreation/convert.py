@@ -11,7 +11,8 @@ class Level(dict):
                         "creator": "",
                         "difficulty": ""}
         self["data"] = {"gamemode": "cube",
-                        "song": ""}
+                        "song": "",
+                        "end": "50"}
         self["sprites"] = []
 
 class CompSprite(dict):
