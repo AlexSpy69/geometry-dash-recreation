@@ -23,7 +23,8 @@ class Cube(pygame.sprite.Sprite):
     
     def reset(self):
         self.angle = 0
-        self.x_to_level
+        self.vel = 0
+        self.x_to_level = 0
         self.hitbox.left, self.hitbox.bottom = PLAYER_POS
     
     def jump(self, mul) -> None:
