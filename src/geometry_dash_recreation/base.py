@@ -54,15 +54,16 @@ def game_func() -> None:
             if event.key == K_SPACE or event.key == K_UP:
                 ev = False
     
-    match player_spr.sprite.controls(ev, click, gravity, ground, level_gr, level_gr_unconverted):
-        case 0:
-            pass
-        case 1:
-            mode = "death"
-        case 2:
-            mode = "win"
-        case 3:
-            gravity = gravity * -1
+    controls = player_spr.sprite.controls(ev, click, gravity, ground, level_gr, level_gr_unconverted)
+
+    if controls == NORMAL:
+        pass
+    elif controls == DEATH:
+        mode = "death"
+    elif controls == WIN:
+        mode = "win"
+    elif controls == CHANGE_GRAVITY:
+        gravity = gravity * -1
     
     click = False
 

@@ -26,3 +26,9 @@ RING_VEL = {"yellow": 1.1,
 PAD_VEL = {"yellow": 1.3,
            "magenta": 0.9,
            "red": 1.7}
+
+# Exit Codes
+NORMAL = 0
+DEATH = 1
+WIN = 2
+CHANGE_GRAVITY = 3

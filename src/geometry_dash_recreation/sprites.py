@@ -39,7 +39,7 @@ class Cube(pygame.sprite.Sprite):
     def controls(self, ev, click, gravity, ground: pygame.sprite.Sprite, level_gr: pygame.sprite.Group,
                  level_gr_unconverted: dict) -> int:
         if self.x_to_level >= int(level_gr_unconverted["data"]["end"]):
-            return 2
+            return WIN
 
         # Springen
         if ev:
@@ -55,7 +55,7 @@ class Cube(pygame.sprite.Sprite):
                     if sprite.type == "ring":
                         if sprite.color == "cyan":
                             self.vel = -gravity * JUMP_VEL / 1.5
-                            return 3
+                            return CHANGE_GRAVITY
                         self.jump(gravity * RING_VEL[sprite.color])
         
         # Einwirkung der Gravitation
@@ -67,7 +67,7 @@ class Cube(pygame.sprite.Sprite):
         # Landen auf dem Boden
         if self.hitbox.colliderect(ground.rect.move(0, -gravity)):
             if gravity == -1:
-                return 1
+                return DEATH
             self.angle = round(self.angle / 90) * 90
             self.hitbox.bottom = ground.rect.top
             self.vel = 0
@@ -77,7 +77,7 @@ class Cube(pygame.sprite.Sprite):
             if sprite.type == "platform":
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
                     if self.death_touch(gravity, sprite):
-                        return 1
+                        return DEATH
                     self.angle = round(self.angle / 90) * 90
                     if gravity == 1:
                         self.hitbox.bottom = sprite.hitbox.top
@@ -86,14 +86,14 @@ class Cube(pygame.sprite.Sprite):
                     self.vel = 0
             elif sprite.type == "hazard":
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
-                    return 1
+                    return DEATH
             elif sprite.type == "pad":
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
                     self.jump(gravity * PAD_VEL[sprite.color])
         
         self.angle = 0 if self.angle == 360 or self.angle == -360 else self.angle
 
-        return 0
+        return NORMAL
     
     def update(self, *args: Any, **kwargs: Any) -> None:
         self.image = pygame.transform.rotate(self.original_image, self.angle)
