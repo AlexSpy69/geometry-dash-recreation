@@ -19,9 +19,11 @@ add comp blocks/RegularBlock01.png 80 1 1 1 1 platform yellow
 add comp blocks/RegularBlock01.png 81 1 1 1 1 platform yellow
 add comp blocks/RegularBlock01.png 82 1 1 1 1 platform yellow
 add comp special/rings/CyanRing.png 84 3 1 1 2 ring cyan
+add comp special/formportals/ShipPortal.png 84 6 1.5 3 1 formportal magenta
 edit info name Level_Script_Example
 edit info creator Alex
 edit info difficulty Easy
-edit data end 90
+edit data gamemode cube
+edit data end 130
 print
 save levels/level_script_example_out
