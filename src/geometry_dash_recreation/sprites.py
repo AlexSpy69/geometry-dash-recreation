@@ -23,7 +23,6 @@ class Cube(pygame.sprite.Sprite):
     def reset(self) -> None:
         self.angle = 0
         self.vel = 0
-        self.x_to_level = 0
         self.hitbox.left, self.hitbox.bottom = PLAYER_POS
     
     def jump(self, mul) -> None:
@@ -113,13 +112,11 @@ class Ship(pygame.sprite.Sprite):
 
         self.vel = 0
         self.angle = 0
-        self.x_to_level = 0
         self.upsidedown = False
 
     def reset(self) -> None:
         self.angle = 0
         self.vel = 0
-        self.x_to_level = 0
         self.hitbox.left, self.hitbox.bottom = PLAYER_POS
         if self.upsidedown:
             self.upsidedown = not self.upsidedown
