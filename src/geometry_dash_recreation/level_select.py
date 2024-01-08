@@ -38,9 +38,24 @@ folder_error = False
 
 level_info = {}
 
+def prev_level() -> None:
+    global level_nr
+    level_nr -= 1
+    if level_nr < 0:
+        level_nr += 1
+
+def next_level() -> None:
+    global level_nr
+    try:
+        level_nr += 1
+        test = level_list[level_nr]
+        del test
+    except IndexError:
+        level_nr -= 1
+
 def loop(screen: pygame.Surface) -> str:
-    global levelname_text, difficulty_text, creator_text, id_text, folder_text, error_text, player_text
-    global levelname_rect, difficulty_rect, creator_rect, id_rect, folder_rect, error_rect, player_rect
+    global levelname_text, difficulty_text, creator_text, id_text, folder_text, error_text
+    global levelname_rect, difficulty_rect, creator_rect, id_rect, folder_rect, error_rect
     global level_folder, level_list, level_nr, level_folder_edit, folder_error, level_info
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -50,18 +65,16 @@ def loop(screen: pygame.Surface) -> str:
                 return f'{level_folder}/{level_list[level_nr]}'
             if folder_rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 level_folder_edit = not level_folder_edit
+                continue
+            if pygame.mouse.get_pos()[0] <= SCREEN_WIDTH/3:
+                prev_level()
+            elif pygame.mouse.get_pos()[0] >= SCREEN_WIDTH-SCREEN_WIDTH/3:
+                next_level()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT:
-                try:
-                    level_nr += 1
-                    test = level_list[level_nr]
-                    del test
-                except IndexError:
-                    level_nr -= 1
+                next_level()
             elif event.key == pygame.K_LEFT:
-                level_nr -= 1
-                if level_nr < 0:
-                    level_nr += 1
+                prev_level()
             elif event.key == pygame.K_RETURN and level_folder_edit:
                 level_folder_edit = False
             elif event.key == pygame.K_BACKSPACE and level_folder_edit:

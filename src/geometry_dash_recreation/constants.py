@@ -5,7 +5,7 @@ MONITOR_NR = 0
 width = screeninfo.get_monitors()[MONITOR_NR].width
 height = screeninfo.get_monitors()[MONITOR_NR].height
 
-FPS = 30                        # Bilder pro Sekunde
+FPS = 60                        # Bilder pro Sekunde
 DELTA_TIME = 60 / FPS           # Abstand zwischen zwei Frames in Sekunden multipliziert mit 60
 SCREEN_WIDTH = 1600            # Fensterbreite
 SCREEN_HEIGHT = 900          # Fensterhöhe
