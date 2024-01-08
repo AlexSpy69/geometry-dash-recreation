@@ -89,6 +89,8 @@ class Cube(pygame.sprite.Sprite):
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
                     if sprite.color == "magenta":
                         return SHIP_GAMEMODE
+                    elif sprite.color == "red":
+                        return BALL_GAMEMODE
         
         self.angle = 0 if self.angle == 360 or self.angle == -360 else self.angle
 
@@ -119,7 +121,7 @@ class Ship(pygame.sprite.Sprite):
         self.vel = 0
         self.hitbox.left, self.hitbox.bottom = PLAYER_POS
         if self.upsidedown:
-            self.upsidedown = not self.upsidedown
+            self.flip()
     
     def flip(self) -> None:
         self.upsidedown = not self.upsidedown
@@ -129,7 +131,7 @@ class Ship(pygame.sprite.Sprite):
         self.rect = self.original_image.get_rect()
         self.rect.y = y
         self.rect.x = x
-        self.vel = self.vel *-1
+        self.vel = -self.vel
     
     def jump(self, mul) -> None:
         self.vel = -JUMP_VEL * mul
@@ -164,7 +166,7 @@ class Ship(pygame.sprite.Sprite):
         self.vel = -20 if self.vel <= -20 else self.vel
         self.vel = 20 if self.vel >= 20 else self.vel
 
-        self.angle = -self.vel * 1.2
+        self.angle = -self.vel * 2
 
         # Landen auf dem Boden
         if self.hitbox.colliderect(ground.rect.move(0, -gravity)):
@@ -205,6 +207,103 @@ class Ship(pygame.sprite.Sprite):
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
                     if sprite.color == "green":
                         return CUBE_GAMEMODE
+                    elif sprite.color == "red":
+                        return BALL_GAMEMODE
+
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        self.image = pygame.transform.rotate(self.original_image, self.angle)
+        self.rect = self.image.get_rect(center=self.hitbox.center)
+        return super().update(*args, **kwargs) 
+
+class Ball(pygame.sprite.Sprite):
+    def __init__(self, *groups: AbstractGroup) -> None:
+        super().__init__(*groups)
+        self.original_image = pygame.image.load("assets/textures/icons/balls/ball_1.png").convert_alpha()
+        self.original_image = pygame.transform.scale(self.original_image, (UNIT, UNIT))
+        self.image = self.original_image
+        self.rect = self.image.get_rect()
+        self.rect.left, self.rect.bottom = PLAYER_POS
+        self.hitbox = self.image.get_rect()
+        self.hitbox.left, self.hitbox.bottom = PLAYER_POS
+
+        self.vel = 0
+        self.angle = 0
+
+    def reset(self) -> None:
+        self.angle = 0
+        self.vel = 0
+        self.hitbox.left, self.hitbox.bottom = PLAYER_POS
+    
+    def jump(self, mul) -> None:
+        self.vel = -JUMP_VEL * mul * 0.7
+
+    def death_touch(self, gravity: int, sprite: pygame.sprite.Sprite) -> bool:
+        if gravity == 1:
+            return self.hitbox.bottom - DEATH_ACCURACY >= sprite.hitbox.top
+        elif gravity == -1:
+            return self.hitbox.bottom + DEATH_ACCURACY <= sprite.hitbox.top
+    
+    def change_gravity(self, gravity):
+        self.vel = VEL_ADD * -gravity * DELTA_TIME * 5
+        return CHANGE_GRAVITY
+
+    def controls(self, ev, click, gravity, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
+                 level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:    
+        if click:
+            for sprite in level_gr:
+                if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
+                    if sprite.type == "ring":
+                        if sprite.color == "cyan":
+                            #self.vel = -gravity * JUMP_VEL / 1.5
+                            return self.change_gravity(gravity)
+                        self.jump(gravity * RING_VEL[sprite.color])
+        
+        # Einwirkung der Gravitation
+        self.hitbox.y += self.vel * DELTA_TIME * RESIZE
+
+        self.vel += VEL_ADD * gravity * DELTA_TIME / 2
+        
+        self.vel = -40 if self.vel <= -40 else self.vel
+        self.vel = 40 if self.vel >= 40 else self.vel
+
+        self.angle -= VEL_ADD * gravity * 4
+
+        # Landen auf dem Boden
+        if self.hitbox.colliderect(ground.rect.move(0, -gravity)):
+            self.hitbox.bottom = ground.rect.top
+            if ev:
+                return self.change_gravity(gravity)
+        
+        if self.hitbox.colliderect(ceiling.rect.move(0, -gravity)):
+            self.hitbox.top = ceiling.rect.bottom
+            if ev:
+                return self.change_gravity(gravity)
+        
+        # Landen auf Level-Komponenten
+        for sprite in level_gr:
+            if sprite.type == "platform":
+                if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
+                    if self.death_touch(gravity, sprite):
+                        return DEATH
+                    if gravity == 1:
+                        self.hitbox.bottom = sprite.hitbox.top
+                    else:
+                        self.hitbox.top = sprite.hitbox.bottom
+                    self.vel = 0
+                    if ev:
+                        return self.change_gravity(gravity)
+            elif sprite.type == "hazard":
+                if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
+                    return DEATH
+            elif sprite.type == "pad":
+                if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
+                    self.jump(gravity * PAD_VEL[sprite.color])
+            elif sprite.type == "formportal":
+                if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
+                    if sprite.color == "green":
+                        return CUBE_GAMEMODE
+                    elif sprite.color == "magenta":
+                        return SHIP_GAMEMODE
 
     def update(self, *args: Any, **kwargs: Any) -> None:
         self.image = pygame.transform.rotate(self.original_image, self.angle)
@@ -247,9 +346,11 @@ class Ceiling(pygame.sprite.Sprite):
     
     def update(self, *args: Any, **kwargs: Any) -> None:
         if self.activated:
-            self.rect.bottom = SCREEN_HEIGHT-GROUND_HEIGHT
+            if self.rect.bottom < CEILING_HEIGHT-CEILING_MOVE:
+                self.rect.bottom += CEILING_MOVE
         else:
-            self.rect.bottom = 0
+            if self.rect.bottom > -CEILING_MOVE:
+                self.rect.bottom -= CEILING_MOVE
         return super().update(*args, **kwargs)
 
 # Component-Sprite (für die Hindernisse im Spiel)

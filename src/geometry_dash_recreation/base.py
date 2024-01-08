@@ -12,7 +12,7 @@ pygame.mixer.init()
 pygame.font.init()
 
 # Spielfenster
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Geometry Dash Recreation")
 
 # Sprites
@@ -23,6 +23,7 @@ bg_gr = pygame.sprite.Group(background, ground, ceiling)  # Die Group, in der de
 
 cube = sprites.Cube()                          # Der Cube-Sprite im Spiel
 ship = sprites.Ship()                          # Der Ship-Sprite im Spiel
+ball = sprites.Ball()                          # Der Ball-Sprite im Spiel
 player_spr = pygame.sprite.GroupSingle(cube)   # Die Spieler-Sprite-"Gruppe", die nur einen Sprite enthalten kann.
 
 ev = False     # True, wenn der Spieler die linke Maustaste gedrückt hält, und False, wenn er sie nicht gedrückt hält
@@ -38,15 +39,22 @@ level_gr = pygame.sprite.Group()
 level_gr_unconverted = convert.Level()
 current_level_name = ""
 
-def change_gamemode(name: str) -> None:
+def change_gamemode(name: str, init: bool = False) -> None:
     global player_spr, ceiling
     old_y = player_spr.sprite.hitbox.y
+    old_vel = player_spr.sprite.vel
     exec(f"player_spr.add({name})")
     player_spr.sprite.hitbox.y = old_y
+    player_spr.sprite.vel = old_vel
     if name == "cube":
         ceiling.activated = False
-    elif name == "ship":
+    elif name in ("ship", "ball"):
         ceiling.activated = True
+    if init:
+        if ceiling.activated:
+            ceiling.rect.bottom = CEILING_HEIGHT
+        else:
+            ceiling.rect.bottom = 0
 
 # Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
 def game_func() -> None:
@@ -86,6 +94,8 @@ def game_func() -> None:
         change_gamemode("cube")
     elif controls == SHIP_GAMEMODE:
         change_gamemode("ship")
+    elif controls == BALL_GAMEMODE:
+        change_gamemode("ball")
     
     click = False
 
@@ -108,7 +118,7 @@ def init_level() -> str:
         # Sprites
         background.reset()
         # Gamemode
-        change_gamemode(level_gr_unconverted["data"]["gamemode"])
+        change_gamemode(level_gr_unconverted["data"]["gamemode"], True)
         player_spr.sprite.reset()
         # Physik
         ev, click, gravity = False, False, 1
