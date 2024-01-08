@@ -57,7 +57,7 @@ class Cube(pygame.sprite.Sprite):
         self.hitbox.y += self.vel * DELTA_TIME * RESIZE
         self.vel += VEL_ADD * gravity * DELTA_TIME
 
-        self.angle -= gravity * 7
+        self.angle -= gravity * 7 * DELTA_TIME
 
         # Landen auf dem Boden
         if self.hitbox.colliderect(ground.rect.move(0, -gravity)):
@@ -244,7 +244,7 @@ class Ball(pygame.sprite.Sprite):
             return self.hitbox.bottom + DEATH_ACCURACY <= sprite.hitbox.top
     
     def change_gravity(self, gravity):
-        self.vel = VEL_ADD * -gravity * DELTA_TIME * 5
+        self.vel = VEL_ADD * -gravity * 5
         return CHANGE_GRAVITY
 
     def controls(self, ev, click, gravity, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
@@ -266,7 +266,7 @@ class Ball(pygame.sprite.Sprite):
         self.vel = -40 if self.vel <= -40 else self.vel
         self.vel = 40 if self.vel >= 40 else self.vel
 
-        self.angle -= VEL_ADD * gravity * 4
+        self.angle -= VEL_ADD * gravity * 4 * DELTA_TIME
 
         # Landen auf dem Boden
         if self.hitbox.colliderect(ground.rect.move(0, -gravity)):
@@ -304,6 +304,8 @@ class Ball(pygame.sprite.Sprite):
                         return CUBE_GAMEMODE
                     elif sprite.color == "magenta":
                         return SHIP_GAMEMODE
+        
+        self.angle = 0 if self.angle == 360 or self.angle == -360 else self.angle
 
     def update(self, *args: Any, **kwargs: Any) -> None:
         self.image = pygame.transform.rotate(self.original_image, self.angle)

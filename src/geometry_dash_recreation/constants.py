@@ -1,11 +1,11 @@
 import screeninfo
 
-MONITOR_NR = 1
+MONITOR_NR = 0
 
 width = screeninfo.get_monitors()[MONITOR_NR].width
 height = screeninfo.get_monitors()[MONITOR_NR].height
 
-FPS = 60                        # Bilder pro Sekunde
+FPS = 30                        # Bilder pro Sekunde
 DELTA_TIME = 60 / FPS           # Abstand zwischen zwei Frames in Sekunden multipliziert mit 60
 SCREEN_WIDTH = 1600            # Fensterbreite
 SCREEN_HEIGHT = 900          # Fensterhöhe
@@ -21,7 +21,7 @@ JUMP_VEL = 27                   # Stärke des Sprungs des Spielers
 LEVEL_SCROLL_SPEED = DELTA_TIME*14*RESIZE  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
 BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
 START_LEVEL = "levels/start"    # Das Level, mit dem das Spiel automatisch beginnt
-DEATH_ACCURACY = 20 / DELTA_TIME
+DEATH_ACCURACY = 20
 RING_VEL = {"yellow": 1.1,
             "magenta": 0.8,
             "red": 1.5}
