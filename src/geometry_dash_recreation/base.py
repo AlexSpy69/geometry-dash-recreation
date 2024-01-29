@@ -74,7 +74,8 @@ def pause_func() -> None:
             if event.type == QUIT:
                 mode = "level select"
                 clicked = True
-            if event.type == MOUSEBUTTONDOWN:
+            if event.type == MOUSEBUTTONDOWN or \
+                event.type == KEYDOWN:
                 clicked = True
 
 # Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
@@ -95,6 +96,9 @@ def game_func() -> None:
             if event.key == K_SPACE or event.key == K_UP:
                 ev = True
                 click = True
+            if event.key == K_ESCAPE:
+                pause_func()
+                continue
         elif event.type == KEYUP:
             if event.key == K_SPACE or event.key == K_UP:
                 ev = False
