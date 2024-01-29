@@ -26,6 +26,14 @@ ship = sprites.Ship()                          # Der Ship-Sprite im Spiel
 ball = sprites.Ball()                          # Der Ball-Sprite im Spiel
 player_spr = pygame.sprite.GroupSingle(cube)   # Die Spieler-Sprite-"Gruppe", die nur einen Sprite enthalten kann.
 
+pause_button = sprites.PauseButton()
+ingame_ui_gr = pygame.sprite.Group(pause_button)
+
+pause_screen = pygame.transform.scale(
+    pygame.image.load("assets/textures/ui/pause_screen.png").convert_alpha(),
+    (SCREEN_WIDTH, SCREEN_HEIGHT)
+)
+
 ev = False     # True, wenn der Spieler die linke Maustaste gedrückt hält, und False, wenn er sie nicht gedrückt hält
 click = False  # True, wenn der Spieler die linke Maustaste drückt, wird aber im nächsten Durchgang der Mainloop direkt auf False gesetzt
 gravity = 1    # Die Richtung der Gravitation: Bei 1 fällt der Spieler nach unten, bei -1 nach oben.
@@ -56,6 +64,19 @@ def change_gamemode(name: str, init: bool = False) -> None:
         else:
             ceiling.rect.bottom = 0
 
+def pause_func() -> None:
+    global mode
+    clicked = False
+    screen.blit(pause_screen, (0, 0))
+    pygame.display.flip()
+    while not clicked:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                mode = "level select"
+                clicked = True
+            if event.type == MOUSEBUTTONDOWN:
+                clicked = True
+
 # Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
 def game_func() -> None:
     global mode, ev, click, gravity, level_gr, level_gr_unconverted, x_to_level
@@ -63,6 +84,9 @@ def game_func() -> None:
         if event.type == QUIT:
             mode = "level select"
         elif event.type == MOUSEBUTTONDOWN:
+            if pause_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                pause_func()
+                continue
             ev = True
             click = True
         elif event.type == MOUSEBUTTONUP:
@@ -107,6 +131,7 @@ def game_func() -> None:
     bg_gr.draw(screen)
     level_gr.draw(screen)
     player_spr.draw(screen)
+    ingame_ui_gr.draw(screen)
 
 # Wird aufgerufen, um das Level zu initialisieren
 def init_level() -> str:

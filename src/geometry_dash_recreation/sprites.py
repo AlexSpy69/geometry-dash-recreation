@@ -384,3 +384,15 @@ class Component(pygame.sprite.Sprite):
         self.rect.x -= LEVEL_SCROLL_SPEED
         self.hitbox.center = self.rect.center
         return super().update(*args, **kwargs)
+
+# Sprite für den Pause-Knopf
+class PauseButton(pygame.sprite.Sprite):
+    def __init__(self, *groups: AbstractGroup) -> None:
+        super().__init__(*groups)
+        self.image = pygame.image.load("assets/textures/ui/pause_button.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
+        self.rect = self.image.get_rect()
+        self.rect.right, self.rect.top = SCREEN_WIDTH, 0
+    
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        return super().update(*args, **kwargs)
