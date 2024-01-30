@@ -17,9 +17,13 @@ pygame.display.set_caption("Geometry Dash Recreation")
 
 # Sprites
 background = sprites.Background()                # Der Hintergrund, der sich nach links bewegt.
+background_2 = sprites.Background()              # Ein zweiter Hintergrund-Sprite, der dazu verwendet wird,
+                                                 # den Hintergrund durchgängig erscheinen zu lassen.
+bg_2_front = False
 ground = sprites.Ground()                        # Der "Boden" im Spiel.
 ceiling = sprites.Ceiling()
-bg_gr = pygame.sprite.Group(background, ground, ceiling)  # Die Group, in der der Boden und der Hintergrund stehen.
+bg_gr = pygame.sprite.Group(background_2, background,
+                            ground, ceiling)   # Die Group, in der der Boden und der Hintergrund stehen.
 
 cube = sprites.Cube()                          # Der Cube-Sprite im Spiel
 ship = sprites.Ship()                          # Der Ship-Sprite im Spiel
@@ -29,11 +33,18 @@ player_spr = pygame.sprite.GroupSingle(cube)   # Die Spieler-Sprite-"Gruppe", di
 pause_button = sprites.PauseButton()
 ingame_ui_gr = pygame.sprite.Group(pause_button)
 
+# Screens
 pause_screen = pygame.transform.scale(
     pygame.image.load("assets/textures/ui/pause_screen.png").convert_alpha(),
     (SCREEN_WIDTH, SCREEN_HEIGHT)
 )
 
+win_screen = pygame.transform.scale(
+    pygame.image.load("assets/textures/ui/win_screen.png").convert_alpha(),
+    (SCREEN_WIDTH, SCREEN_HEIGHT)
+)
+
+# Variablen
 ev = False     # True, wenn der Spieler die linke Maustaste gedrückt hält, und False, wenn er sie nicht gedrückt hält
 click = False  # True, wenn der Spieler die linke Maustaste drückt, wird aber im nächsten Durchgang der Mainloop direkt auf False gesetzt
 gravity = 1    # Die Richtung der Gravitation: Bei 1 fällt der Spieler nach unten, bei -1 nach oben.
@@ -46,6 +57,7 @@ mode = "level select"  # Der "Zustand" des Spiels.
 level_gr = pygame.sprite.Group()
 level_gr_unconverted = convert.Level()
 current_level_name = ""
+level_end = 0
 
 def change_gamemode(name: str, init: bool = False) -> None:
     global player_spr, ceiling
@@ -64,10 +76,10 @@ def change_gamemode(name: str, init: bool = False) -> None:
         else:
             ceiling.rect.bottom = 0
 
-def pause_func() -> None:
+def screen_func(surface: pygame.Surface) -> None:
     global mode
     clicked = False
-    screen.blit(pause_screen, (0, 0))
+    screen.blit(surface, (0, 0))
     pygame.display.flip()
     while not clicked:
         for event in pygame.event.get():
@@ -80,13 +92,13 @@ def pause_func() -> None:
 
 # Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
 def game_func() -> None:
-    global mode, ev, click, gravity, level_gr, level_gr_unconverted, x_to_level
+    global mode, ev, click, gravity, level_gr, level_gr_unconverted, x_to_level, level_end, bg_2_front
     for event in pygame.event.get():
         if event.type == QUIT:
             mode = "level select"
         elif event.type == MOUSEBUTTONDOWN:
             if pause_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                pause_func()
+                screen_func(pause_screen)
                 continue
             ev = True
             click = True
@@ -97,7 +109,7 @@ def game_func() -> None:
                 ev = True
                 click = True
             if event.key == K_ESCAPE:
-                pause_func()
+                screen_func(pause_screen)
                 continue
         elif event.type == KEYUP:
             if event.key == K_SPACE or event.key == K_UP:
@@ -105,7 +117,7 @@ def game_func() -> None:
     
     x_to_level += LEVEL_SCROLL_SPEED / UNIT
 
-    if x_to_level >= int(level_gr_unconverted["data"]["end"]):
+    if x_to_level >= level_end:
         mode = "win"
 
     controls = player_spr.sprite.controls(ev, click, gravity, ground, ceiling, level_gr, level_gr_unconverted)
@@ -127,6 +139,20 @@ def game_func() -> None:
     
     click = False
 
+    background.rect.x -= BACKGROUND_SCROLL_SPEED
+
+    if background.rect.right == 0:
+        background.rect.left = background_2.rect.width
+        bg_2_front = True
+    elif background_2.rect.right == 0:
+        background.rect.left = 0
+        bg_2_front = False
+
+    if not bg_2_front:
+        background_2.rect.left = background.rect.right
+    else:
+        background_2.rect.right = background.rect.left    
+
     bg_gr.update()
     level_gr.update()
     player_spr.update()
@@ -139,13 +165,28 @@ def game_func() -> None:
 
 # Wird aufgerufen, um das Level zu initialisieren
 def init_level() -> str:
-    global mode, level_gr, level_gr_unconverted, player_spr, ev, click, gravity, current_level_name, x_to_level
+    global mode, level_gr, level_gr_unconverted, player_spr, ev, click, \
+        gravity, current_level_name, x_to_level, level_end
+    
+    def max_x() -> int:
+        global level_gr_unconverted
+        max_value = 0
+        for sprite in level_gr_unconverted["sprites"]:
+            if sprite["pos"][0] > max_value:
+                max_value = sprite["pos"][0]
+        
+        return max_value
+
     def proc() -> None:
-        global mode, level_gr, level_gr_unconverted, player_spr, ev, click, gravity, current_level_name, x_to_level
+        global mode, level_gr, level_gr_unconverted, player_spr, ev, click, \
+            gravity, current_level_name, x_to_level, level_end
         level_gr_unconverted = level.open_level_data(current_level_name)
         level_gr = convert.data_to_group(level_gr_unconverted)
         # Sprites
         background.reset()
+        background_2.reset()
+        # Level
+        level_end = max_x() + 10
         # Gamemode
         change_gamemode(level_gr_unconverted["data"]["gamemode"], True)
         player_spr.sprite.reset()
@@ -195,7 +236,7 @@ def main_loop() -> int:
             pygame.time.wait(500)
             mode = "init level"
         case "win":
-            print("You won")
+            screen_func(win_screen)
             mode = "level select"
     
     return 0

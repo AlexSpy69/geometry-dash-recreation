@@ -9,7 +9,7 @@ pygame.init()
 class Cube(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.original_image = pygame.image.load("assets/textures/icons/cubes/icon_2.png").convert_alpha()
+        self.original_image = pygame.image.load("assets/textures/icons/cubes/icon_1.png").convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, (UNIT, UNIT))
         self.image = self.original_image
         self.rect = self.image.get_rect()
@@ -333,7 +333,7 @@ class Background(pygame.sprite.Sprite):
         self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT/4
 
     def update(self, *args: Any, **kwargs: Any) -> None:
-        self.rect.x -= BACKGROUND_SCROLL_SPEED    # Bewegen des Hintergrunds nach links
+        #self.rect.x -= BACKGROUND_SCROLL_SPEED    # Bewegen des Hintergrunds nach links
         return super().update(*args, **kwargs)
 
 class Ceiling(pygame.sprite.Sprite):
