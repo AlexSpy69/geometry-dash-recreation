@@ -7,8 +7,8 @@ height = screeninfo.get_monitors()[MONITOR_NR].height
 
 FPS = 60                        # Bilder pro Sekunde
 DELTA_TIME = 60 / FPS           # Abstand zwischen zwei Frames in Sekunden multipliziert mit 60
-SCREEN_WIDTH = 1600            # Fensterbreite
-SCREEN_HEIGHT = 900          # Fensterhöhe
+SCREEN_WIDTH = width            # Fensterbreite
+SCREEN_HEIGHT = height          # Fensterhöhe
 RESIZE = SCREEN_HEIGHT/1080
 UNIT = SCREEN_HEIGHT * 0.08     # Einheit
 GROUND_HEIGHT = UNIT * 10       # Höhe des Bodens

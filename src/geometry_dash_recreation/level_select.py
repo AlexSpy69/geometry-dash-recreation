@@ -48,10 +48,12 @@ def next_level() -> None:
     global level_nr
     try:
         level_nr += 1
-        test = level_list[level_nr]
-        del test
+        level_list[level_nr]
     except IndexError:
         level_nr -= 1
+
+def select_level() -> str:
+    return f'{level_folder}/{level_list[level_nr]}'
 
 def loop(screen: pygame.Surface) -> str:
     global levelname_text, difficulty_text, creator_text, id_text, folder_text, error_text
@@ -62,24 +64,32 @@ def loop(screen: pygame.Surface) -> str:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if levelname_rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                return f'{level_folder}/{level_list[level_nr]}'
+                return select_level()
             if folder_rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 level_folder_edit = not level_folder_edit
                 continue
             if pygame.mouse.get_pos()[0] <= SCREEN_WIDTH/3:
                 prev_level()
             elif pygame.mouse.get_pos()[0] >= SCREEN_WIDTH-SCREEN_WIDTH/3:
+                if pygame.mouse.get_pos()[1] <= SCREEN_HEIGHT/3:
+                    sys.exit(0)
                 next_level()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT:
                 next_level()
             elif event.key == pygame.K_LEFT:
                 prev_level()
-            elif event.key == pygame.K_RETURN and level_folder_edit:
-                level_folder_edit = False
+            elif event.key == pygame.K_RETURN:
+                if level_folder_edit:
+                    level_folder_edit = False
+                else:
+                    return select_level()
             elif event.key == pygame.K_BACKSPACE and level_folder_edit:
                 if len(level_folder) > 0:
                     level_folder = level_folder[:-1]
+            elif event.key == pygame.K_ESCAPE:
+                if not level_folder_edit:
+                    sys.exit(0)
 
             if level_folder_edit and event.key != pygame.K_BACKSPACE and event.key != pygame.K_RETURN:
                 level_folder += event.unicode

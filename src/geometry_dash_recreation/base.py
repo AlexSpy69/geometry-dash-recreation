@@ -12,7 +12,7 @@ pygame.mixer.init()
 pygame.font.init()
 
 # Spielfenster
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("Geometry Dash Recreation")
 
 # Sprites
