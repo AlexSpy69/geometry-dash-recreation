@@ -84,7 +84,6 @@ def screen_func(surface: pygame.Surface) -> None:
     while not clicked:
         for event in pygame.event.get():
             if event.type == QUIT:
-                mode = "level select"
                 clicked = True
             if event.type == MOUSEBUTTONDOWN or \
                 event.type == KEYDOWN:
