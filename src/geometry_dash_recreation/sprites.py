@@ -5,6 +5,7 @@ from geometry_dash_recreation.constants import *
 
 pygame.init()
 
+
 # Spieler-Sprites
 class Cube(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
@@ -101,6 +102,7 @@ class Cube(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.hitbox.center)
         return super().update(*args, **kwargs) 
 
+
 class Ship(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
@@ -149,7 +151,7 @@ class Ship(pygame.sprite.Sprite):
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
                     if sprite.type == "ring":
                         if sprite.color == "cyan":
-                            #self.vel = -gravity * JUMP_VEL / 1.5
+                            # self.vel = -gravity * JUMP_VEL / 1.5
                             self.flip()
                             return CHANGE_GRAVITY
                         self.jump(gravity * RING_VEL[sprite.color])
@@ -215,6 +217,7 @@ class Ship(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.hitbox.center)
         return super().update(*args, **kwargs) 
 
+
 class Ball(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
@@ -254,7 +257,7 @@ class Ball(pygame.sprite.Sprite):
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
                     if sprite.type == "ring":
                         if sprite.color == "cyan":
-                            #self.vel = -gravity * JUMP_VEL / 1.5
+                            # self.vel = -gravity * JUMP_VEL / 1.5
                             return self.change_gravity(gravity)
                         self.jump(gravity * RING_VEL[sprite.color])
         
@@ -312,6 +315,7 @@ class Ball(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.hitbox.center)
         return super().update(*args, **kwargs) 
 
+
 # Background-Sprites
 class Ground(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
@@ -320,6 +324,7 @@ class Ground(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = 0, GROUND_HEIGHT
+
 
 class Background(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
@@ -333,8 +338,9 @@ class Background(pygame.sprite.Sprite):
         self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT/4
 
     def update(self, *args: Any, **kwargs: Any) -> None:
-        #self.rect.x -= BACKGROUND_SCROLL_SPEED    # Bewegen des Hintergrunds nach links
+        # self.rect.x -= BACKGROUND_SCROLL_SPEED    # Bewegen des Hintergrunds nach links
         return super().update(*args, **kwargs)
+
 
 class Ceiling(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
@@ -355,12 +361,17 @@ class Ceiling(pygame.sprite.Sprite):
                 self.rect.bottom -= CEILING_MOVE
         return super().update(*args, **kwargs)
 
+
 # Component-Sprite (für die Hindernisse im Spiel)
 class Component(pygame.sprite.Sprite):
     def __init__(self, imgfile="assets/textures/transparent.png",
-                 pos=[0.0, 0.0], size=[1.0, 1.0], hb_mul=1.0, type="deco", color="yellow", 
+                 pos=None, size=None, hb_mul=1.0, type_="deco", color="yellow",
                  *groups: AbstractGroup) -> None:
         super().__init__(*groups)
+        if pos is None:
+            pos = [0.0, 0.0]
+        if size is None:
+            size = [1.0, 1.0]
         self.image = pygame.image.load(imgfile).convert_alpha()
         self.image = pygame.transform.scale(self.image, (UNIT*size[0], UNIT*size[1]))
         self.rect = self.image.get_rect()
@@ -371,7 +382,7 @@ class Component(pygame.sprite.Sprite):
             self.rect.width*hb_mul, self.rect.height*hb_mul
         # Der Hitbox kann um einen bestimmten Faktor vergrößert oder verkleinert werden
 
-        self.type = type    # platform: Man kann darauf landen und davon abspringen
+        self.type = type_    # platform: Man kann darauf landen und davon abspringen
                             # hazard: Man stirbt, wenn man es berührt
                             # deco: Es zählt als Dekoration und wird vom Spieler ignioriert
                             # ring: Rings, von denen man abspringen kann, wenn man die Maustaste drückt
@@ -384,6 +395,7 @@ class Component(pygame.sprite.Sprite):
         self.rect.x -= LEVEL_SCROLL_SPEED
         self.hitbox.center = self.rect.center
         return super().update(*args, **kwargs)
+
 
 # Sprite für den Pause-Knopf
 class PauseButton(pygame.sprite.Sprite):

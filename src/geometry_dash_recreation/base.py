@@ -16,19 +16,19 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREE
 pygame.display.set_caption("Geometry Dash Recreation")
 
 # Sprites
-background = sprites.Background()                # Der Hintergrund, der sich nach links bewegt.
-background_2 = sprites.Background()              # Ein zweiter Hintergrund-Sprite, der dazu verwendet wird,
-                                                 # den Hintergrund durchgängig erscheinen zu lassen.
+background = sprites.Background()  # Der Hintergrund, der sich nach links bewegt.
+background_2 = sprites.Background()  # Ein zweiter Hintergrund-Sprite, der dazu verwendet wird,
+# den Hintergrund durchgängig erscheinen zu lassen.
 bg_2_front = False
-ground = sprites.Ground()                        # Der "Boden" im Spiel.
+ground = sprites.Ground()  # Der "Boden" im Spiel.
 ceiling = sprites.Ceiling()
 bg_gr = pygame.sprite.Group(background_2, background,
-                            ground, ceiling)   # Die Group, in der der Boden und der Hintergrund stehen.
+                            ground, ceiling)  # Die Group, in der der Boden und der Hintergrund stehen.
 
-cube = sprites.Cube()                          # Der Cube-Sprite im Spiel
-ship = sprites.Ship()                          # Der Ship-Sprite im Spiel
-ball = sprites.Ball()                          # Der Ball-Sprite im Spiel
-player_spr = pygame.sprite.GroupSingle(cube)   # Die Spieler-Sprite-"Gruppe", die nur einen Sprite enthalten kann.
+cube = sprites.Cube()  # Der Cube-Sprite im Spiel
+ship = sprites.Ship()  # Der Ship-Sprite im Spiel
+ball = sprites.Ball()  # Der Ball-Sprite im Spiel
+player_spr = pygame.sprite.GroupSingle(cube)  # Die Spieler-Sprite-"Gruppe", die nur einen Sprite enthalten kann.
 
 pause_button = sprites.PauseButton()
 ingame_ui_gr = pygame.sprite.Group(pause_button)
@@ -45,19 +45,22 @@ win_screen = pygame.transform.scale(
 )
 
 # Variablen
-ev = False     # True, wenn der Spieler die linke Maustaste gedrückt hält, und False, wenn er sie nicht gedrückt hält
-click = False  # True, wenn der Spieler die linke Maustaste drückt, wird aber im nächsten Durchgang der Mainloop direkt auf False gesetzt
-gravity = 1    # Die Richtung der Gravitation: Bei 1 fällt der Spieler nach unten, bei -1 nach oben.
+ev = False  # True, wenn der Spieler die linke Maustaste gedrückt hält, und False, wenn er sie nicht gedrückt hält
+click = False  # True, wenn der Spieler die linke Maustaste drückt, wird aber im nächsten Durchgang
+# des Mainloops direkt auf False gesetzt
+gravity = 1  # Die Richtung der Gravitation: Bei 1 fällt der Spieler nach unten, bei -1 nach oben.
 x_to_level = 0
 
 mode = "level select"  # Der "Zustand" des Spiels.
 
 # Level
-#level.save_level_data("levels/start", level.convert.Level())""
+# level.save_level_data("levels/start", level.convert.Level())""
 level_gr = pygame.sprite.Group()
 level_gr_unconverted = convert.Level()
 current_level_name = ""
 level_end = 0
+level_error_msg = ""
+
 
 def change_gamemode(name: str, init: bool = False) -> None:
     global player_spr, ceiling
@@ -76,6 +79,7 @@ def change_gamemode(name: str, init: bool = False) -> None:
         else:
             ceiling.rect.bottom = 0
 
+
 def screen_func(surface: pygame.Surface) -> None:
     global mode
     clicked = False
@@ -86,8 +90,9 @@ def screen_func(surface: pygame.Surface) -> None:
             if event.type == QUIT:
                 clicked = True
             if event.type == MOUSEBUTTONDOWN or \
-                event.type == KEYDOWN:
+                    event.type == KEYDOWN:
                 clicked = True
+
 
 # Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
 def game_func() -> None:
@@ -113,7 +118,7 @@ def game_func() -> None:
         elif event.type == KEYUP:
             if event.key == K_SPACE or event.key == K_UP:
                 ev = False
-    
+
     x_to_level += LEVEL_SCROLL_SPEED / UNIT
 
     if x_to_level >= level_end:
@@ -135,7 +140,7 @@ def game_func() -> None:
         change_gamemode("ship")
     elif controls == BALL_GAMEMODE:
         change_gamemode("ball")
-    
+
     click = False
 
     background.rect.x -= BACKGROUND_SCROLL_SPEED
@@ -150,30 +155,31 @@ def game_func() -> None:
     if not bg_2_front:
         background_2.rect.left = background.rect.right
     else:
-        background_2.rect.right = background.rect.left    
+        background_2.rect.right = background.rect.left
 
     bg_gr.update()
     level_gr.update()
     player_spr.update()
-    
+
     screen.fill((0, 0, 0))
     bg_gr.draw(screen)
     level_gr.draw(screen)
     player_spr.draw(screen)
     ingame_ui_gr.draw(screen)
 
+
 # Wird aufgerufen, um das Level zu initialisieren
 def init_level() -> str:
     global mode, level_gr, level_gr_unconverted, player_spr, ev, click, \
         gravity, current_level_name, x_to_level, level_end
-    
+
     def max_x() -> int:
         global level_gr_unconverted
         max_value = 0
         for sprite in level_gr_unconverted["sprites"]:
             if sprite["pos"][0] > max_value:
                 max_value = sprite["pos"][0]
-        
+
         return max_value
 
     def proc() -> None:
@@ -192,25 +198,28 @@ def init_level() -> str:
         # Physik
         ev, click, gravity = False, False, 1
         x_to_level = 0
-    
+
     try:
         proc()
     except Exception as e:
         return str(e)
-    
+
     return ""
 
+
 def level_error() -> None:
-    global mode, level_error_msg
+    global mode
     print(level_error_msg)
     mode = "exit"
 
+
 def lvl_select() -> None:
     global mode, current_level_name
-    l = level_select.loop(screen)
-    if l != "":
-        current_level_name = l
+    level_screen = level_select.loop(screen)
+    if level_screen != "":
+        current_level_name = level_screen
         mode = "init level"
+
 
 # Die Mainloop-Funktion, die in jedem Frame aufgerufen wird und für bestimmte
 # Ereignisse einen Exit-Code zurückgibt.
@@ -237,13 +246,13 @@ def main_loop() -> int:
         case "win":
             screen_func(win_screen)
             mode = "level select"
-    
+
     return 0
+
 
 # Die Hauptfunktion, die nur einmal aufgerufen wird. Der while-Loop ruft
 # die Mainloop-Funktion auf und verwaltet ihre Exit-Codes.
 def main_proc() -> None:
-    global clock
     clock = pygame.time.Clock()
     while True:
         match main_loop():
@@ -254,6 +263,7 @@ def main_proc() -> None:
         pygame.display.update()
         clock.tick(FPS)
     pygame.quit()
+
 
 # Die Funktion, die von __main__.py  aufgerufen wird.
 def main():

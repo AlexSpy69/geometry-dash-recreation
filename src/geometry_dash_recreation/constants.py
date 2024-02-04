@@ -1,6 +1,6 @@
 import screeninfo
 
-MONITOR_NR = 0
+MONITOR_NR = 1
 
 width = screeninfo.get_monitors()[MONITOR_NR].width
 height = screeninfo.get_monitors()[MONITOR_NR].height

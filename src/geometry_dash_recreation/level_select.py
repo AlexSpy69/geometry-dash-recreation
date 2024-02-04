@@ -38,22 +38,25 @@ folder_error = False
 
 level_info = {}
 
+
 def prev_level() -> None:
     global level_nr
     level_nr -= 1
     if level_nr < 0:
         level_nr += 1
 
+
 def next_level() -> None:
     global level_nr
-    try:
-        level_nr += 1
-        level_list[level_nr]
-    except IndexError:
+    if level_nr == len(level_list) - 1:
         level_nr -= 1
+    else:
+        level_nr += 1
+
 
 def select_level() -> str:
     return f'{level_folder}/{level_list[level_nr]}'
+
 
 def loop(screen: pygame.Surface) -> str:
     global levelname_text, difficulty_text, creator_text, id_text, folder_text, error_text
@@ -68,10 +71,10 @@ def loop(screen: pygame.Surface) -> str:
             if folder_rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 level_folder_edit = not level_folder_edit
                 continue
-            if pygame.mouse.get_pos()[0] <= SCREEN_WIDTH/3:
+            if pygame.mouse.get_pos()[0] <= SCREEN_WIDTH / 3:
                 prev_level()
-            elif pygame.mouse.get_pos()[0] >= SCREEN_WIDTH-SCREEN_WIDTH/3:
-                if pygame.mouse.get_pos()[1] <= SCREEN_HEIGHT/3:
+            elif pygame.mouse.get_pos()[0] >= SCREEN_WIDTH - SCREEN_WIDTH / 3:
+                if pygame.mouse.get_pos()[1] <= SCREEN_HEIGHT / 3:
                     sys.exit(0)
                 next_level()
         elif event.type == pygame.KEYDOWN:
@@ -115,20 +118,22 @@ def loop(screen: pygame.Surface) -> str:
         folder_error = True
 
     if not levelname_rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-        levelname_text = fonts.pusab_big.render(f'{level_nr + 1}/{len(level_list)}) {level_info["name"]}', True, (255, 200, 0),
-                                                (25, 0, 12))
+        levelname_text = fonts.pusab_big.render(f'{level_nr + 1}/{len(level_list)}) {level_info["name"]}', True,
+                                                (255, 200, 0), (25, 0, 12))
     else:
-        levelname_text = fonts.pusab_big.render(f'{level_nr + 1}/{len(level_list)}) {level_info["name"]}', True, (0, 255, 0))
+        levelname_text = fonts.pusab_big.render(f'{level_nr + 1}/{len(level_list)}) {level_info["name"]}', True,
+                                                (0, 255, 0))
 
     difficulty_text = fonts.aller_normal.render(f'Difficulty: {level_info["difficulty"]}', True,
-                                               (255, 255, 255))
+                                                (255, 255, 255))
     creator_text = fonts.aller_normal.render(f'Created by: {level_info["creator"]}', True, (255, 255, 255))
 
     if not level_folder_edit:
-        folder_text = fonts.aller_small.render(f'Current level folder: {level_folder} (click to edit)', True, (255, 255, 255))
+        folder_text = fonts.aller_small.render(f'Current level folder: {level_folder} (click to edit)', True,
+                                               (255, 255, 255))
     else:
         folder_text = fonts.aller_small.render(f'Current level folder: {level_folder}', True,
-                                                 (0, 255, 0))
+                                               (0, 255, 0))
 
     levelname_rect = levelname_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2.7))
     difficulty_rect = difficulty_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
