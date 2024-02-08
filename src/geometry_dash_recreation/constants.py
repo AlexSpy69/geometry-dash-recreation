@@ -1,4 +1,5 @@
 import screeninfo
+from pathlib import Path
 
 MONITOR_NR = 1
 
@@ -19,9 +20,11 @@ PLAYER_POS = (UNIT * 5,
 VEL_ADD = 2                     # Stärke der Einwirkung der Gravitation
 JUMP_VEL = 27                   # Stärke des Sprungs des Spielers
 LEVEL_SCROLL_SPEED = DELTA_TIME*14*RESIZE  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
-BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
+BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE  # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
 START_LEVEL = "levels/start"    # Das Level, mit dem das Spiel automatisch beginnt
 DEATH_ACCURACY = 20
+
+# vel wird bei der Berührung von bestimmten Rings bzw. Pads um folgende Werte multipliziert.
 RING_VEL = {"yellow": 1.1,
             "magenta": 0.8,
             "red": 1.5}
@@ -29,12 +32,24 @@ PAD_VEL = {"yellow": 1.3,
            "magenta": 0.9,
            "red": 1.7}
 
-# Exit Codes
-NORMAL = 0
-DEATH = 1
-WIN = 2
-CHANGE_GRAVITY = 3
+# Der Index ist die Sternanzahl, die bei einer Completion gewonnen wird,
+# und das Element ist der Name des Schwierigkeitsgrades.
+DIFFICULTY = ["", "Auto", "Easy", "Normal", "Hard", "Hard",
+              "Harder", "Harder", "Insane", "Insane", "Demon"]
 
-CUBE_GAMEMODE = 10
-SHIP_GAMEMODE = 11
-BALL_GAMEMODE = 12
+# Speicherort für das Save-File
+SAVE_FILE_PATH = str(Path.home()) + "/Documents/gdr_savefile"
+
+# Exit Codes für Funktionen im Spiel
+CONTINUE = 0
+EXIT = 1
+VIEW_SAVE_FILE = 3
+
+NORMAL = 10
+DEATH = 11
+WIN = 12
+CHANGE_GRAVITY = 13
+
+CUBE_GAMEMODE = 20
+SHIP_GAMEMODE = 21
+BALL_GAMEMODE = 22

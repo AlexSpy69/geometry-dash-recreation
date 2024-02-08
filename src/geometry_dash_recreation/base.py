@@ -5,6 +5,8 @@ import geometry_dash_recreation.sprites as sprites
 import geometry_dash_recreation.level as level
 import geometry_dash_recreation.convert as convert
 import geometry_dash_recreation.level_select as level_select
+import geometry_dash_recreation.save_file as save_file
+import geometry_dash_recreation.view_save_file as view_save_file
 
 # Pygame-Initialisierung
 pygame.init()
@@ -52,6 +54,10 @@ gravity = 1  # Die Richtung der Gravitation: Bei 1 fällt der Spieler nach unten
 x_to_level = 0
 
 mode = "level select"  # Der "Zustand" des Spiels.
+
+# Save File
+current_sf = save_file.open_sf(SAVE_FILE_PATH)
+current_sf.update_stats()
 
 # Level
 # level.save_level_data("levels/start", level.convert.Level())""
@@ -168,19 +174,19 @@ def game_func() -> None:
     ingame_ui_gr.draw(screen)
 
 
+def get_level_end() -> int:
+    global level_gr_unconverted
+    max_value = 0
+    for sprite in level_gr_unconverted["sprites"]:
+        if sprite["pos"][0] > max_value:
+            max_value = sprite["pos"][0]
+    return max_value + 10
+
+
 # Wird aufgerufen, um das Level zu initialisieren
 def init_level() -> str:
     global mode, level_gr, level_gr_unconverted, player_spr, ev, click, \
         gravity, current_level_name, x_to_level, level_end
-
-    def max_x() -> int:
-        global level_gr_unconverted
-        max_value = 0
-        for sprite in level_gr_unconverted["sprites"]:
-            if sprite["pos"][0] > max_value:
-                max_value = sprite["pos"][0]
-
-        return max_value
 
     def proc() -> None:
         global mode, level_gr, level_gr_unconverted, player_spr, ev, click, \
@@ -191,7 +197,7 @@ def init_level() -> str:
         background.reset()
         background_2.reset()
         # Level
-        level_end = max_x() + 10
+        level_end = get_level_end()
         # Gamemode
         change_gamemode(level_gr_unconverted["data"]["gamemode"], True)
         player_spr.sprite.reset()
@@ -216,22 +222,37 @@ def level_error() -> None:
 def lvl_select() -> None:
     global mode, current_level_name
     level_screen = level_select.loop(screen)
-    if level_screen != "":
+    if level_screen == "":
+        pass
+    elif level_screen == VIEW_SAVE_FILE:
+        mode = "view save file"
+    else:
         current_level_name = level_screen
         mode = "init level"
+
+
+def savefile_view() -> None:
+    global mode
+    savefile_screen = view_save_file.loop(screen, current_sf)
+    if savefile_screen == CONTINUE:
+        pass
+    elif savefile_screen == EXIT:
+        mode = "level select"
 
 
 # Die Mainloop-Funktion, die in jedem Frame aufgerufen wird und für bestimmte
 # Ereignisse einen Exit-Code zurückgibt.
 def main_loop() -> int:
-    global mode, level_error_msg
+    global mode, level_error_msg, level_end, x_to_level
     match mode:
         case "game":
             game_func()
         case "level select":
             lvl_select()
+        case "view save file":
+            savefile_view()
         case "exit":
-            return 1
+            return EXIT
         case "init level":
             level_error_msg = init_level()
             if level_error_msg != "":
@@ -241,13 +262,20 @@ def main_loop() -> int:
         case "level error":
             level_error()
         case "death":
+            percentage = int(x_to_level / level_end * 100)
+            if percentage > current_sf.get_level_percent(current_level_name):
+                current_sf.set_level(current_level_name, percentage)
+            save_file.save_sf(current_sf, SAVE_FILE_PATH)
             pygame.time.wait(500)
             mode = "init level"
         case "win":
+            current_sf.set_level(current_level_name, 100)
+            current_sf.update_stats()
+            save_file.save_sf(current_sf, SAVE_FILE_PATH)
             screen_func(win_screen)
             mode = "level select"
 
-    return 0
+    return CONTINUE
 
 
 # Die Hauptfunktion, die nur einmal aufgerufen wird. Der while-Loop ruft
@@ -255,11 +283,11 @@ def main_loop() -> int:
 def main_proc() -> None:
     clock = pygame.time.Clock()
     while True:
-        match main_loop():
-            case 0:
-                pass
-            case 1:
-                break
+        ml = main_loop()
+        if ml == CONTINUE:
+            pass
+        elif ml == EXIT:
+            break
         pygame.display.update()
         clock.tick(FPS)
     pygame.quit()

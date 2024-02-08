@@ -11,6 +11,7 @@ print("Geometry Dash Level Editor Tool")
 
 current_level = convert.Level()
 
+
 def execute(command) -> None:
     global current_level
     inp = command.split()
@@ -21,8 +22,9 @@ def execute(command) -> None:
     elif inp[0] == "add":
         if inp[1] == "comp":
             current_level["sprites"].append(convert.CompSprite(imgfile="assets/textures/components/" + inp[2],
-                                                               pos=[float(inp[3]),float(inp[4])], size=[float(inp[5]), float(inp[6])],
-                                                               hb_mul=float(inp[7]), type=inp[8], color=inp[9]))
+                                                               pos=[float(inp[3]), float(inp[4])], size=[float(inp[5]),
+                                                                                                         float(inp[6])],
+                                                               hb_mul=float(inp[7]), type_=inp[8], color=inp[9]))
     elif inp[0] == "remove":
         if inp[1] == "all":
             current_level["sprites"] = []
@@ -34,6 +36,7 @@ def execute(command) -> None:
         sys.exit(0)
     else:
         print("Command not found")
+
 
 if len(sys.argv) == 1:
     while True:

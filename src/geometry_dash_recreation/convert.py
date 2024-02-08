@@ -9,10 +9,11 @@ class Level(dict):
         super().__init__()
         self["info"] = {"name": "",
                         "creator": "",
-                        "difficulty": ""}
+                        "difficulty": "",  # Unbenutzt
+                        "stars": ""}
         self["data"] = {"gamemode": "cube",
                         "song": "",
-                        "end": "50"}
+                        "end": "50"}  # Unbenutzt
         self["sprites"] = []
 
 
