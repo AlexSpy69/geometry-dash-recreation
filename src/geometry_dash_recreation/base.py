@@ -7,6 +7,7 @@ import geometry_dash_recreation.convert as convert
 import geometry_dash_recreation.level_select as level_select
 import geometry_dash_recreation.save_file as save_file
 import geometry_dash_recreation.view_save_file as view_save_file
+import geometry_dash_recreation.fonts as fonts
 
 # Pygame-Initialisierung
 pygame.init()
@@ -45,6 +46,9 @@ win_screen = pygame.transform.scale(
     pygame.image.load("assets/textures/ui/win_screen.png").convert_alpha(),
     (SCREEN_WIDTH, SCREEN_HEIGHT)
 )
+
+current_percent_text = fonts.pusab_small.render('100%', True, (255, 255, 255))
+current_percent_rect = current_percent_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.05))
 
 # Variablen
 ev = False  # True, wenn der Spieler die linke Maustaste gedrückt hält, und False, wenn er sie nicht gedrückt hält
@@ -100,9 +104,15 @@ def screen_func(surface: pygame.Surface) -> None:
                 clicked = True
 
 
+def get_current_level_percent() -> int:
+    global x_to_level, level_end
+    return int(x_to_level / level_end * 100)
+
+
 # Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
 def game_func() -> None:
     global mode, ev, click, gravity, level_gr, level_gr_unconverted, x_to_level, level_end, bg_2_front
+    global current_percent_text, current_percent_rect
     for event in pygame.event.get():
         if event.type == QUIT:
             mode = "level select"
@@ -166,12 +176,14 @@ def game_func() -> None:
     bg_gr.update()
     level_gr.update()
     player_spr.update()
+    current_percent_text = fonts.pusab_small.render(f"{get_current_level_percent()}%", True, (255, 255, 255))
 
     screen.fill((0, 0, 0))
     bg_gr.draw(screen)
     level_gr.draw(screen)
     player_spr.draw(screen)
     ingame_ui_gr.draw(screen)
+    screen.blit(current_percent_text, current_percent_rect)
 
 
 def get_level_end() -> int:
@@ -262,9 +274,8 @@ def main_loop() -> int:
         case "level error":
             level_error()
         case "death":
-            percentage = int(x_to_level / level_end * 100)
-            if percentage > current_sf.get_level_percent(current_level_name):
-                current_sf.set_level(current_level_name, percentage)
+            if get_current_level_percent() > current_sf.get_level_percent(current_level_name):
+                current_sf.set_level(current_level_name, get_current_level_percent())
             save_file.save_sf(current_sf, SAVE_FILE_PATH)
             pygame.time.wait(500)
             mode = "init level"
