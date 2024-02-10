@@ -60,6 +60,9 @@ class Cube(pygame.sprite.Sprite):
 
         self.angle -= gravity * 7 * DELTA_TIME
 
+        if self.hitbox.y < OUT_OF_BOUNDS:
+            return DEATH
+
         # Landen auf dem Boden
         if self.hitbox.colliderect(ground.rect.move(0, -gravity)):
             if gravity == -1:

@@ -23,6 +23,7 @@ LEVEL_SCROLL_SPEED = DELTA_TIME*14*RESIZE  # Die Geschwindigkeit, mit der die Ob
 BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE  # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
 START_LEVEL = "levels/start"    # Das Level, mit dem das Spiel automatisch beginnt
 DEATH_ACCURACY = 20
+OUT_OF_BOUNDS = -6000
 
 # vel wird bei der Berührung von bestimmten Rings bzw. Pads um folgende Werte multipliziert.
 RING_VEL = {"yellow": 1.1,

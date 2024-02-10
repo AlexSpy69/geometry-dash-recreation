@@ -76,7 +76,7 @@ def change_gamemode(name: str, init: bool = False) -> None:
     global player_spr, ceiling
     old_y = player_spr.sprite.hitbox.y
     old_vel = player_spr.sprite.vel
-    exec(f"player_spr.add({name})")
+    player_spr.add(eval(name))
     player_spr.sprite.hitbox.y = old_y
     player_spr.sprite.vel = old_vel
     if name == "cube":
@@ -177,6 +177,7 @@ def game_func() -> None:
     level_gr.update()
     player_spr.update()
     current_percent_text = fonts.pusab_small.render(f"{get_current_level_percent()}%", True, (255, 255, 255))
+    current_percent_rect = current_percent_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.05))
 
     screen.fill((0, 0, 0))
     bg_gr.draw(screen)
