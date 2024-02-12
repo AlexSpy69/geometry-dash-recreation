@@ -38,12 +38,12 @@ ingame_ui_gr = pygame.sprite.Group(pause_button)
 
 # Screens
 pause_screen = pygame.transform.scale(
-    pygame.image.load("assets/textures/ui/pause_screen.png").convert_alpha(),
+    pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/pause_screen.png").convert_alpha(),
     (SCREEN_WIDTH, SCREEN_HEIGHT)
 )
 
 win_screen = pygame.transform.scale(
-    pygame.image.load("assets/textures/ui/win_screen.png").convert_alpha(),
+    pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/win_screen.png").convert_alpha(),
     (SCREEN_WIDTH, SCREEN_HEIGHT)
 )
 

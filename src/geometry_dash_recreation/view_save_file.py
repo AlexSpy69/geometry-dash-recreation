@@ -63,7 +63,10 @@ def loop(screen: pygame.Surface, sf: save_file.SaveFile) -> int:
 
     counter = 0
     for lvlname in sf.lvldict.keys():
-        txt = f'{lvlname}, {sf.lvldict[lvlname]}%'
+        if lvlname.startswith(LEVELS_FOLDER):
+            txt = f'Default levels/{lvlname.split("/")[-1]}, {sf.lvldict[lvlname]}%'
+        else:
+            txt = f'{lvlname}, {sf.lvldict[lvlname]}%'
         render_level_list(txt, counter, screen)
         counter += 1
 

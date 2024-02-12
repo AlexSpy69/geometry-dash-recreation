@@ -1,11 +1,17 @@
 import screeninfo
 from pathlib import Path
+import pkg_resources
 
 MONITOR_NR = 1
 
 width = screeninfo.get_monitors()[MONITOR_NR].width
 height = screeninfo.get_monitors()[MONITOR_NR].height
 
+# Ressourcen-Ordner
+ASSETS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "assets")
+LEVELS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "levels")
+
+# Ingame-Konstanten
 FPS = 60                        # Bilder pro Sekunde
 DELTA_TIME = 60 / FPS           # Abstand zwischen zwei Frames in Sekunden multipliziert mit 60
 SCREEN_WIDTH = width            # Fensterbreite

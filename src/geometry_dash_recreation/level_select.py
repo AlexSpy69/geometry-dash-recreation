@@ -33,7 +33,7 @@ playerdata_text = fonts.pusab_small.render("View Player Data", True, (255, 255, 
 playerdata_rect = playerdata_text.get_rect(center=(SCREEN_WIDTH * 0.15, SCREEN_HEIGHT * 0.05))
 
 # Level-Variablen
-level_folder = 'levels'
+level_folder = LEVELS_FOLDER
 level_list = os.listdir(level_folder)
 level_nr = 0
 
@@ -143,8 +143,10 @@ def loop(screen: pygame.Surface) -> str:
         comp_text = fonts.aller_normal.render(f'{current_level_percentage()}% Completed', True, (255, 100, 100))
 
     if not level_folder_edit:
-        folder_text = fonts.aller_small.render(f'Current level folder: {level_folder} (click to edit)', True,
-                                               (255, 255, 255))
+        if level_folder == LEVELS_FOLDER:
+            folder_text = fonts.aller_small.render(f'Current level folder: Default level folder', True, (255, 255, 255))
+        else:
+            folder_text = fonts.aller_small.render(f'Current level folder: {level_folder}', True, (255, 255, 255))
     else:
         folder_text = fonts.aller_small.render(f'Current level folder: {level_folder}', True,
                                                (0, 255, 0))

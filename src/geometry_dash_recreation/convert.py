@@ -1,5 +1,6 @@
 import pygame
 import geometry_dash_recreation.sprites as sprites
+from geometry_dash_recreation.constants import *
 
 pygame.init()
 
@@ -42,5 +43,6 @@ def data_to_sprite(data: CompSprite) -> sprites.Component:
 def data_to_group(data: Level) -> pygame.sprite.Group:
     gr = pygame.sprite.Group()
     for element in data["sprites"]:
+        element["imgfile"] = element["imgfile"].replace("assets/", ASSETS_FOLDER + "/")
         gr.add(data_to_sprite(element))
     return gr

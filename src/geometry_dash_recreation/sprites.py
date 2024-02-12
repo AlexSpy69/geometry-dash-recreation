@@ -10,7 +10,7 @@ pygame.init()
 class Cube(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.original_image = pygame.image.load("assets/textures/icons/cubes/icon_1.png").convert_alpha()
+        self.original_image = pygame.image.load(f"{ASSETS_FOLDER}/textures/icons/cubes/icon_1.png").convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, (UNIT, UNIT))
         self.image = self.original_image
         self.rect = self.image.get_rect()
@@ -109,7 +109,7 @@ class Cube(pygame.sprite.Sprite):
 class Ship(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.original_image = pygame.image.load("assets/textures/icons/ships/ship_01.png").convert_alpha()
+        self.original_image = pygame.image.load(f"{ASSETS_FOLDER}/textures/icons/ships/ship_01.png").convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, (UNIT, UNIT))
         self.image = self.original_image
         self.rect = self.image.get_rect()
@@ -224,7 +224,7 @@ class Ship(pygame.sprite.Sprite):
 class Ball(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.original_image = pygame.image.load("assets/textures/icons/balls/ball_1.png").convert_alpha()
+        self.original_image = pygame.image.load(f"{ASSETS_FOLDER}/textures/icons/balls/ball_1.png").convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, (UNIT, UNIT))
         self.image = self.original_image
         self.rect = self.image.get_rect()
@@ -323,7 +323,7 @@ class Ball(pygame.sprite.Sprite):
 class Ground(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.image = pygame.image.load("assets/textures/bg/ground.jpg").convert()
+        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/bg/ground.jpg").convert()
         self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = 0, GROUND_HEIGHT
@@ -332,7 +332,7 @@ class Ground(pygame.sprite.Sprite):
 class Background(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.image = pygame.image.load("assets/textures/bg/background.png").convert()
+        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/bg/background.png").convert()
         self.image = pygame.transform.scale(self.image, (SCREEN_HEIGHT*2*(16/9), SCREEN_HEIGHT*2))
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT/4
@@ -348,7 +348,7 @@ class Background(pygame.sprite.Sprite):
 class Ceiling(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.image = pygame.image.load("assets/textures/bg/ground.jpg").convert()
+        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/bg/ground.jpg").convert()
         self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.bottom = 0, 0
@@ -367,7 +367,7 @@ class Ceiling(pygame.sprite.Sprite):
 
 # Component-Sprite (für die Hindernisse im Spiel)
 class Component(pygame.sprite.Sprite):
-    def __init__(self, imgfile="assets/textures/transparent.png",
+    def __init__(self, imgfile=f"{ASSETS_FOLDER}/textures/transparent.png",
                  pos=None, size=None, hb_mul=1.0, type_="deco", color="yellow",
                  *groups: AbstractGroup) -> None:
         super().__init__(*groups)
@@ -404,7 +404,7 @@ class Component(pygame.sprite.Sprite):
 class PauseButton(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.image = pygame.image.load("assets/textures/ui/pause_button.png").convert_alpha()
+        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/pause_button.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
         self.rect = self.image.get_rect()
         self.rect.right, self.rect.top = SCREEN_WIDTH, 0
