@@ -15,6 +15,8 @@ current_level = convert.Level()
 
 def execute(command) -> None:
     global current_level
+    if command.startswith("#") or command == "\n":
+        return
     inp = command.split()
     if inp[0] == "open":
         current_level = level.open_level_data(inp[1].replace("levels/", LEVELS_FOLDER + "/"))
