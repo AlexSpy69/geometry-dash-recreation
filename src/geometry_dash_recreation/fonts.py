@@ -12,3 +12,4 @@ oxygene_big = pygame.font.Font(f'{ASSETS_FOLDER}/fonts/Oxygene 1.ttf', int(SCREE
 
 aller_normal = pygame.font.Font(f'{ASSETS_FOLDER}/fonts/Aller.ttf', int(SCREEN_HEIGHT * 0.05))
 aller_small = pygame.font.Font(f'{ASSETS_FOLDER}/fonts/Aller.ttf', int(SCREEN_HEIGHT * 0.03))
+aller_smaller = pygame.font.Font(f'{ASSETS_FOLDER}/fonts/Aller.ttf', int(SCREEN_HEIGHT * 0.02))

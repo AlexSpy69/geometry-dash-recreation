@@ -14,8 +14,8 @@ exit_rect = exit_text.get_rect(center=(SCREEN_WIDTH * 0.9, SCREEN_HEIGHT * 0.05)
 
 
 def render_level_list(txt, pos, screen) -> None:
-    render = fonts.aller_small.render(txt, True, (255, 255, 255))
-    screen.blit(render, render.get_rect(center=(SCREEN_WIDTH * 0.2, SCREEN_HEIGHT * 0.57 +
+    render = fonts.aller_smaller.render(txt, True, (255, 255, 255))
+    screen.blit(render, render.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.57 +
                                                 SCREEN_HEIGHT * 0.04 * pos)))
 
 
@@ -47,7 +47,7 @@ def loop(screen: pygame.Surface, sf: save_file.SaveFile) -> int:
     srect = stext.get_rect(center=(SCREEN_WIDTH * 0.6, SCREEN_HEIGHT * 0.27))
 
     ltext = fonts.aller_normal.render('Played Levels', True, (255, 255, 255))
-    lrect = ltext.get_rect(center=(SCREEN_WIDTH * 0.2, SCREEN_HEIGHT * 0.5))
+    lrect = ltext.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.5))
 
     lotext = fonts.aller_normal.render(f'Save File Location: {SAVE_FILE_PATH}', True, (255, 255, 255))
     lorect = lotext.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.85))
@@ -65,6 +65,8 @@ def loop(screen: pygame.Surface, sf: save_file.SaveFile) -> int:
     for lvlname in sf.lvldict.keys():
         if lvlname.startswith(LEVELS_FOLDER):
             txt = f'Default levels/{lvlname.split("/")[-1]}, {sf.lvldict[lvlname]}%'
+        elif lvlname.startswith(HOME_FOLDER):
+            txt = f'{lvlname.strip(HOME_FOLDER)}, {sf.lvldict[lvlname]}%'
         else:
             txt = f'{lvlname}, {sf.lvldict[lvlname]}%'
         render_level_list(txt, counter, screen)

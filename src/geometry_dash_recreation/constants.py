@@ -7,6 +7,9 @@ MONITOR_NR = 1
 width = screeninfo.get_monitors()[MONITOR_NR].width
 height = screeninfo.get_monitors()[MONITOR_NR].height
 
+# Home-Ordner
+HOME_FOLDER = str(Path.home())
+
 # Ressourcen-Ordner
 ASSETS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "assets")
 LEVELS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "levels")
@@ -45,7 +48,7 @@ DIFFICULTY = ["", "Auto", "Easy", "Normal", "Hard", "Hard",
               "Harder", "Harder", "Insane", "Insane", "Demon"]
 
 # Speicherort für das Save-File
-SAVE_FILE_PATH = str(Path.home()) + "/Documents/gdr_savefile"
+SAVE_FILE_PATH = HOME_FOLDER + "/Documents/gdr_savefile"
 
 # Exit Codes für Funktionen im Spiel
 CONTINUE = 0
