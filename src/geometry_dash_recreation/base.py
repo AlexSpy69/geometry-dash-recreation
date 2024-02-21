@@ -1,13 +1,14 @@
 import pygame
 from pygame.locals import *
 from geometry_dash_recreation.constants import *
-import geometry_dash_recreation.sprites as sprites
-import geometry_dash_recreation.level as level
+import geometry_dash_recreation.assets_source.sprites as sprites
+import geometry_dash_recreation.level_source.level as level
 import geometry_dash_recreation.convert as convert
-import geometry_dash_recreation.level_select as level_select
-import geometry_dash_recreation.save_file as save_file
-import geometry_dash_recreation.view_save_file as view_save_file
-import geometry_dash_recreation.fonts as fonts
+import geometry_dash_recreation.level_source.level_select as level_select
+import geometry_dash_recreation.save_file_source.save_file as save_file
+import geometry_dash_recreation.save_file_source.view_save_file as view_save_file
+import geometry_dash_recreation.assets_source.fonts as fonts
+import geometry_dash_recreation.assets_source.screens as screens
 
 # Pygame-Initialisierung
 pygame.init()
@@ -37,15 +38,8 @@ pause_button = sprites.PauseButton()
 ingame_ui_gr = pygame.sprite.Group(pause_button)
 
 # Screens
-pause_screen = pygame.transform.scale(
-    pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/pause_screen.png").convert_alpha(),
-    (SCREEN_WIDTH, SCREEN_HEIGHT)
-)
-
-win_screen = pygame.transform.scale(
-    pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/win_screen.png").convert_alpha(),
-    (SCREEN_WIDTH, SCREEN_HEIGHT)
-)
+pause_screen = screens.returnPauseScreen()
+win_screen = screens.returnWinScreen()
 
 current_percent_text = fonts.pusab_small.render('100%', True, (255, 255, 255))
 current_percent_rect = current_percent_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.05))

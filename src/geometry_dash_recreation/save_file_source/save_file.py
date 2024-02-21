@@ -1,5 +1,5 @@
 import pickle
-import geometry_dash_recreation.level as level
+import geometry_dash_recreation.level_source.level as level
 
 
 class SaveFile(object):

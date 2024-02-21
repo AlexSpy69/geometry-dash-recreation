@@ -1,5 +1,5 @@
 import pygame
-import geometry_dash_recreation.sprites as sprites
+import geometry_dash_recreation.assets_source.sprites as sprites
 from geometry_dash_recreation.constants import *
 
 pygame.init()

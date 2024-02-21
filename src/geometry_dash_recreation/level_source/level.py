@@ -6,7 +6,7 @@ import geometry_dash_recreation.convert as convert
 pygame.init()
 
 
-# Auslesen der Leveldaten aus einer Datei
+# Auslesen der Leveldaten aus einer Datei (Deserialisierung)
 def open_level_data(filename: str) -> convert.Level:
     with open(filename, "rb") as f:
         return pickle.load(f)
@@ -17,7 +17,7 @@ def open_level(filename: str) -> pygame.sprite.Group:
     return convert.data_to_group(open_level_data(filename))
 
 
-# Schreiben von Leveldaten in eine Datei
+# Schreiben von Leveldaten in eine Datei (Serialisierung)
 def save_level_data(filename: str, group: convert.Level) -> None:
     with open(filename, "wb") as f:
         pickle.dump(group, f)
