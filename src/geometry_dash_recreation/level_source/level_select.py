@@ -3,12 +3,19 @@ import sys
 
 import pygame
 from geometry_dash_recreation.constants import *
-import geometry_dash_recreation.assets_source.fonts as fonts
-import geometry_dash_recreation.level_source.level as level
-import geometry_dash_recreation.save_file_source.save_file as save_file
+from geometry_dash_recreation.assets_source import fonts
+from geometry_dash_recreation.level_source import level, convert
+from geometry_dash_recreation.save_file_source import save_file
 
 pygame.init()
 pygame.font.init()
+
+folder_empty = False
+
+try:
+    os.mkdir(LEVELS_FOLDER)
+except FileExistsError:
+    pass
 
 # Textanzeigen
 levelname_text = fonts.pusab_big.render('', True, (255, 255, 255))
@@ -45,6 +52,8 @@ level_info = {}
 
 def prev_level() -> None:
     global level_nr
+    if len(level_list) in (0, 1):
+        return
     level_nr -= 1
     if level_nr < 0:
         level_nr += 1
@@ -52,6 +61,8 @@ def prev_level() -> None:
 
 def next_level() -> None:
     global level_nr
+    if len(level_list) in (0, 1):
+        return
     if level_nr == len(level_list) - 1:
         level_nr -= 1
     else:
@@ -59,7 +70,10 @@ def next_level() -> None:
 
 
 def selected_level() -> str:
-    return f'{level_folder}/{level_list[level_nr]}'
+    if len(level_list) != 0:
+        return f'{level_folder}/{level_list[level_nr]}'
+    else:
+        return ""
 
 
 def current_level_percentage() -> int:
@@ -112,7 +126,10 @@ def loop(screen: pygame.Surface) -> str:
     try:
         if not level_folder_edit:
             level_list = os.listdir(level_folder)
-            level_info = level.open_level_data(level_folder + "/" + level_list[level_nr])["info"]
+            if len(level_list) != 0:
+                level_info = level.open_level_data(level_folder + "/" + level_list[level_nr])["info"]
+            else:
+                level_info = convert.Level()["info"]
         else:
             level_nr = 0
         error_text = fonts.aller_small.render('', True, (255, 0, 0))

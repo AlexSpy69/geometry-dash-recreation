@@ -1,5 +1,5 @@
 import pygame
-import geometry_dash_recreation.assets_source.sprites as sprites
+from geometry_dash_recreation.assets_source import game_sprites
 from geometry_dash_recreation.constants import *
 
 pygame.init()
@@ -10,11 +10,9 @@ class Level(dict):
         super().__init__()
         self["info"] = {"name": "",
                         "creator": "",
-                        "difficulty": "",  # Unbenutzt
-                        "stars": ""}
+                        "stars": "0"}
         self["data"] = {"gamemode": "cube",
-                        "song": "",
-                        "end": "50"}  # Unbenutzt
+                        "song": ""}
         self["sprites"] = []
 
 
@@ -34,8 +32,8 @@ class CompSprite(dict):
         self["color"] = color
 
 
-def data_to_sprite(data: CompSprite) -> sprites.Component:
-    return sprites.Component(imgfile=data["imgfile"], pos=data["pos"],
+def data_to_sprite(data: CompSprite) -> game_sprites.Component:
+    return game_sprites.Component(imgfile=data["imgfile"], pos=data["pos"],
                              size=data["size"], hb_mul=data["hb_mul"],
                              type_=data["type"], color=data["color"])
 
@@ -43,6 +41,5 @@ def data_to_sprite(data: CompSprite) -> sprites.Component:
 def data_to_group(data: Level) -> pygame.sprite.Group:
     gr = pygame.sprite.Group()
     for element in data["sprites"]:
-        element["imgfile"] = element["imgfile"].replace("assets/", ASSETS_FOLDER + "/")
         gr.add(data_to_sprite(element))
     return gr

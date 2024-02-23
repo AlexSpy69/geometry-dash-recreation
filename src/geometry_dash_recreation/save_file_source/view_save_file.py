@@ -2,8 +2,8 @@ import sys
 
 import pygame
 from geometry_dash_recreation.constants import *
-import geometry_dash_recreation.assets_source.fonts as fonts
-import geometry_dash_recreation.save_file_source.save_file as save_file
+from geometry_dash_recreation.assets_source import fonts
+from geometry_dash_recreation.save_file_source import save_file
 
 pygame.init()
 pygame.font.init()

@@ -1,14 +1,9 @@
 import pygame
 from pygame.locals import *
 from geometry_dash_recreation.constants import *
-import geometry_dash_recreation.assets_source.sprites as sprites
-import geometry_dash_recreation.level_source.level as level
-import geometry_dash_recreation.convert as convert
-import geometry_dash_recreation.level_source.level_select as level_select
-import geometry_dash_recreation.save_file_source.save_file as save_file
-import geometry_dash_recreation.save_file_source.view_save_file as view_save_file
-import geometry_dash_recreation.assets_source.fonts as fonts
-import geometry_dash_recreation.assets_source.screens as screens
+from geometry_dash_recreation.assets_source import game_sprites, ui_sprites, fonts, screens
+from geometry_dash_recreation.level_source import level, level_select, convert
+from geometry_dash_recreation.save_file_source import save_file, view_save_file
 
 # Pygame-Initialisierung
 pygame.init()
@@ -20,21 +15,21 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREE
 pygame.display.set_caption("Geometry Dash Recreation")
 
 # Sprites
-background = sprites.Background()  # Der Hintergrund, der sich nach links bewegt.
-background_2 = sprites.Background()  # Ein zweiter Hintergrund-Sprite, der dazu verwendet wird,
+background = game_sprites.Background()  # Der Hintergrund, der sich nach links bewegt.
+background_2 = game_sprites.Background()  # Ein zweiter Hintergrund-Sprite, der dazu verwendet wird,
 # den Hintergrund durchgängig erscheinen zu lassen.
 bg_2_front = False
-ground = sprites.Ground()  # Der "Boden" im Spiel.
-ceiling = sprites.Ceiling()
+ground = game_sprites.Ground()  # Der "Boden" im Spiel.
+ceiling = game_sprites.Ceiling()
 bg_gr = pygame.sprite.Group(background_2, background,
                             ground, ceiling)  # Die Group, in der der Boden und der Hintergrund stehen.
 
-cube = sprites.Cube()  # Der Cube-Sprite im Spiel
-ship = sprites.Ship()  # Der Ship-Sprite im Spiel
-ball = sprites.Ball()  # Der Ball-Sprite im Spiel
+cube = game_sprites.Cube()  # Der Cube-Sprite im Spiel
+ship = game_sprites.Ship()  # Der Ship-Sprite im Spiel
+ball = game_sprites.Ball()  # Der Ball-Sprite im Spiel
 player_spr = pygame.sprite.GroupSingle(cube)  # Die Spieler-Sprite-"Gruppe", die nur einen Sprite enthalten kann.
 
-pause_button = sprites.PauseButton()
+pause_button = ui_sprites.PauseButton()
 ingame_ui_gr = pygame.sprite.Group(pause_button)
 
 # Screens

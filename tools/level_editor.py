@@ -1,5 +1,4 @@
-import geometry_dash_recreation.level as level
-import geometry_dash_recreation.convert as convert
+from geometry_dash_recreation.level_source import level, convert
 from geometry_dash_recreation.constants import *
 import pygame
 import sys
@@ -24,7 +23,7 @@ def execute(command) -> None:
         level.save_level_data(inp[1].replace("levels/", LEVELS_FOLDER + "/"), current_level)
     elif inp[0] == "add":
         if inp[1] == "comp":
-            current_level["sprites"].append(convert.CompSprite(imgfile=f"{ASSETS_FOLDER}/textures/components/" + inp[2],
+            current_level["sprites"].append(convert.CompSprite(imgfile=f"{ASSETS_FOLDER}/textures/components/{inp[2]}",
                                                                pos=[float(inp[3]), float(inp[4])], size=[float(inp[5]),
                                                                                                          float(inp[6])],
                                                                hb_mul=float(inp[7]), type_=inp[8], color=inp[9]))
