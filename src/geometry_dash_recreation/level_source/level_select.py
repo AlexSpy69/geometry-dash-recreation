@@ -3,7 +3,7 @@ import sys
 
 import pygame
 from geometry_dash_recreation.constants import *
-from geometry_dash_recreation.assets_source import fonts
+from geometry_dash_recreation.assets_source import fonts, ui_sprites
 from geometry_dash_recreation.level_source import level, convert
 from geometry_dash_recreation.save_file_source import save_file
 
@@ -37,7 +37,22 @@ error_text = fonts.aller_small.render('', True, (255, 0, 0))
 error_rect = error_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.1))
 
 playerdata_text = fonts.pusab_small.render("View Player Data", True, (255, 255, 255))
-playerdata_rect = playerdata_text.get_rect(center=(SCREEN_WIDTH * 0.15, SCREEN_HEIGHT * 0.05))
+playerdata_rect = playerdata_text.get_rect(center=(SCREEN_WIDTH * 0.2, SCREEN_HEIGHT * 0.055))
+
+# Sprites
+arrow_left = ui_sprites.Arrow(right=False)
+arrow_left.rect.x, arrow_left.rect.y = SCREEN_WIDTH * 0.04, SCREEN_HEIGHT * 0.45
+arrow_right = ui_sprites.Arrow(right=True)
+arrow_right.rect.x, arrow_right.rect.y = SCREEN_WIDTH * 0.90, SCREEN_HEIGHT * 0.45
+arrow_gr = pygame.sprite.Group(arrow_left, arrow_right)
+
+user_icon = ui_sprites.UserIcon()
+user_icon.rect.x, user_icon.rect.y = SCREEN_WIDTH * 0.02, SCREEN_HEIGHT * 0.015
+
+exit_button = ui_sprites.ExitButton()
+exit_button.rect.x, exit_button.rect.y = SCREEN_WIDTH * 0.91, SCREEN_HEIGHT * 0.03
+
+ui_other_gr = pygame.sprite.Group(user_icon, exit_button)
 
 # Level-Variablen
 level_folder = LEVELS_FOLDER
@@ -180,8 +195,11 @@ def loop(screen: pygame.Surface) -> str:
         screen.blit(difficulty_text, difficulty_rect)
         screen.blit(creator_text, creator_rect)
         screen.blit(comp_text, comp_rect)
+        arrow_gr.draw(screen)
     screen.blit(folder_text, folder_rect)
     screen.blit(error_text, error_rect)
     screen.blit(playerdata_text, playerdata_rect)
+
+    ui_other_gr.draw(screen)
 
     return ""
