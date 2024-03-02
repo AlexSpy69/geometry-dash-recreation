@@ -1,9 +1,9 @@
 import pygame
 from pygame.locals import *
 from geometry_dash_recreation.constants import *
-from geometry_dash_recreation.assets_source import game_sprites, ui_sprites, fonts, screens
-from geometry_dash_recreation.level_source import level, level_select, convert
-from geometry_dash_recreation.save_file_source import save_file, view_save_file
+from geometry_dash_recreation.assets import game_sprites, ui_sprites, fonts, screens
+from geometry_dash_recreation.level import level, level_select, convert
+from geometry_dash_recreation.save_file import save_file, view_save_file
 
 # Pygame-Initialisierung
 pygame.init()

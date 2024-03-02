@@ -3,9 +3,9 @@ import sys
 
 import pygame
 from geometry_dash_recreation.constants import *
-from geometry_dash_recreation.assets_source import fonts, ui_sprites
-from geometry_dash_recreation.level_source import level, convert
-from geometry_dash_recreation.save_file_source import save_file
+from geometry_dash_recreation.assets import fonts, ui_sprites
+from geometry_dash_recreation.level import level, convert
+from geometry_dash_recreation.save_file import save_file
 
 pygame.init()
 pygame.font.init()

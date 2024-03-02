@@ -1,7 +1,7 @@
 import pickle
 import pygame
 from geometry_dash_recreation.constants import *
-from geometry_dash_recreation.level_source import convert
+from geometry_dash_recreation.level import convert
 
 pygame.init()
 
