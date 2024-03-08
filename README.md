@@ -23,4 +23,8 @@ Arrows in the level menu: https://www.clipartmax.com/middle/m2i8d3b1Z5K9d3b1_but
 
 User icon: https://www.stickpng.com/img/icons-logos-emojis/users/simple-user-icon
 
+Build icon: https://www.pngkey.com/detail/u2w7w7u2a9e6q8y3_build-icon/
+
+Level editor icons: https://fertile-soil-productions.itch.io/level-editor-icons-pixel-art
+
 Exit button: https://1pageicon.blogspot.com/2014/07/exit-icon-buttons-for-project.html

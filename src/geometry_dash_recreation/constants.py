@@ -53,7 +53,9 @@ SAVE_FILE_PATH = HOME_FOLDER + "/Documents/gdr_savefile"
 # Exit Codes für Funktionen im Spiel
 CONTINUE = 0
 EXIT = 1
+PLAY_LEVEL = 2
 VIEW_SAVE_FILE = 3
+OPEN_LEVEL_EDITOR = 4
 
 NORMAL = 10
 DEATH = 11

@@ -41,6 +41,17 @@ class UserIcon(pygame.sprite.Sprite):
         return super().update(*args, **kwargs)
 
 
+class BuildIcon(pygame.sprite.Sprite):
+    def __init__(self, *groups: AbstractGroup) -> None:
+        super().__init__(*groups)
+        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/build_icon.png")
+        self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
+        self.rect = self.image.get_rect()
+    
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        return super().update(*args, **kwargs)
+
+
 class ExitButton(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)

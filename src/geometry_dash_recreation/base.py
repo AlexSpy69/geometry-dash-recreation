@@ -4,6 +4,7 @@ from geometry_dash_recreation.constants import *
 from geometry_dash_recreation.assets import game_sprites, ui_sprites, fonts, screens
 from geometry_dash_recreation.level import level, level_select, convert
 from geometry_dash_recreation.save_file import save_file, view_save_file
+from geometry_dash_recreation.level_editor import editor
 
 # Pygame-Initialisierung
 pygame.init()
@@ -59,6 +60,8 @@ level_gr_unconverted = convert.Level()
 current_level_name = ""
 level_end = 0
 level_error_msg = ""
+
+running = True
 
 
 def change_gamemode(name: str, init: bool = False) -> None:
@@ -224,12 +227,14 @@ def level_error() -> None:
 def lvl_select() -> None:
     global mode, current_level_name
     level_screen = level_select.loop(screen)
-    if level_screen == "":
-        pass
-    elif level_screen == VIEW_SAVE_FILE:
+
+    if level_screen[0] == CONTINUE:
+        current_level_name = level_screen[1]
+    elif level_screen[0] == VIEW_SAVE_FILE:
         mode = "view save file"
-    else:
-        current_level_name = level_screen
+    elif level_screen[0] == OPEN_LEVEL_EDITOR:
+        mode = "level editor"
+    elif level_screen[0] == PLAY_LEVEL:
         mode = "init level"
 
 
@@ -240,6 +245,12 @@ def savefile_view() -> None:
         pass
     elif savefile_screen == EXIT:
         mode = "level select"
+
+
+def level_editor_func() -> None:
+    global running
+    print("Current level name:", current_level_name)
+    running = False
 
 
 # Die Mainloop-Funktion, die in jedem Frame aufgerufen wird und für bestimmte
@@ -253,6 +264,8 @@ def main_loop() -> int:
             lvl_select()
         case "view save file":
             savefile_view()
+        case "level editor":
+            level_editor_func()
         case "exit":
             return EXIT
         case "init level":
@@ -282,8 +295,9 @@ def main_loop() -> int:
 # Die Hauptfunktion, die nur einmal aufgerufen wird. Der while-Loop ruft
 # die Mainloop-Funktion auf und verwaltet ihre Exit-Codes.
 def main_proc() -> None:
+    global running
     clock = pygame.time.Clock()
-    while True:
+    while running:
         ml = main_loop()
         if ml == CONTINUE:
             pass

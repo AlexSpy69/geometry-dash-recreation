@@ -1,3 +1,4 @@
+from distutils.command import build
 import os
 import sys
 
@@ -36,9 +37,6 @@ folder_rect = folder_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.2
 error_text = fonts.aller_small.render('', True, (255, 0, 0))
 error_rect = error_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.1))
 
-playerdata_text = fonts.pusab_small.render("View Player Data", True, (255, 255, 255))
-playerdata_rect = playerdata_text.get_rect(center=(SCREEN_WIDTH * 0.2, SCREEN_HEIGHT * 0.055))
-
 # Sprites
 arrow_left = ui_sprites.Arrow(right=False)
 arrow_left.rect.x, arrow_left.rect.y = SCREEN_WIDTH * 0.04, SCREEN_HEIGHT * 0.45
@@ -49,10 +47,13 @@ arrow_gr = pygame.sprite.Group(arrow_left, arrow_right)
 user_icon = ui_sprites.UserIcon()
 user_icon.rect.x, user_icon.rect.y = SCREEN_WIDTH * 0.02, SCREEN_HEIGHT * 0.015
 
+build_icon = ui_sprites.BuildIcon()
+build_icon.rect.x, build_icon.rect.y = SCREEN_WIDTH * 0.05 + UNIT, SCREEN_WIDTH * 0.01
+
 exit_button = ui_sprites.ExitButton()
 exit_button.rect.x, exit_button.rect.y = SCREEN_WIDTH * 0.91, SCREEN_HEIGHT * 0.03
 
-ui_other_gr = pygame.sprite.Group(user_icon, exit_button)
+ui_other_gr = pygame.sprite.Group(user_icon, build_icon, exit_button)
 
 # Level-Variablen
 level_folder = LEVELS_FOLDER
@@ -95,23 +96,23 @@ def current_level_percentage() -> int:
     return save_file.open_sf(SAVE_FILE_PATH).get_level_percent(selected_level())
 
 
-def loop(screen: pygame.Surface) -> str:
-    global levelname_text, difficulty_text, creator_text, comp_text, folder_text, error_text, playerdata_text
-    global levelname_rect, difficulty_rect, creator_rect, comp_rect, folder_rect, error_rect, playerdata_rect
+def loop(screen: pygame.Surface) -> tuple:
+    global levelname_text, difficulty_text, creator_text, comp_text, folder_text, error_text
+    global levelname_rect, difficulty_rect, creator_rect, comp_rect, folder_rect, error_rect
     global level_folder, level_list, level_nr, level_folder_edit, folder_error, level_info
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if levelname_rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                return selected_level()
+                return (PLAY_LEVEL, selected_level())
             if folder_rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 level_folder_edit = not level_folder_edit
                 continue
-            if pygame.mouse.get_pos()[0] <= SCREEN_WIDTH / 3:
-                if pygame.mouse.get_pos()[1] <= SCREEN_HEIGHT / 3:
-                    return VIEW_SAVE_FILE
-                prev_level()
+            if user_icon.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                return (VIEW_SAVE_FILE)
+            if build_icon.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                return (OPEN_LEVEL_EDITOR, selected_level())
             elif pygame.mouse.get_pos()[0] >= SCREEN_WIDTH - SCREEN_WIDTH / 3:
                 if pygame.mouse.get_pos()[1] <= SCREEN_HEIGHT / 3:
                     sys.exit(0)
@@ -198,8 +199,7 @@ def loop(screen: pygame.Surface) -> str:
         arrow_gr.draw(screen)
     screen.blit(folder_text, folder_rect)
     screen.blit(error_text, error_rect)
-    screen.blit(playerdata_text, playerdata_rect)
 
     ui_other_gr.draw(screen)
 
-    return ""
+    return (CONTINUE, selected_level())

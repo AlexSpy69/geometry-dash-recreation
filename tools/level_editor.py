@@ -1,4 +1,4 @@
-from geometry_dash_recreation.level_source import level, convert
+from geometry_dash_recreation.level import level, convert
 from geometry_dash_recreation.constants import *
 import pygame
 import sys
