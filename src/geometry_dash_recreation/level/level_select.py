@@ -1,4 +1,3 @@
-from distutils.command import build
 import os
 import sys
 
@@ -110,7 +109,7 @@ def loop(screen: pygame.Surface) -> tuple:
                 level_folder_edit = not level_folder_edit
                 continue
             if user_icon.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                return (VIEW_SAVE_FILE)
+                return (VIEW_SAVE_FILE, 0)
             if build_icon.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 return (OPEN_LEVEL_EDITOR, selected_level())
             elif pygame.mouse.get_pos()[0] >= SCREEN_WIDTH - SCREEN_WIDTH / 3:

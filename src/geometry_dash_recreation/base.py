@@ -248,9 +248,13 @@ def savefile_view() -> None:
 
 
 def level_editor_func() -> None:
-    global running
-    print("Current level name:", current_level_name)
-    running = False
+    global mode
+    level_editor = editor.loop(screen)
+
+    if level_editor[0] == CONTINUE:
+        pass
+    elif level_editor[0] == EXIT:
+        mode = "level select"
 
 
 # Die Mainloop-Funktion, die in jedem Frame aufgerufen wird und für bestimmte
