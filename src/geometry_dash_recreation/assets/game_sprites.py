@@ -395,7 +395,6 @@ class Component(pygame.sprite.Sprite):
         self.color = color  # Wird als Indentifikation für Rings und Portale verwendet.
     
     def update(self, *args: Any, **kwargs: Any) -> None:
+        self.rect.x -= LEVEL_SCROLL_SPEED
+        self.hitbox.center = self.rect.center
         return super().update(*args, **kwargs)
-
-    def __str__(self) -> str:
-        return f"Type: {self.type}\nColor: {self.color}\nRect: {self.rect}\nHitbox: {self.hitbox}\n"
