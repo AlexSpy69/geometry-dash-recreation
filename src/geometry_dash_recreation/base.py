@@ -167,6 +167,9 @@ def game_func() -> None:
 
     bg_gr.update()
     level_gr.update()
+    for sprite in level_gr:
+        sprite.rect.x -= LEVEL_SCROLL_SPEED
+        sprite.hitbox.center = sprite.rect.center
     player_spr.update()
     current_percent_text = fonts.pusab_small.render(f"{get_current_level_percent()}%", True, (255, 255, 255))
     current_percent_rect = current_percent_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.05))
@@ -233,6 +236,7 @@ def lvl_select() -> None:
     elif level_screen[0] == VIEW_SAVE_FILE:
         mode = "view save file"
     elif level_screen[0] == OPEN_LEVEL_EDITOR:
+        init_level()
         mode = "level editor"
     elif level_screen[0] == PLAY_LEVEL:
         mode = "init level"
@@ -249,7 +253,7 @@ def savefile_view() -> None:
 
 def level_editor_func() -> None:
     global mode
-    level_editor = editor.loop(screen)
+    level_editor = editor.loop(screen, level_gr, bg_gr, background, background_2)
 
     if level_editor[0] == CONTINUE:
         pass

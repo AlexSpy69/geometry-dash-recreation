@@ -50,6 +50,10 @@ DIFFICULTY = ["", "Auto", "Easy", "Normal", "Hard", "Hard",
 # Speicherort für das Save-File
 SAVE_FILE_PATH = HOME_FOLDER + "/Documents/gdr_savefile"
 
+# Level-Editor
+EDITOR_MOVE_MUL = 2
+EDITOR_VIEW_MOVEMENT = 1
+
 # Exit Codes für Funktionen im Spiel
 CONTINUE = 0
 EXIT = 1
