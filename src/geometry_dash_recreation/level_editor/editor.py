@@ -1,7 +1,7 @@
-from doctest import script_from_examples
 import pygame
 from geometry_dash_recreation.constants import *
 from geometry_dash_recreation.assets import ui_sprites, game_sprites, fonts
+from geometry_dash_recreation.level import level, convert
 
 pygame.init()
 pygame.font.init()
@@ -25,10 +25,11 @@ objectcolor_rect = objecttype_text.get_rect(center=(SCREEN_WIDTH * 0.05, SCREEN_
 
 bg_2_front = False
 movement = 0
+selected_sprite = game_sprites.HitboxSprite()
 
 def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, bg_gr: pygame.sprite.Group,
          background: game_sprites.Background, background_2: game_sprites.Background) -> tuple:
-    global bg_2_front, movement
+    global bg_2_front, movement, selected_sprite
     global objecttype_text, objectcolor_text
     global objectcolor_text, objectcolor_rect
     for event in pygame.event.get():
@@ -39,13 +40,31 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, bg_gr: pygame.sp
                 return (EXIT, 0)
             for sprite in level_gr:
                 if sprite.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                    objecttype_text = fonts.aller_normal.render(f'Type: {sprite.type}', True, (255, 255, 255))
-                    objectcolor_text = fonts.aller_normal.render(f'Color: {sprite.color}', True, (255, 255, 255))
+                    selected_sprite = sprite
+                    break
+                else:
+                    selected_sprite = game_sprites.HitboxSprite()
+            objecttype_text = fonts.aller_normal.render(f'Type: {selected_sprite.type}', True, (255, 255, 255))
+            objectcolor_text = fonts.aller_normal.render(f'Color: {selected_sprite.color}', True, (255, 255, 255))
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 movement = 1
             elif event.key == pygame.K_RIGHT:
                 movement = -1
+            # Position
+            if event.key == pygame.K_s:
+                game_sprites.move_sprite(selected_sprite, 0, UNIT)
+            elif event.key == pygame.K_w:
+                game_sprites.move_sprite(selected_sprite, 0, -UNIT)
+            if event.key == pygame.K_d:
+                game_sprites.move_sprite(selected_sprite, UNIT, 0)
+            elif event.key == pygame.K_a:
+                game_sprites.move_sprite(selected_sprite, -UNIT, 0)
+            # Rotation
+            if event.key == pygame.K_q:
+                game_sprites.rotate_sprite(selected_sprite, 45)
+            elif event.key == pygame.K_e:
+                game_sprites.rotate_sprite(selected_sprite, -45)
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or \
                 event.key == pygame.K_RIGHT:
@@ -54,8 +73,7 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, bg_gr: pygame.sp
     background.rect.x += BACKGROUND_SCROLL_SPEED * EDITOR_MOVE_MUL * EDITOR_VIEW_MOVEMENT * movement
 
     for sprite in level_gr:
-        sprite.rect.x += LEVEL_SCROLL_SPEED * EDITOR_MOVE_MUL * EDITOR_VIEW_MOVEMENT * movement
-        sprite.hitbox.center = sprite.rect.center
+        game_sprites.move_sprite(sprite, LEVEL_SCROLL_SPEED * EDITOR_MOVE_MUL * EDITOR_VIEW_MOVEMENT * movement, 0)
     
     if background.rect.right == 0:
         background.rect.left = background_2.rect.width

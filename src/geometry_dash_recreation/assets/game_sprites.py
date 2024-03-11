@@ -6,8 +6,35 @@ from geometry_dash_recreation.constants import *
 pygame.init()
 
 
+class HitboxSprite(pygame.sprite.Sprite):
+    def __init__(self, *groups: AbstractGroup) -> None:
+        super().__init__(*groups)
+        self.original_image = pygame.Surface((0, 0))
+        self.image = pygame.Surface((0, 0))
+        self.rect = pygame.Rect(0, 0, 0, 0)
+        self.hitbox = pygame.Rect(0, 0, 0, 0)
+        self.type = ""
+        self.color = ""
+        self.angle = 0
+    
+    def __str__(self) -> str:
+        return f"Type: {self.type}\nColor: {self.color}\nRect: {self.rect}\nHitbox: {self.hitbox}\n"
+
+
+def move_sprite(sprite: HitboxSprite, x: int, y: int):
+    sprite.rect.x += x
+    sprite.rect.y += y
+    sprite.hitbox.center = sprite.rect.center
+
+
+def rotate_sprite(sprite: HitboxSprite, angle: int):
+    sprite.angle += angle
+    sprite.image = pygame.transform.rotate(sprite.original_image, sprite.angle)
+    sprite.rect = sprite.image.get_rect(center=sprite.hitbox.center)
+
+
 # Spieler-Sprites
-class Cube(pygame.sprite.Sprite):
+class Cube(HitboxSprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         self.original_image = pygame.image.load(f"{ASSETS_FOLDER}/textures/icons/cubes/icon_1.png").convert_alpha()
@@ -106,7 +133,7 @@ class Cube(pygame.sprite.Sprite):
         return super().update(*args, **kwargs) 
 
 
-class Ship(pygame.sprite.Sprite):
+class Ship(HitboxSprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         self.original_image = pygame.image.load(f"{ASSETS_FOLDER}/textures/icons/ships/ship_01.png").convert_alpha()
@@ -221,7 +248,7 @@ class Ship(pygame.sprite.Sprite):
         return super().update(*args, **kwargs) 
 
 
-class Ball(pygame.sprite.Sprite):
+class Ball(HitboxSprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         self.original_image = pygame.image.load(f"{ASSETS_FOLDER}/textures/icons/balls/ball_1.png").convert_alpha()
@@ -366,7 +393,7 @@ class Ceiling(pygame.sprite.Sprite):
 
 
 # Component-Sprite (für die Hindernisse im Spiel)
-class Component(pygame.sprite.Sprite):
+class Component(HitboxSprite):
     def __init__(self, imgfile=f"{ASSETS_FOLDER}/textures/transparent.png",
                  pos=None, size=None, hb_mul=1.0, type_="deco", color="yellow",
                  *groups: AbstractGroup) -> None:
@@ -375,8 +402,9 @@ class Component(pygame.sprite.Sprite):
             pos = [0.0, 0.0]
         if size is None:
             size = [1.0, 1.0]
-        self.image = pygame.image.load(imgfile).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (UNIT*size[0], UNIT*size[1]))
+        self.original_image = pygame.image.load(imgfile).convert_alpha()
+        self.original_image = pygame.transform.scale(self.original_image, (UNIT*size[0], UNIT*size[1]))
+        self.image = self.original_image
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = pos[0]*UNIT, pos[1]*UNIT  # Position des Komponenten
         self.hitbox = self.image.get_rect()
@@ -396,6 +424,3 @@ class Component(pygame.sprite.Sprite):
     
     def update(self, *args: Any, **kwargs: Any) -> None:
         return super().update(*args, **kwargs)
-
-    def __str__(self) -> str:
-        return f"Type: {self.type}\nColor: {self.color}\nRect: {self.rect}\nHitbox: {self.hitbox}\n"
