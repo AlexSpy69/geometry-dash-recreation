@@ -26,7 +26,7 @@ def execute(command) -> None:
             current_level["sprites"].append(convert.CompSprite(imgfile=f"{ASSETS_FOLDER}/textures/components/{inp[2]}",
                                                                pos=[float(inp[3]), float(inp[4])], size=[float(inp[5]),
                                                                                                          float(inp[6])],
-                                                               hb_mul=float(inp[7]), type_=inp[8], color=inp[9]))
+                                                               angle=float(inp[7]), hb_mul=float(inp[8]), type_=inp[9], color=inp[10]))
     elif inp[0] == "remove":
         if inp[1] == "all":
             current_level["sprites"] = []

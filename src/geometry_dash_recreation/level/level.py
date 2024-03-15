@@ -18,6 +18,6 @@ def open_level(filename: str) -> pygame.sprite.Group:
 
 
 # Schreiben von Leveldaten in eine Datei (Serialisierung)
-def save_level_data(filename: str, group: convert.Level) -> None:
+def save_level_data(filename: str, data: convert.Level) -> None:
     with open(filename, "wb") as f:
-        pickle.dump(group, f)
+        pickle.dump(data, f)

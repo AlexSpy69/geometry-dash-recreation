@@ -2,41 +2,41 @@
 
 save levels/level_script_example_out
 remove all
-add comp spikes/RegularSpike01.png 40 9 1 1 0.5 hazard yellow
-add comp special/rings/YellowRing.png 30 7 1 1 2 ring yellow
-add comp special/rings/RedRing.png 23 8 1 1 2 ring red
-add comp special/rings/MagentaRing.png 38 7 1 1 2 ring magenta
-add comp special/pads/YellowPad.png 45 9.8 1 0.2 1 pad yellow
-add comp special/pads/MagentaPad.png 55 9.8 1 0.2 1 pad magenta
-add comp special/pads/RedPad.png 65 9.8 1 0.2 1 pad red
-add comp special/rings/CyanRing.png 72 7 1 1 2 ring cyan
-add comp special/rings/CyanRing.png 74 3 1 1 2 ring cyan
-add comp blocks/RegularBlock01.png 74 1 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 75 1 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 76 1 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 77 1 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 78 1 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 79 1 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 80 1 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 81 1 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 82 1 1 1 1 platform yellow
-add comp special/rings/CyanRing.png 84 3 1 1 2 ring cyan
-add comp special/formportals/ShipPortal.png 84 6 1.5 3 1 formportal magenta
-add comp special/rings/CyanRing.png 90 3 1 1 2 ring cyan
-add comp special/formportals/BallPortal.png 120 6 1.5 3 1 formportal red
-add comp blocks/RegularBlock01.png 126 3 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 127 3 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 128 3 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 129 3 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 130 3 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 128 6 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 129 6 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 130 6 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 131 6 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 132 6 1 1 1 platform yellow
-add comp blocks/RegularBlock01.png 129 9 1 1 1 platform yellow
-add comp special/rings/YellowRing.png 137 9 1 1 2 ring yellow
-add comp special/formportals/CubePortal.png 150 4 1.5 3 1 formportal green
+add comp spikes/RegularSpike01.png 40 9 1 1 0 0.5 hazard yellow
+add comp special/rings/YellowRing.png 30 7 1 1 0 2 ring yellow
+add comp special/rings/RedRing.png 23 8 1 1 0 2 ring red
+add comp special/rings/MagentaRing.png 38 7 1 1 0 2 ring magenta
+add comp special/pads/YellowPad.png 45 9.8 1 0.2 0 1 pad yellow
+add comp special/pads/MagentaPad.png 55 9.8 1 0.2 0 1 pad magenta
+add comp special/pads/RedPad.png 65 9.8 1 0.2 0 1 pad red
+add comp special/rings/CyanRing.png 72 7 1 1 0 2 ring cyan
+add comp special/rings/CyanRing.png 74 3 1 1 0 2 ring cyan
+add comp blocks/RegularBlock01.png 74 1 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 75 1 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 76 1 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 77 1 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 78 1 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 79 1 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 80 1 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 81 1 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 82 1 1 1 0 1 platform yellow
+add comp special/rings/CyanRing.png 84 3 1 1 0 2 ring cyan
+add comp special/formportals/ShipPortal.png 84 6 1.5 3 0 1 formportal magenta
+add comp special/rings/CyanRing.png 90 3 1 1 0 2 ring cyan
+add comp special/formportals/BallPortal.png 120 6 1.5 3 0 1 formportal red
+add comp blocks/RegularBlock01.png 126 3 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 127 3 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 128 3 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 129 3 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 130 3 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 128 6 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 129 6 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 130 6 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 131 6 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 132 6 1 1 0 1 platform yellow
+add comp blocks/RegularBlock01.png 129 9 1 1 0 1 platform yellow
+add comp special/rings/YellowRing.png 137 9 1 1 0 2 ring yellow
+add comp special/formportals/CubePortal.png 150 4 1.5 3 0 1 formportal green
 edit info name Level_Script_Example
 edit info creator Alex
 edit info stars 4

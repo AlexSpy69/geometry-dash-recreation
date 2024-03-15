@@ -28,9 +28,10 @@ def move_sprite(sprite: HitboxSprite, x: int, y: int):
 
 
 def rotate_sprite(sprite: HitboxSprite, angle: int):
+    old_center = sprite.rect.center
     sprite.angle += angle
     sprite.image = pygame.transform.rotate(sprite.original_image, sprite.angle)
-    sprite.rect = sprite.image.get_rect(center=sprite.hitbox.center)
+    sprite.rect = sprite.image.get_rect(center=old_center)
 
 
 # Spieler-Sprites
@@ -395,13 +396,14 @@ class Ceiling(pygame.sprite.Sprite):
 # Component-Sprite (für die Hindernisse im Spiel)
 class Component(HitboxSprite):
     def __init__(self, imgfile=f"{ASSETS_FOLDER}/textures/transparent.png",
-                 pos=None, size=None, hb_mul=1.0, type_="deco", color="yellow",
+                 pos=None, size=None, angle=0, hb_mul=1.0, type_="deco", color="yellow",
                  *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         if pos is None:
             pos = [0.0, 0.0]
         if size is None:
             size = [1.0, 1.0]
+        self.image_filename = imgfile
         self.original_image = pygame.image.load(imgfile).convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, (UNIT*size[0], UNIT*size[1]))
         self.image = self.original_image
@@ -412,6 +414,8 @@ class Component(HitboxSprite):
         self.hitbox.width, self.hitbox.height = \
             self.rect.width*hb_mul, self.rect.height*hb_mul
         # Der Hitbox kann um einen bestimmten Faktor vergrößert oder verkleinert werden
+        self.angle = angle
+        rotate_sprite(self, angle)
 
         self.type = type_    # platform: Man kann darauf landen und davon abspringen
                             # hazard: Man stirbt, wenn man es berührt

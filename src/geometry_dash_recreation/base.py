@@ -252,11 +252,19 @@ def savefile_view() -> None:
 
 
 def level_editor_func() -> None:
-    global mode
+    global mode, level_gr
     level_editor = editor.loop(screen, level_gr, bg_gr, background, background_2)
 
     if level_editor[0] == CONTINUE:
         pass
+    elif level_editor[0] == SAVE_LEVEL:
+        level_gr = level_editor[1]
+        level_gr_unconverted["sprites"] = []
+        for sprite in level_gr:
+            game_sprites.move_sprite(sprite, -level_editor[2], 0)
+            level_gr_unconverted["sprites"].append(convert.sprite_to_data(sprite))
+            game_sprites.move_sprite(sprite, level_editor[2], 0)
+        level.save_level_data(current_level_name, level_gr_unconverted)
     elif level_editor[0] == EXIT:
         mode = "level select"
 
