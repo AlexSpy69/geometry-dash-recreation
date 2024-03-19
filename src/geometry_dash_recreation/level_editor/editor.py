@@ -63,9 +63,9 @@ def move_rotate_event(sprite, event):
     elif event.key == pygame.K_a:
         game_sprites.move_sprite(sprite, -UNIT, 0)
     if event.key == pygame.K_q:
-        game_sprites.rotate_sprite(sprite, -45)
-    elif event.key == pygame.K_e:
         game_sprites.rotate_sprite(sprite, 45)
+    elif event.key == pygame.K_e:
+        game_sprites.rotate_sprite(sprite, -45)
 
 
 def move_rotate_button(sprite):
