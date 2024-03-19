@@ -1,10 +1,6 @@
 import pygame
 from pygame.locals import *
 from geometry_dash_recreation.constants import *
-from geometry_dash_recreation.assets import game_sprites, ui_sprites, fonts, screens
-from geometry_dash_recreation.level import level, level_select, convert
-from geometry_dash_recreation.save_file import save_file, view_save_file
-from geometry_dash_recreation.level_editor import editor
 
 # Pygame-Initialisierung
 pygame.init()
@@ -12,8 +8,13 @@ pygame.mixer.init()
 pygame.font.init()
 
 # Spielfenster
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN if FULLSCREEN else 0)
 pygame.display.set_caption("Geometry Dash Recreation")
+
+from geometry_dash_recreation.assets import game_sprites, ui_sprites, fonts, screens
+from geometry_dash_recreation.level import level, level_select, convert
+from geometry_dash_recreation.save_file import save_file, view_save_file
+from geometry_dash_recreation.level_editor import editor
 
 # Sprites
 background = game_sprites.Background()  # Der Hintergrund, der sich nach links bewegt.

@@ -1,11 +1,18 @@
 import screeninfo
 from pathlib import Path
 import pkg_resources
+import sys
 
 MONITOR_NR = 1
 
-width = screeninfo.get_monitors()[MONITOR_NR].width
-height = screeninfo.get_monitors()[MONITOR_NR].height
+try:
+    width, height = map(int, sys.argv[1:3])
+    FULLSCREEN = False
+except (ValueError, IndexError):
+    width = screeninfo.get_monitors()[MONITOR_NR].width
+    height = screeninfo.get_monitors()[MONITOR_NR].height
+    FULLSCREEN = True
+
 
 # Home-Ordner
 HOME_FOLDER = str(Path.home())

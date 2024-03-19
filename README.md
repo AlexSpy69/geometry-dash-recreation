@@ -28,3 +28,7 @@ Build icon: https://www.pngkey.com/detail/u2w7w7u2a9e6q8y3_build-icon/
 Level editor icons: https://fertile-soil-productions.itch.io/level-editor-icons-pixel-art
 
 Exit button: https://1pageicon.blogspot.com/2014/07/exit-icon-buttons-for-project.html
+
+## Used code
+
+/src/geometry_dash_recreation/assets/spritesheets.py - https://www.pygame.org/wiki/Spritesheet

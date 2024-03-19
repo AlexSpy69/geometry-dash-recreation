@@ -1,11 +1,12 @@
 from geometry_dash_recreation.level import level, convert
-from geometry_dash_recreation.constants import *
+from geometry_dash_recreation.constants import LEVELS_FOLDER, ASSETS_FOLDER
 import pygame
 import sys
+import os
 
 pygame.init()
 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HIDDEN)
+screen = pygame.display.set_mode((0, 0), pygame.HIDDEN)
 
 print("Geometry Dash Level Editor Tool")
 
@@ -36,6 +37,8 @@ def execute(command) -> None:
         print(current_level)
     elif inp[0] == "exit":
         sys.exit(0)
+    elif inp[0] == "clear":
+        os.system("clear")
     else:
         print("Command not found")
 
