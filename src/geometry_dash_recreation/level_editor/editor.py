@@ -1,8 +1,6 @@
-from shutil import move
 import pygame
 from geometry_dash_recreation.constants import *
 from geometry_dash_recreation.assets import ui_sprites, game_sprites, fonts
-from geometry_dash_recreation.level import level, convert
 
 pygame.init()
 pygame.font.init()
@@ -29,14 +27,17 @@ right_button.rect.left, right_button.rect.top = UNIT*1.2, GROUND_HEIGHT+UNIT*1.2
 rotate_right_button = ui_sprites.EditorIcon([2, 3, 1, 1])
 rotate_right_button.rect.left, rotate_right_button.rect.top = UNIT*2.4, GROUND_HEIGHT
 
+delete_button = ui_sprites.EditorIcon([4, 0, 1, 1])
+delete_button.rect.left, delete_button.rect.top = UNIT*2.4, GROUND_HEIGHT+UNIT*1.2
+
 ui_other_gr = pygame.sprite.Group(exit_button, save_button,
                                   up_button, down_button, left_button, right_button,
-                                  rotate_right_button)
+                                  rotate_right_button, delete_button)
 
 # Current Object Info
-objectinfo_surface = pygame.Surface((800, 400))
+objectinfo_surface = pygame.Surface((SCREEN_WIDTH * 0.417, SCREEN_HEIGHT * 0.37))
 objectinfo_surface.fill((0, 0, 0))
-objectinfo_surface_rect = pygame.Rect(0, 0, 800, 400)
+objectinfo_surface_rect = pygame.Rect(0, 0, SCREEN_WIDTH * 0.417, SCREEN_HEIGHT * 0.37)
 
 objecttype_text = fonts.aller_small.render('Type:', True, (255, 255, 255))
 objecttype_rect = objecttype_text.get_rect(left=SCREEN_WIDTH * 0.02, top=SCREEN_HEIGHT * 0.05)
@@ -53,7 +54,19 @@ total_movement = 0
 movement_mode = "single"
 selected_sprite = game_sprites.HitboxSprite()
 
-def move_rotate_event(sprite, event):
+
+def snap_position(position: tuple) -> int:
+    return (position[0] - position[0] % UNIT + total_movement % UNIT,
+            position[1] - position[1] % UNIT)
+
+
+def add_component(level_gr: pygame.sprite.Group, component: game_sprites.Component):
+    game_sprites.set_sprite_position(component, snap_position(pygame.mouse.get_pos()))
+    level_gr.add(component)
+
+
+def move_rotate_event(sprite: game_sprites.HitboxSprite, event):
+    global selected_sprite
     if event.key == pygame.K_s:
         game_sprites.move_sprite(sprite, 0, UNIT)
     elif event.key == pygame.K_w:
@@ -66,19 +79,35 @@ def move_rotate_event(sprite, event):
         game_sprites.rotate_sprite(sprite, 45)
     elif event.key == pygame.K_e:
         game_sprites.rotate_sprite(sprite, -45)
+    if event.key == pygame.K_DELETE:
+        sprite.kill()
+        selected_sprite = game_sprites.HitboxSprite()
 
 
-def move_rotate_button(sprite):
+def move_rotate_button(sprite: game_sprites.HitboxSprite) -> bool:
+    global selected_sprite
     if up_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
         game_sprites.move_sprite(sprite, 0, -UNIT)
-    if down_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+    elif down_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
         game_sprites.move_sprite(sprite, 0, UNIT)
-    if left_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+    elif left_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
         game_sprites.move_sprite(sprite, UNIT, 0)
-    if right_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+    elif right_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
         game_sprites.move_sprite(sprite, -UNIT, 0)
-    if rotate_right_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+    elif rotate_right_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
         game_sprites.rotate_sprite(sprite, -45)
+    elif delete_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+        sprite.kill()
+        selected_sprite = game_sprites.HitboxSprite()
+    else:
+        return False
+    return True
+
+
+def update_label():
+    global objecttype_text, objectcolor_text
+    objecttype_text = fonts.aller_small.render(f'Type: {selected_sprite.type}', True, (255, 255, 255))
+    objectcolor_text = fonts.aller_small.render(f'Color: {selected_sprite.color}', True, (255, 255, 255))
 
 
 def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, bg_gr: pygame.sprite.Group, 
@@ -96,17 +125,31 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, bg_gr: pygame.sp
                 return (SAVE_LEVEL, level_gr, total_movement)
             
             if movement_mode == "single":
-                move_rotate_button(selected_sprite)
+                if move_rotate_button(selected_sprite):
+                    break
             elif movement_mode == "all":
                 for sprite in level_gr:
-                    move_rotate_button(sprite)
+                    if move_rotate_button(sprite):
+                        break
             
             for sprite in level_gr:
                 if sprite.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                     selected_sprite = sprite
                     break
-            objecttype_text = fonts.aller_small.render(f'Type: {selected_sprite.type}', True, (255, 255, 255))
-            objectcolor_text = fonts.aller_small.render(f'Color: {selected_sprite.color}', True, (255, 255, 255))
+            
+            if selected_sprite != sprite:
+                selected_sprite = game_sprites.HitboxSprite()
+                add_component(level_gr, game_sprites.Component(
+                    imgfile=f"{ASSETS_FOLDER}/textures/components/blocks/RegularBlock01.png",
+                    pos=(0, 0),
+                    size=(1, 1),
+                    hb_mul=1,
+                    type_="platform",
+                    color="yellow"
+                ))
+            
+            update_label()
+        
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 movement = 1
@@ -126,6 +169,8 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, bg_gr: pygame.sp
                     movement_mode = "all"
                 elif movement_mode == "all":
                     movement_mode = "single"
+            
+            update_label()
             
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or \

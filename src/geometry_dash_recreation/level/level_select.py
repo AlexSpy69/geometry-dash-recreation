@@ -70,18 +70,15 @@ def prev_level() -> None:
     if len(level_list) in (0, 1):
         return
     level_nr -= 1
-    if level_nr < 0:
-        level_nr += 1
+    level_nr %= len(level_list)
 
 
 def next_level() -> None:
     global level_nr
     if len(level_list) in (0, 1):
         return
-    if level_nr == len(level_list) - 1:
-        level_nr -= 1
-    else:
-        level_nr += 1
+    level_nr += 1
+    level_nr %= len(level_list)
 
 
 def selected_level() -> str:

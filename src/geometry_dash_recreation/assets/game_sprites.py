@@ -27,6 +27,11 @@ def move_sprite(sprite: HitboxSprite, x: int, y: int):
     sprite.hitbox.center = sprite.rect.center
 
 
+def set_sprite_position(sprite: HitboxSprite, pos: tuple):
+    sprite.rect.x, sprite.rect.y = pos
+    sprite.hitbox.center = sprite.rect.center
+
+
 def rotate_sprite(sprite: HitboxSprite, angle: int):
     old_center = sprite.rect.center
     sprite.angle += angle
