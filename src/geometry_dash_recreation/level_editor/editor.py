@@ -120,6 +120,7 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, bg_gr: pygame.sp
             return (EXIT, 0)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if exit_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                total_movement = 0
                 return (EXIT, 0)
             if save_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 return (SAVE_LEVEL, level_gr, total_movement)

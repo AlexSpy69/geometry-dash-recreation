@@ -3,7 +3,7 @@ import sys
 
 import pygame
 from geometry_dash_recreation.constants import *
-from geometry_dash_recreation.assets import fonts, ui_sprites
+from geometry_dash_recreation.assets import fonts, ui_sprites, error_screen
 from geometry_dash_recreation.level import level, convert
 from geometry_dash_recreation.save_file import save_file
 
@@ -92,7 +92,7 @@ def current_level_percentage() -> int:
     return save_file.open_sf(SAVE_FILE_PATH).get_level_percent(selected_level())
 
 
-def loop(screen: pygame.Surface) -> tuple:
+def loop_no_exception(screen: pygame.Surface) -> tuple:
     global levelname_text, difficulty_text, creator_text, comp_text, folder_text, error_text
     global levelname_rect, difficulty_rect, creator_rect, comp_rect, folder_rect, error_rect
     global level_folder, level_list, level_nr, level_folder_edit, folder_error, level_info
@@ -101,7 +101,8 @@ def loop(screen: pygame.Surface) -> tuple:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if levelname_rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                return (PLAY_LEVEL, selected_level())
+                if len(level_list) != 0:
+                    return (PLAY_LEVEL, selected_level())
             if folder_rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 level_folder_edit = not level_folder_edit
                 continue
@@ -156,12 +157,15 @@ def loop(screen: pygame.Surface) -> tuple:
         error_text = fonts.aller_small.render('Error: Not a directory', True, (255, 0, 0))
         folder_error = True
 
-    if not levelname_rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-        levelname_text = fonts.pusab_big.render(f'{level_nr + 1}/{len(level_list)}) {level_info["name"]}', True,
-                                                (255, 200, 0), (25, 0, 12))
+    if len(level_list) != 0:
+        if not levelname_rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+            levelname_text = fonts.pusab_big.render(f'{level_nr + 1}/{len(level_list)}) {level_info["name"]}', True,
+                                                    (255, 200, 0), (25, 0, 12))
+        else:
+            levelname_text = fonts.pusab_big.render(f'{level_nr + 1}/{len(level_list)}) {level_info["name"]}', True,
+                                                    (0, 255, 0))
     else:
-        levelname_text = fonts.pusab_big.render(f'{level_nr + 1}/{len(level_list)}) {level_info["name"]}', True,
-                                                (0, 255, 0))
+        levelname_text = fonts.pusab_big.render("Current folder is empty!", True, (255, 200, 0), (25, 0, 12))
 
     difficulty_text = fonts.aller_normal.render(f'Difficulty: {DIFFICULTY[int(level_info["stars"])]}, '
                                                 f'{level_info["stars"]}*', True, (255, 255, 255))
@@ -189,13 +193,25 @@ def loop(screen: pygame.Surface) -> tuple:
 
     if not level_folder_edit and not folder_error:
         screen.blit(levelname_text, levelname_rect)
-        screen.blit(difficulty_text, difficulty_rect)
-        screen.blit(creator_text, creator_rect)
-        screen.blit(comp_text, comp_rect)
-        arrow_gr.draw(screen)
+        if len(level_list) != 0:
+            screen.blit(difficulty_text, difficulty_rect)
+            screen.blit(creator_text, creator_rect)
+            screen.blit(comp_text, comp_rect)
+            arrow_gr.draw(screen)
     screen.blit(folder_text, folder_rect)
     screen.blit(error_text, error_rect)
 
     ui_other_gr.draw(screen)
 
     return (CONTINUE, selected_level())
+
+
+def loop(screen: pygame.Surface) -> tuple:
+    global level_folder, old_level_folder
+    try:
+        return loop_no_exception(screen)
+    except Exception as e:
+        while error_screen.loop(screen, str(e)) != EXIT:
+            pygame.display.update()
+        level_folder = LEVELS_FOLDER
+        return loop_no_exception(screen)

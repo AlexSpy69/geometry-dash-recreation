@@ -11,7 +11,7 @@ pygame.font.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN if FULLSCREEN else 0)
 pygame.display.set_caption("Geometry Dash Recreation")
 
-from geometry_dash_recreation.assets import game_sprites, ui_sprites, fonts, screens
+from geometry_dash_recreation.assets import game_sprites, ui_sprites, fonts, screens, error_screen
 from geometry_dash_recreation.level import level, level_select, convert
 from geometry_dash_recreation.save_file import save_file, view_save_file
 from geometry_dash_recreation.level_editor import editor
@@ -223,9 +223,12 @@ def init_level() -> str:
 
 
 def level_error() -> None:
-    global mode
-    print(level_error_msg)
-    mode = "exit"
+    global mode, level_error_msg
+    error_scr = error_screen.loop(screen, level_error_msg)
+    if error_scr == CONTINUE:
+        pass
+    elif error_scr == EXIT:
+        mode = "level select"
 
 
 def lvl_select() -> None:
