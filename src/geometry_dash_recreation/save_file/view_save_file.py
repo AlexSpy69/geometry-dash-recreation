@@ -49,7 +49,7 @@ def loop(screen: pygame.Surface, sf: save_file.SaveFile) -> int:
     ltext = fonts.aller_normal.render('Played Levels', True, (255, 255, 255))
     lrect = ltext.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.5))
 
-    lotext = fonts.aller_normal.render(f'Save File Location: {SAVE_FILE_PATH}', True, (255, 255, 255))
+    lotext = fonts.aller_normal.render(SAVE_FILE_PATH, True, (255, 255, 255))
     lorect = lotext.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.85))
     
     screen.fill((50, 0, 25))

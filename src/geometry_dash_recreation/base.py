@@ -41,6 +41,9 @@ win_screen = screens.returnWinScreen()
 current_percent_text = fonts.pusab_small.render('100%', True, (255, 255, 255))
 current_percent_rect = current_percent_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.05))
 
+current_attempt_text = fonts.text_with_outline("Attempt 0", fonts.pusab_big, 3)
+current_attempt_rect = current_attempt_text.get_rect(center=ATTEMPT_COUNT_POS)
+
 # Variablen
 ev = False  # True, wenn der Spieler die linke Maustaste gedrückt hält, und False, wenn er sie nicht gedrückt hält
 click = False  # True, wenn der Spieler die linke Maustaste drückt, wird aber im nächsten Durchgang
@@ -61,6 +64,7 @@ level_gr_unconverted = convert.Level()
 current_level_name = ""
 level_end = 0
 level_error_msg = ""
+current_attempt = 0
 
 running = True
 
@@ -104,8 +108,8 @@ def get_current_level_percent() -> int:
 
 # Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
 def game_func() -> None:
-    global mode, ev, click, gravity, level_gr, level_gr_unconverted, x_to_level, level_end, bg_2_front
-    global current_percent_text, current_percent_rect
+    global mode, ev, click, gravity, level_gr, level_gr_unconverted, x_to_level, level_end, bg_2_front, current_attempt
+    global current_percent_text, current_percent_rect, current_attempt_text, current_attempt_rect
     for event in pygame.event.get():
         if event.type == QUIT:
             mode = "level select"
@@ -128,11 +132,40 @@ def game_func() -> None:
             if event.key == K_SPACE or event.key == K_UP:
                 ev = False
 
+    # Überprüfen, ob der Spieler das Levelende erreicht hat
     x_to_level += LEVEL_SCROLL_SPEED / UNIT
 
     if x_to_level >= level_end:
         mode = "win"
+    
+    if player_spr.sprite.hitbox.right < PLAYER_X:
+        player_spr.sprite.hitbox.right += LEVEL_SCROLL_SPEED
+    else:
+        # Bewegen der Level-Komponenten
+        for sprite in level_gr:
+            sprite.rect.x -= LEVEL_SCROLL_SPEED
+            sprite.hitbox.center = sprite.rect.center
+        
+        # Bewegen des Hintergrunds
+        background.rect.x -= BACKGROUND_SCROLL_SPEED
 
+        # Bewegen des Attempt-Labels
+        if current_attempt_rect.right > 0:
+            current_attempt_rect.x -= LEVEL_SCROLL_SPEED
+
+    if background.rect.right == 0:
+        background.rect.left = background_2.rect.width
+        bg_2_front = True
+    elif background_2.rect.right == 0:
+        background.rect.left = 0
+        bg_2_front = False
+
+    if not bg_2_front:
+        background_2.rect.left = background.rect.right
+    else:
+        background_2.rect.right = background.rect.left
+
+    # Kontrolle des Spielers
     controls = player_spr.sprite.controls(ev, click, gravity, ground, ceiling, level_gr, level_gr_unconverted)
 
     if controls == NORMAL:
@@ -152,28 +185,14 @@ def game_func() -> None:
 
     click = False
 
-    background.rect.x -= BACKGROUND_SCROLL_SPEED
-
-    if background.rect.right == 0:
-        background.rect.left = background_2.rect.width
-        bg_2_front = True
-    elif background_2.rect.right == 0:
-        background.rect.left = 0
-        bg_2_front = False
-
-    if not bg_2_front:
-        background_2.rect.left = background.rect.right
-    else:
-        background_2.rect.right = background.rect.left
-
     bg_gr.update()
     level_gr.update()
-    for sprite in level_gr:
-        sprite.rect.x -= LEVEL_SCROLL_SPEED
-        sprite.hitbox.center = sprite.rect.center
     player_spr.update()
+
     current_percent_text = fonts.pusab_small.render(f"{get_current_level_percent()}%", True, (255, 255, 255))
     current_percent_rect = current_percent_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.05))
+
+    current_attempt_text = fonts.text_with_outline(f"Attempt {current_attempt}", fonts.pusab_big, 3)
 
     screen.fill((0, 0, 0))
     bg_gr.draw(screen)
@@ -181,6 +200,8 @@ def game_func() -> None:
     player_spr.draw(screen)
     ingame_ui_gr.draw(screen)
     screen.blit(current_percent_text, current_percent_rect)
+    if current_attempt_rect.right > 0:
+        screen.blit(current_attempt_text, current_attempt_rect)
 
 
 def get_level_end() -> int:
@@ -195,24 +216,34 @@ def get_level_end() -> int:
 # Wird aufgerufen, um das Level zu initialisieren
 def init_level() -> str:
     global mode, level_gr, level_gr_unconverted, player_spr, ev, click, \
-        gravity, current_level_name, x_to_level, level_end
+        gravity, current_level_name, x_to_level, level_end, current_attempt_rect, current_attempt
 
     def proc() -> None:
         global mode, level_gr, level_gr_unconverted, player_spr, ev, click, \
-            gravity, current_level_name, x_to_level, level_end
+            gravity, current_level_name, x_to_level, level_end, current_attempt_rect, current_attempt
+        
+        # Leveldaten
         level_gr_unconverted = level.open_level_data(current_level_name)
         level_gr = convert.data_to_group(level_gr_unconverted)
+
         # Sprites
         background.reset()
         background_2.reset()
+
         # Level
         level_end = get_level_end()
+
         # Gamemode
         change_gamemode(level_gr_unconverted["data"]["gamemode"], True)
         player_spr.sprite.reset()
+
         # Physik
         ev, click, gravity = False, False, 1
         x_to_level = 0
+
+        # Attempt
+        current_attempt += 1
+        current_attempt_rect.center = ATTEMPT_COUNT_POS
 
     try:
         proc()
@@ -232,7 +263,9 @@ def level_error() -> None:
 
 
 def lvl_select() -> None:
-    global mode, current_level_name
+    global mode, current_level_name, current_attempt
+    current_attempt = 0
+
     level_screen = level_select.loop(screen)
 
     if level_screen[0] == CONTINUE:

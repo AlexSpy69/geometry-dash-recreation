@@ -55,7 +55,7 @@ movement_mode = "single"
 selected_sprite = game_sprites.HitboxSprite()
 
 
-def snap_position(position: tuple) -> int:
+def snap_position(position: tuple) -> tuple:
     return (position[0] - position[0] % UNIT + total_movement % UNIT,
             position[1] - position[1] % UNIT)
 
@@ -138,7 +138,7 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, bg_gr: pygame.sp
                     selected_sprite = sprite
                     break
             
-            if selected_sprite != sprite:
+            if selected_sprite is not sprite:
                 selected_sprite = game_sprites.HitboxSprite()
                 add_component(level_gr, game_sprites.Component(
                     imgfile=f"{ASSETS_FOLDER}/textures/components/blocks/RegularBlock01.png",

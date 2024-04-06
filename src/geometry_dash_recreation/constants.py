@@ -31,8 +31,8 @@ UNIT = SCREEN_HEIGHT * 0.08     # Einheit
 GROUND_HEIGHT = UNIT * 10       # Höhe des Bodens
 CEILING_HEIGHT = UNIT * 1       # Höhe der Decke
 CEILING_MOVE = CEILING_HEIGHT/5
-PLAYER_POS = (UNIT * 5,
-              GROUND_HEIGHT)    # Ursprüngliche Position des Spielers auf dem Bildschirm
+PLAYER_X = UNIT * 5             # Ursprüngliche Position des Spielers auf dem Bildschirm
+PLAYER_Y = GROUND_HEIGHT
 VEL_ADD = 2                     # Stärke der Einwirkung der Gravitation
 JUMP_VEL = 27                   # Stärke des Sprungs des Spielers
 LEVEL_SCROLL_SPEED = DELTA_TIME*14*RESIZE  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
@@ -40,6 +40,7 @@ BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE  # Die Geschwindigkeit, mit der de
 START_LEVEL = "levels/start"    # Das Level, mit dem das Spiel automatisch beginnt
 DEATH_ACCURACY = 20
 OUT_OF_BOUNDS = -6000
+ATTEMPT_COUNT_POS = (SCREEN_WIDTH * 0.35, SCREEN_HEIGHT * 0.4)
 
 # vel wird bei der Berührung von bestimmten Rings bzw. Pads um folgende Werte multipliziert.
 RING_VEL = {"yellow": 1.1,

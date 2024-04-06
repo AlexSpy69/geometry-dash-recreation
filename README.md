@@ -31,4 +31,6 @@ Exit button: https://1pageicon.blogspot.com/2014/07/exit-icon-buttons-for-projec
 
 ## Used code
 
-/src/geometry_dash_recreation/assets/spritesheets.py - https://www.pygame.org/wiki/Spritesheet
+/src/geometry_dash_recreation/assets/spritesheets.py - https://www.pygame.org/wiki/Spritesheet - for spritesheet handling
+
+/src/geometry_dash_recreation/assets/fonts.py - https://stackoverflow.com/questions/54363047/how-to-draw-outline-on-the-fontpygame - to add outline to text label

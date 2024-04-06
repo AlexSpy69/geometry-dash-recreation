@@ -47,9 +47,9 @@ class Cube(HitboxSprite):
         self.original_image = pygame.transform.scale(self.original_image, (UNIT, UNIT))
         self.image = self.original_image
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.bottom = PLAYER_POS
+        self.rect.right, self.rect.bottom = PLAYER_X, PLAYER_Y
         self.hitbox = self.image.get_rect()
-        self.hitbox.left, self.hitbox.bottom = PLAYER_POS
+        self.hitbox.right, self.hitbox.bottom = PLAYER_X, PLAYER_Y
 
         self.vel = 0
         self.angle = 0
@@ -57,7 +57,7 @@ class Cube(HitboxSprite):
     def reset(self) -> None:
         self.angle = 0
         self.vel = 0
-        self.hitbox.left, self.hitbox.bottom = PLAYER_POS
+        self.hitbox.right, self.hitbox.bottom = 0, PLAYER_Y
     
     def jump(self, mul) -> None:
         self.vel = -JUMP_VEL * mul
@@ -146,9 +146,9 @@ class Ship(HitboxSprite):
         self.original_image = pygame.transform.scale(self.original_image, (UNIT, UNIT))
         self.image = self.original_image
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.bottom = PLAYER_POS
+        self.rect.right, self.rect.bottom = PLAYER_X, PLAYER_Y
         self.hitbox = self.image.get_rect()
-        self.hitbox.left, self.hitbox.bottom = PLAYER_POS
+        self.hitbox.right, self.hitbox.bottom = PLAYER_X, PLAYER_Y
 
         self.vel = 0
         self.angle = 0
@@ -157,7 +157,7 @@ class Ship(HitboxSprite):
     def reset(self) -> None:
         self.angle = 0
         self.vel = 0
-        self.hitbox.left, self.hitbox.bottom = PLAYER_POS
+        self.hitbox.right, self.hitbox.bottom = 0, PLAYER_Y
         if self.upsidedown:
             self.flip()
     
@@ -261,9 +261,9 @@ class Ball(HitboxSprite):
         self.original_image = pygame.transform.scale(self.original_image, (UNIT, UNIT))
         self.image = self.original_image
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.bottom = PLAYER_POS
+        self.rect.right, self.rect.bottom = PLAYER_X, PLAYER_Y
         self.hitbox = self.image.get_rect()
-        self.hitbox.left, self.hitbox.bottom = PLAYER_POS
+        self.hitbox.right, self.hitbox.bottom = PLAYER_X, PLAYER_Y
 
         self.vel = 0
         self.angle = 0
@@ -271,7 +271,7 @@ class Ball(HitboxSprite):
     def reset(self) -> None:
         self.angle = 0
         self.vel = 0
-        self.hitbox.left, self.hitbox.bottom = PLAYER_POS
+        self.hitbox.right, self.hitbox.bottom = 0, PLAYER_Y
     
     def jump(self, mul) -> None:
         self.vel = -JUMP_VEL * mul * 0.7
@@ -357,9 +357,9 @@ class Ground(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/bg/ground.jpg").convert()
-        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH+UNIT, SCREEN_HEIGHT))
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = 0, GROUND_HEIGHT
+        self.rect.left, self.rect.top = -UNIT, GROUND_HEIGHT
 
 
 class Background(pygame.sprite.Sprite):

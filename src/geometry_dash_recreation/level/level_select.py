@@ -207,7 +207,7 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
 
 
 def loop(screen: pygame.Surface) -> tuple:
-    global level_folder, old_level_folder
+    global level_folder
     try:
         return loop_no_exception(screen)
     except Exception as e:
