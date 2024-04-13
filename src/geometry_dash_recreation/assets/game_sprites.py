@@ -9,6 +9,7 @@ pygame.init()
 class HitboxSprite(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
+        self.image_filename = ""
         self.original_image = pygame.Surface((0, 0))
         self.image = pygame.Surface((0, 0))
         self.rect = pygame.Rect(0, 0, 0, 0)
@@ -27,8 +28,15 @@ def move_sprite(sprite: HitboxSprite, x: int, y: int):
     sprite.hitbox.center = sprite.rect.center
 
 
-def set_sprite_position(sprite: HitboxSprite, pos: tuple):
-    sprite.rect.x, sprite.rect.y = pos
+def set_sprite_position(sprite: HitboxSprite, pos: tuple, mode: str= "xy"):
+    if mode == "xy":
+        sprite.rect.x, sprite.rect.y = pos
+    elif mode == "lt":
+        sprite.rect.left, sprite.rect.top = pos
+    elif mode == "lb":
+        sprite.rect.left, sprite.rect.bottom = pos
+    else:
+        sprite.rect.left, sprite.rect.top = pos
     sprite.hitbox.center = sprite.rect.center
 
 
@@ -404,32 +412,38 @@ class Component(HitboxSprite):
                  pos=None, size=None, angle=0, hb_mul=1.0, type_="deco", color="yellow",
                  *groups: AbstractGroup) -> None:
         super().__init__(*groups)
+        self.image_filename = imgfile
         if pos is None:
             pos = [0.0, 0.0]
         if size is None:
             size = [1.0, 1.0]
-        self.image_filename = imgfile
-        self.original_image = pygame.image.load(imgfile).convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (UNIT*size[0], UNIT*size[1]))
-        self.image = self.original_image
-        self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = pos[0]*UNIT, pos[1]*UNIT  # Position des Komponenten
-        self.hitbox = self.image.get_rect()
-        self.hitbox.x, self.hitbox.y = pos[0]*UNIT, pos[1]*UNIT
-        self.hitbox.width, self.hitbox.height = \
-            self.rect.width*hb_mul, self.rect.height*hb_mul
-        # Der Hitbox kann um einen bestimmten Faktor vergrößert oder verkleinert werden
+        self.pos = pos
+        self.size = size
         self.angle = angle
-        rotate_sprite(self, angle)
-
-        self.type = type_    # platform: Man kann darauf landen und davon abspringen
+        self.hb_mul = hb_mul
+        self.type = type_   # platform: Man kann darauf landen und davon abspringen
                             # hazard: Man stirbt, wenn man es berührt
                             # deco: Es zählt als Dekoration und wird vom Spieler ignioriert
                             # ring: Rings, von denen man abspringen kann, wenn man die Maustaste drückt
                             # gravportal: Portale, die die Gravitationsrichtung wechseln
                             # formportal: Portale, die den Spielmodus wechseln
-
         self.color = color  # Wird als Indentifikation für Rings und Portale verwendet.
+
+        self.real_init()
+    
+    def real_init(self):
+        self.original_image = pygame.image.load(self.image_filename).convert_alpha()
+        self.original_image = pygame.transform.scale(self.original_image, (UNIT*self.size[0], UNIT*self.size[1]))
+        self.image = self.original_image
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = self.pos[0]*UNIT, self.pos[1]*UNIT  # Position des Komponenten
+        self.hitbox = self.image.get_rect()
+        self.hitbox.x, self.hitbox.y = self.pos[0]*UNIT, self.pos[1]*UNIT
+        self.hitbox.width, self.hitbox.height = \
+            self.rect.width * self.hb_mul, self.rect.height * self.hb_mul
+        # Der Hitbox kann um einen bestimmten Faktor vergrößert oder verkleinert werden
+
+        rotate_sprite(self, self.angle)
     
     def update(self, *args: Any, **kwargs: Any) -> None:
         return super().update(*args, **kwargs)

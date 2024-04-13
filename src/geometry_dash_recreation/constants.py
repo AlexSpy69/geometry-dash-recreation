@@ -2,6 +2,7 @@ import screeninfo
 from pathlib import Path
 import pkg_resources
 import sys
+from geometry_dash_recreation import util
 
 MONITOR_NR = 1
 
@@ -31,16 +32,21 @@ UNIT = SCREEN_HEIGHT * 0.08     # Einheit
 GROUND_HEIGHT = UNIT * 10       # Höhe des Bodens
 CEILING_HEIGHT = UNIT * 1       # Höhe der Decke
 CEILING_MOVE = CEILING_HEIGHT/5
-PLAYER_X = UNIT * 5             # Ursprüngliche Position des Spielers auf dem Bildschirm
+PLAYER_X = UNIT * 7             # Ursprüngliche Position des Spielers auf dem Bildschirm
 PLAYER_Y = GROUND_HEIGHT
 VEL_ADD = 2                     # Stärke der Einwirkung der Gravitation
 JUMP_VEL = 27                   # Stärke des Sprungs des Spielers
-LEVEL_SCROLL_SPEED = DELTA_TIME*14*RESIZE  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
-BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE  # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
+LEVEL_SCROLL_SPEED = DELTA_TIME*14*RESIZE**1.1  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
+BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE**1.1  # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
 START_LEVEL = "levels/start"    # Das Level, mit dem das Spiel automatisch beginnt
 DEATH_ACCURACY = 20
 OUT_OF_BOUNDS = -6000
 ATTEMPT_COUNT_POS = (SCREEN_WIDTH * 0.35, SCREEN_HEIGHT * 0.4)
+
+# Mögliche Level-Komponenten-Eigenschaften
+COMPONENT_IMGFILE_LIST = sorted(util.list_files(ASSETS_FOLDER + "/textures/components", ".png"))
+COMPONENT_TYPE_LIST = ("", "platform", "hazard", "ring", "pad", "formportal", "gravityportal", "deco")
+COMPONENT_COLOR_LIST = ("", "magenta", "yellow", "red", "cyan", "green")
 
 # vel wird bei der Berührung von bestimmten Rings bzw. Pads um folgende Werte multipliziert.
 RING_VEL = {"yellow": 1.1,
@@ -52,8 +58,8 @@ PAD_VEL = {"yellow": 1.3,
 
 # Der Index ist die Sternanzahl, die bei einer Completion gewonnen wird,
 # und das Element ist der Name des Schwierigkeitsgrades.
-DIFFICULTY = ["", "Auto", "Easy", "Normal", "Hard", "Hard",
-              "Harder", "Harder", "Insane", "Insane", "Demon"]
+DIFFICULTY = ("", "Auto", "Easy", "Normal", "Hard", "Hard",
+              "Harder", "Harder", "Insane", "Insane", "Demon")
 
 # Speicherort für das Save-File
 SAVE_FILE_PATH = HOME_FOLDER + "/Documents/gdr_savefile"

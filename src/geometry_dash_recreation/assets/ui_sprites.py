@@ -82,3 +82,14 @@ class EditorIcon(pygame.sprite.Sprite):
     
     def update(self, *args: Any, **kwargs: Any) -> None:
         return super().update(*args, **kwargs)
+
+
+class EditorBarLabel(pygame.sprite.Sprite):
+    def __init__(self, *groups: AbstractGroup) -> None:
+        super().__init__(*groups)
+        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/editor_bar_label.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT-GROUND_HEIGHT))
+        self.rect = self.image.get_rect()
+    
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        return super().update(*args, **kwargs)

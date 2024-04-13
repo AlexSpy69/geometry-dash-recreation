@@ -41,7 +41,7 @@ def round_position(pos: list, spritetype: str):
 
 
 def round_size(size: list, spritetype: str):
-    if spritetype in ("formportal", "pad"):
+    if spritetype in ("gravityportal", "formportal", "pad"):
         return [round(size[0], 1), round(size[1], 1)]
     return [round(size[0]), round(size[1])]
 
