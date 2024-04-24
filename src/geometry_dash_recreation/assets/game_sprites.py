@@ -21,30 +21,27 @@ class HitboxSprite(pygame.sprite.Sprite):
     def __str__(self) -> str:
         return f"Type: {self.type}\nColor: {self.color}\nRect: {self.rect}\nHitbox: {self.hitbox}\n"
 
+    def move_sprite(self, x: int, y: int):
+        self.rect.x += x
+        self.rect.y += y
+        self.hitbox.center = self.rect.center
 
-def move_sprite(sprite: HitboxSprite, x: int, y: int):
-    sprite.rect.x += x
-    sprite.rect.y += y
-    sprite.hitbox.center = sprite.rect.center
+    def set_sprite_position(self, pos: tuple, mode: str= "xy"):
+        if mode == "xy":
+            self.rect.x, self.rect.y = pos
+        elif mode == "lt":
+            self.rect.left, self.rect.top = pos
+        elif mode == "lb":
+            self.rect.left, self.rect.bottom = pos
+        else:
+            self.rect.left, self.rect.top = pos
+        self.hitbox.center = self.rect.center
 
-
-def set_sprite_position(sprite: HitboxSprite, pos: tuple, mode: str= "xy"):
-    if mode == "xy":
-        sprite.rect.x, sprite.rect.y = pos
-    elif mode == "lt":
-        sprite.rect.left, sprite.rect.top = pos
-    elif mode == "lb":
-        sprite.rect.left, sprite.rect.bottom = pos
-    else:
-        sprite.rect.left, sprite.rect.top = pos
-    sprite.hitbox.center = sprite.rect.center
-
-
-def rotate_sprite(sprite: HitboxSprite, angle: int):
-    old_center = sprite.rect.center
-    sprite.angle += angle
-    sprite.image = pygame.transform.rotate(sprite.original_image, sprite.angle)
-    sprite.rect = sprite.image.get_rect(center=old_center)
+    def rotate_sprite(self, angle: int):
+        old_center = self.rect.center
+        self.angle += angle
+        self.image = pygame.transform.rotate(self.original_image, self.angle)
+        self.rect = self.image.get_rect(center=old_center)
 
 
 # Spieler-Sprites
@@ -318,12 +315,12 @@ class Ball(HitboxSprite):
         # Landen auf dem Boden
         if self.hitbox.colliderect(ground.rect.move(0, -gravity)):
             self.hitbox.bottom = ground.rect.top
-            if ev:
+            if click:
                 return self.change_gravity(gravity)
         
         if self.hitbox.colliderect(ceiling.rect.move(0, -gravity)):
             self.hitbox.top = ceiling.rect.bottom
-            if ev:
+            if click:
                 return self.change_gravity(gravity)
         
         # Landen auf Level-Komponenten
@@ -337,7 +334,7 @@ class Ball(HitboxSprite):
                     else:
                         self.hitbox.top = sprite.hitbox.bottom
                     self.vel = 0
-                    if ev:
+                    if click:
                         return self.change_gravity(gravity)
             elif sprite.type == "hazard":
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
@@ -443,7 +440,7 @@ class Component(HitboxSprite):
             self.rect.width * self.hb_mul, self.rect.height * self.hb_mul
         # Der Hitbox kann um einen bestimmten Faktor vergrößert oder verkleinert werden
 
-        rotate_sprite(self, self.angle)
+        self.rotate_sprite(self.angle)
     
     def update(self, *args: Any, **kwargs: Any) -> None:
         return super().update(*args, **kwargs)
