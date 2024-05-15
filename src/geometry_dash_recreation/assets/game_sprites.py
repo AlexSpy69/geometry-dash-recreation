@@ -13,18 +13,24 @@ class HitboxSprite(pygame.sprite.Sprite):
         self.original_image = pygame.Surface((0, 0))
         self.image = pygame.Surface((0, 0))
         self.rect = pygame.Rect(0, 0, 0, 0)
+        self.initial_rect = pygame.Rect(0, 0, 0, 0)
         self.hitbox = pygame.Rect(0, 0, 0, 0)
         self.type = ""
         self.color = ""
         self.angle = 0
     
     def __str__(self) -> str:
-        return f"Type: {self.type}\nColor: {self.color}\nRect: {self.rect}\nHitbox: {self.hitbox}\n"
+        return f"Type: {self.type}\nColor: {self.color}\nRect: {self.rect}\nHitbox: {self.hitbox}\nAngle: {self.angle}\n"
 
     def move_sprite(self, x: int, y: int):
         self.rect.x += x
         self.rect.y += y
         self.hitbox.center = self.rect.center
+    
+    def move_initial(self, x: int, y: int):
+        self.move_sprite(x, y)
+        self.initial_rect.x += x
+        self.initial_rect.y += y
 
     def set_sprite_position(self, pos: tuple, mode: str= "xy"):
         if mode == "xy":
@@ -40,8 +46,19 @@ class HitboxSprite(pygame.sprite.Sprite):
     def rotate_sprite(self, angle: int):
         old_center = self.rect.center
         self.angle += angle
+        self.angle %= 360
         self.image = pygame.transform.rotate(self.original_image, self.angle)
         self.rect = self.image.get_rect(center=old_center)
+    
+    def smooth_angle(self, goal_angle: int = 0, minus: bool = False) -> None:
+        if minus and self.angle <= goal_angle + 0.1:
+            self.angle -= self.angle/2
+        elif minus and self.angle > goal_angle + 0.1:
+            self.angle = goal_angle
+        elif not minus and self.angle >= goal_angle - 0.1:
+            self.angle -= self.angle/2
+        elif not minus and self.angle < goal_angle - 0.1:
+            self.angle = goal_angle
 
 
 # Spieler-Sprites
@@ -100,12 +117,12 @@ class Cube(HitboxSprite):
 
         if self.hitbox.y < OUT_OF_BOUNDS:
             return DEATH
-
+        
         # Landen auf dem Boden
         if self.hitbox.colliderect(ground.rect.move(0, -gravity)):
             if gravity == -1:
                 return DEATH
-            self.angle = round(self.angle / 90) * 90
+            self.smooth_angle(round(self.angle / 90) * 90, self.angle % 360 < -45)
             self.hitbox.bottom = ground.rect.top
             self.vel = 0
         
@@ -115,7 +132,7 @@ class Cube(HitboxSprite):
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
                     if self.death_touch(gravity, sprite):
                         return DEATH
-                    self.angle = round(self.angle / 90) * 90
+                    self.smooth_angle(round(self.angle / 90) * 90, self.angle % 360 > -45)
                     if gravity == 1:
                         self.hitbox.bottom = sprite.hitbox.top
                     elif gravity == -1:
@@ -209,33 +226,29 @@ class Ship(HitboxSprite):
         self.vel = -20 if self.vel <= -20 else self.vel
         self.vel = 20 if self.vel >= 20 else self.vel
 
-        self.angle = -self.vel * 2
-
         # Landen auf dem Boden
         if self.hitbox.colliderect(ground.rect.move(0, -gravity)):
-            self.angle = 0
+            self.smooth_angle(minus=True)
             self.hitbox.bottom = ground.rect.top
-            if gravity == 1:
-                if not ev:
-                    self.vel = 0
-            else:
-                if ev:
-                    self.vel = 0
-        
-        if self.hitbox.colliderect(ceiling.rect.move(0, -gravity)):
-            self.angle = 0
-            self.hitbox.top = ceiling.rect.bottom
-            if gravity == 1:
-                if ev:
-                    self.vel = 0
-            else:
-                if not ev:
-                    self.vel = 0
+            if gravity == 1 and not ev:
+                self.vel = 0
+            elif gravity == 0 and ev:
+                self.vel = 0
+        elif self.hitbox.colliderect(ceiling.rect.move(0, -gravity)):
+            self.smooth_angle(minus=False)
+            self.hitbox.top = ceiling.rect.bottom - 1
+            if gravity == 1 and ev:
+                self.vel = 0
+            elif gravity == 0 and not ev:
+                self.vel = 0
+        else:
+            self.angle = -self.vel * 2
         
         # Landen auf Level-Komponenten
         for sprite in level_gr:
             if sprite.type == "platform":
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
+                    self.smooth_angle(True)
                     if self.death_touch(gravity, sprite):
                         return DEATH
                     if not ev:
@@ -434,13 +447,17 @@ class Component(HitboxSprite):
         self.image = self.original_image
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = self.pos[0]*UNIT, self.pos[1]*UNIT  # Position des Komponenten
+        self.initial_rect = self.image.get_rect()
+        self.initial_rect.x, self.initial_rect.y = self.pos[0]*UNIT, self.pos[1]*UNIT
         self.hitbox = self.image.get_rect()
         self.hitbox.x, self.hitbox.y = self.pos[0]*UNIT, self.pos[1]*UNIT
         self.hitbox.width, self.hitbox.height = \
             self.rect.width * self.hb_mul, self.rect.height * self.hb_mul
         # Der Hitbox kann um einen bestimmten Faktor vergrößert oder verkleinert werden
 
-        self.rotate_sprite(self.angle)
-    
+        old_center = self.rect.center
+        self.image = pygame.transform.rotate(self.original_image, self.angle)
+        self.rect = self.image.get_rect(center=old_center)
+        
     def update(self, *args: Any, **kwargs: Any) -> None:
         return super().update(*args, **kwargs)

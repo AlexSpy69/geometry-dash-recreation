@@ -59,7 +59,8 @@ def data_to_group(data: Level) -> pygame.sprite.Group:
     return gr
 
 
-def sprite_to_data(sprite: game_sprites.Component) -> CompSprite:
-    return CompSprite(imgfile=sprite.image_filename, pos=round_position([sprite.rect.x/UNIT, sprite.rect.y/UNIT], sprite.type),
-                      size=round_size([sprite.rect.width/UNIT, sprite.rect.height/UNIT], sprite.type), angle=sprite.angle % 360,
+def sprite_to_data(sprite: game_sprites.Component, initial_rect: bool = False) -> CompSprite:
+    return CompSprite(imgfile=sprite.image_filename, pos=round_position([sprite.rect.x/UNIT, sprite.rect.y/UNIT] if not initial_rect else \
+                                                                        [sprite.initial_rect.x/UNIT, sprite.initial_rect.y/UNIT], sprite.type),
+                      size=round_size([sprite.rect.width/UNIT, sprite.rect.height/UNIT], sprite.type), angle=sprite.angle,
                       hb_mul=sprite.hitbox.width / sprite.rect.width, type_=sprite.type, color=sprite.color)

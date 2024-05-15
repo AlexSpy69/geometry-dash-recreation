@@ -100,20 +100,22 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
         if event.type == pygame.QUIT:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if levelname_rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+            if levelname_rect.collidepoint(*pygame.mouse.get_pos()):
                 if len(level_list) != 0:
                     return (PLAY_LEVEL, selected_level())
-            if folder_rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+            elif folder_rect.collidepoint(*pygame.mouse.get_pos()):
                 level_folder_edit = not level_folder_edit
                 continue
-            if user_icon.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+            elif user_icon.rect.collidepoint(*pygame.mouse.get_pos()):
                 return (VIEW_SAVE_FILE, 0)
-            if build_icon.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+            elif build_icon.rect.collidepoint(*pygame.mouse.get_pos()):
                 return (OPEN_LEVEL_EDITOR, selected_level())
-            elif pygame.mouse.get_pos()[0] >= SCREEN_WIDTH - SCREEN_WIDTH / 3:
-                if pygame.mouse.get_pos()[1] <= SCREEN_HEIGHT / 3:
-                    sys.exit(0)
+            elif arrow_left.rect.collidepoint(*pygame.mouse.get_pos()):
+                prev_level()
+            elif arrow_right.rect.collidepoint(*pygame.mouse.get_pos()):
                 next_level()
+            elif exit_button.rect.collidepoint(*pygame.mouse.get_pos()):
+                sys.exit(0)
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT:
                 next_level()

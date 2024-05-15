@@ -195,8 +195,11 @@ def game_func() -> None:
     current_attempt_text = fonts.text_with_outline(f"Attempt {current_attempt}", fonts.pusab_big, 3)
 
     screen.fill((0, 0, 0))
-    bg_gr.draw(screen)
+    for bg in background, background_2:
+        screen.blit(bg.image, bg.rect)
     level_gr.draw(screen)
+    for gr in ground, ceiling:
+        screen.blit(gr.image, gr.rect)
     player_spr.draw(screen)
     ingame_ui_gr.draw(screen)
     screen.blit(current_percent_text, current_percent_rect)
@@ -290,19 +293,17 @@ def savefile_view() -> None:
 
 def level_editor_func() -> None:
     global mode, level_gr
-    level_editor = editor.loop(screen, level_gr, bg_gr, background, background_2)
+    exit_code, level_group, total_movement_ = editor.loop(screen, level_gr, bg_gr, background, background_2)
 
-    if level_editor[0] == CONTINUE:
+    if exit_code == CONTINUE:
         pass
-    elif level_editor[0] == SAVE_LEVEL:
-        level_gr = level_editor[1]
+    elif exit_code == SAVE_LEVEL:
+        level_gr = level_group
         level_gr_unconverted["sprites"] = []
         for sprite in level_gr:
-            game_sprites.move_sprite(sprite, -level_editor[2], 0)
-            level_gr_unconverted["sprites"].append(convert.sprite_to_data(sprite))
-            game_sprites.move_sprite(sprite, level_editor[2], 0)
+            level_gr_unconverted["sprites"].append(convert.sprite_to_data(sprite, True))
         level.save_level_data(current_level_name, level_gr_unconverted)
-    elif level_editor[0] == EXIT:
+    elif exit_code == EXIT:
         mode = "level select"
 
 

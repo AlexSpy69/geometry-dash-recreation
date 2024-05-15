@@ -4,15 +4,25 @@ import pkg_resources
 import sys
 from geometry_dash_recreation import util
 
-MONITOR_NR = 1
+
+def adapt_res(width, height) -> tuple:
+    if width/height != 16/9:
+        height = int(width * 9/16)
+    return width, height
 
 try:
     width, height = map(int, sys.argv[1:3])
     FULLSCREEN = False
 except (ValueError, IndexError):
+    try:
+        MONITOR_NR = int(sys.argv[1])
+    except (ValueError, IndexError):
+        MONITOR_NR = 0
     width = screeninfo.get_monitors()[MONITOR_NR].width
     height = screeninfo.get_monitors()[MONITOR_NR].height
     FULLSCREEN = True
+
+width, height = adapt_res(width, height)
 
 
 # Home-Ordner
@@ -36,8 +46,8 @@ PLAYER_X = UNIT * 7             # Ursprüngliche Position des Spielers auf dem B
 PLAYER_Y = GROUND_HEIGHT
 VEL_ADD = 2                     # Stärke der Einwirkung der Gravitation
 JUMP_VEL = 27                   # Stärke des Sprungs des Spielers
-LEVEL_SCROLL_SPEED = DELTA_TIME*14*RESIZE**1.1  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
-BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE**1.1  # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
+LEVEL_SCROLL_SPEED = DELTA_TIME*13*RESIZE  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
+BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE  # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
 START_LEVEL = "levels/start"    # Das Level, mit dem das Spiel automatisch beginnt
 DEATH_ACCURACY = 20
 OUT_OF_BOUNDS = -6000
