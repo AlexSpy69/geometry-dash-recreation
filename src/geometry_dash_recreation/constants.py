@@ -20,9 +20,8 @@ except (ValueError, IndexError):
         MONITOR_NR = 0
     width = screeninfo.get_monitors()[MONITOR_NR].width
     height = screeninfo.get_monitors()[MONITOR_NR].height
+    width, height = adapt_res(width, height)
     FULLSCREEN = True
-
-width, height = adapt_res(width, height)
 
 
 # Home-Ordner
