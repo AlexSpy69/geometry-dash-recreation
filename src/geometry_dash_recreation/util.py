@@ -30,13 +30,6 @@ def csv_reader(filename: str, line_single: bool=True) -> tuple:
     return tuple(output_list)
 
 
-def limit(x: int, l: int, no_0: bool=False) -> int:
-    x %= l + 1
-    if no_0:
-        x = 1 if x == 0 else x
-    return x
-
-
 def iter_add(x, y) -> list:
     r = []
     for i in range(0, len(x)):

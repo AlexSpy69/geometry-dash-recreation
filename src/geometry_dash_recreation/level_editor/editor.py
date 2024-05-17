@@ -200,6 +200,13 @@ def option_handle(option, option_increase):
         selected_sprite.color = COMPONENT_COLOR_LIST[color_index]
 
 
+def limit(x: int, l: int, no_0: bool=False) -> int:
+    x %= l + 1
+    if no_0:
+        x = 1 if x == 0 else x
+    return x
+
+
 def option_button() -> bool:
     global option
     if option_up.rect.collidepoint(*pygame.mouse.get_pos()):
@@ -213,7 +220,7 @@ def option_button() -> bool:
     else:
         return False
     
-    option = util.limit(option, 3, True)
+    option = limit(option, 3, True)
 
     return True
 
@@ -253,7 +260,7 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, bg_gr: pygame.sp
                 return (SAVE_LEVEL, level_gr, total_movement)            
             elif objectinfo_surface_rect.collidepoint(*pygame.mouse.get_pos()):
                 option += 1
-                option = util.limit(option, 3, True)
+                option = limit(option, 3, True)
                 update_label()
                 break
 
@@ -324,7 +331,7 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, bg_gr: pygame.sp
                 option -= 1
             elif event.key == pygame.K_DOWN:
                 option += 1
-            option = util.limit(option, 3, True)
+            option = limit(option, 3, True)
 
             if event.key == pygame.K_o:
                 option_handle(option, 1)
