@@ -54,7 +54,8 @@ ATTEMPT_COUNT_POS = (SCREEN_WIDTH * 0.35, SCREEN_HEIGHT * 0.4)
 
 # Mögliche Level-Komponenten-Eigenschaften
 COMPONENT_IMGFILE_LIST = sorted(util.list_files(ASSETS_FOLDER + "/textures/components", ".png"))
-COMPONENT_TYPE_LIST = ("", "platform", "hazard", "ring", "pad", "formportal", "gravityportal", "deco")
+#COMPONENT_TYPE_LIST = ("", "platform", "hazard", "ring", "pad", "formportal", "gravityportal", "deco")
+COMPONENT_TYPE_LIST = ("", "platform", "hazard", "ring", "pad", "formportal", "deco")
 COMPONENT_COLOR_LIST = ("", "magenta", "yellow", "red", "cyan", "green")
 
 # vel wird bei der Berührung von bestimmten Rings bzw. Pads um folgende Werte multipliziert.

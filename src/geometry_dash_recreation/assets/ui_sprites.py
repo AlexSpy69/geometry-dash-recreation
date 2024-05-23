@@ -14,9 +14,6 @@ class PauseButton(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
         self.rect = self.image.get_rect()
         self.rect.right, self.rect.top = SCREEN_WIDTH, 0
-    
-    def update(self, *args: Any, **kwargs: Any) -> None:
-        return super().update(*args, **kwargs)
 
 
 class Arrow(pygame.sprite.Sprite):
@@ -26,9 +23,6 @@ class Arrow(pygame.sprite.Sprite):
         self.image = pygame.transform.flip(self.image, True, False) if right else self.image
         self.image = pygame.transform.scale(self.image, (UNIT*1.5, UNIT*1.5))
         self.rect = self.image.get_rect()
-    
-    def update(self, *args: Any, **kwargs: Any) -> None:
-        return super().update(*args, **kwargs)
 
 
 class UserIcon(pygame.sprite.Sprite):
@@ -37,9 +31,6 @@ class UserIcon(pygame.sprite.Sprite):
         self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/user_icon.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
         self.rect = self.image.get_rect()
-    
-    def update(self, *args: Any, **kwargs: Any) -> None:
-        return super().update(*args, **kwargs)
 
 
 class BuildIcon(pygame.sprite.Sprite):
@@ -48,9 +39,6 @@ class BuildIcon(pygame.sprite.Sprite):
         self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/build_icon.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
         self.rect = self.image.get_rect()
-    
-    def update(self, *args: Any, **kwargs: Any) -> None:
-        return super().update(*args, **kwargs)
 
 
 class ExitButton(pygame.sprite.Sprite):
@@ -59,10 +47,6 @@ class ExitButton(pygame.sprite.Sprite):
         self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/exit_button.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (UNIT*1.5, UNIT*1.5))
         self.rect = self.image.get_rect()
-
-    def update(self, *args: Any, **kwargs: Any) -> None:
-        return super().update(*args, **kwargs)
-
 
 class EditorIconsSheet(spritesheets.spritesheet):
     def __init__(self):
@@ -79,9 +63,6 @@ class EditorIcon(pygame.sprite.Sprite):
         self.image = EditorIconsSheet().image_at(pos)
         self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
         self.rect = self.image.get_rect()
-    
-    def update(self, *args: Any, **kwargs: Any) -> None:
-        return super().update(*args, **kwargs)
 
 
 class EditorBarLabel(pygame.sprite.Sprite):
@@ -90,6 +71,3 @@ class EditorBarLabel(pygame.sprite.Sprite):
         self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/editor_bar_label.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT-GROUND_HEIGHT))
         self.rect = self.image.get_rect()
-    
-    def update(self, *args: Any, **kwargs: Any) -> None:
-        return super().update(*args, **kwargs)
