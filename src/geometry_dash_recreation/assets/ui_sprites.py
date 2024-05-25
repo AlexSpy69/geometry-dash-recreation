@@ -48,6 +48,31 @@ class ExitButton(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (UNIT*1.5, UNIT*1.5))
         self.rect = self.image.get_rect()
 
+
+class PlusIcon(pygame.sprite.Sprite):
+    def __init__(self, *groups: AbstractGroup) -> None:
+        super().__init__(*groups)
+        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/plus_icon.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
+        self.rect = self.image.get_rect()
+
+
+class TrashIcon(pygame.sprite.Sprite):
+    def __init__(self, *groups: AbstractGroup) -> None:
+        super().__init__(*groups)
+        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/trash_icon.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
+        self.rect = self.image.get_rect()
+
+
+class EditIcon(pygame.sprite.Sprite):
+    def __init__(self, *groups: AbstractGroup) -> None:
+        super().__init__(*groups)
+        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/edit_icon.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
+        self.rect = self.image.get_rect()
+
+
 class EditorIconsSheet(spritesheets.spritesheet):
     def __init__(self):
         super().__init__(f"{ASSETS_FOLDER}/textures/ui/editor_icons.png")

@@ -1,6 +1,8 @@
 import pygame
 from geometry_dash_recreation.constants import *
 from geometry_dash_recreation.assets import ui_sprites, game_sprites, fonts
+from geometry_dash_recreation.level_editor import level_properties
+from geometry_dash_recreation.save_file import save_file
 from geometry_dash_recreation import util
 
 pygame.init()
@@ -12,6 +14,9 @@ exit_button.rect.x, exit_button.rect.y = SCREEN_WIDTH * 0.91, SCREEN_HEIGHT * 0.
 
 save_button = ui_sprites.EditorIcon([5, 0, 1, 1])
 save_button.rect.x, save_button.rect.y = SCREEN_WIDTH * 0.8, SCREEN_HEIGHT * 0.04
+
+edit_icon = ui_sprites.EditIcon()
+edit_icon.rect.x, edit_icon.rect.y = SCREEN_WIDTH * 0.74, SCREEN_HEIGHT * 0.04
 
 up_button = ui_sprites.EditorIcon([6, 1, 0.45, 0.55])
 up_button.rect.left, up_button.rect.top = UNIT*3.5, GROUND_HEIGHT
@@ -52,7 +57,7 @@ level_move_right.rect.x, level_move_right.rect.y = SCREEN_WIDTH * 0.90, SCREEN_H
 editor_bar_label = ui_sprites.EditorBarLabel()
 editor_bar_label.rect.left, editor_bar_label.rect.top = 0, GROUND_HEIGHT
 
-ui_other_gr = pygame.sprite.Group(exit_button, save_button,
+ui_other_gr = pygame.sprite.Group(exit_button, save_button, edit_icon,
                                   up_button, down_button, left_button, right_button,
                                   rotate_right_button, delete_button, 
                                   option_up, option_down, option_left,
@@ -108,7 +113,7 @@ def add_component(level_gr: pygame.sprite.Group, component: game_sprites.Compone
     return component
 
 
-def move_rotate_event(sprite: game_sprites.HitboxSprite, event):
+def move_rotate_event(sprite: game_sprites.HitboxSprite, event: pygame.event.Event):
     global selected_sprite
     rotate = False
 
@@ -174,7 +179,7 @@ def update_label():
     movementmode_text = fonts.aller_small.render(f'Selected: {movement_mode}', True, (255, 255, 255))
 
 
-def option_handle(option, option_increase):
+def option_handle(option: int, option_increase: int):
     global selected_sprite, img_index, type_index, color_index
     if option == 1 and type(selected_sprite) != game_sprites.HitboxSprite:
         img_index += option_increase
@@ -236,7 +241,7 @@ def move_level_button() -> bool:
     return True
 
 
-def draw_grid(screen):
+def draw_grid(screen: pygame.Surface):
     global total_movement
     for x in range(0, int(SCREEN_WIDTH / UNIT)):
         pygame.draw.line(screen, (0, 0, 0), snap_position(x * UNIT, -UNIT), (snap_position(x * UNIT, 0)[0], SCREEN_HEIGHT))
@@ -244,8 +249,39 @@ def draw_grid(screen):
         pygame.draw.line(screen, (0, 0, 0), (0, y * UNIT), (SCREEN_WIDTH, y * UNIT))
 
 
-def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, bg_gr: pygame.sprite.Group, 
-         background: game_sprites.Background, background_2: game_sprites.Background) -> tuple:
+def lp_loop(screen: pygame.Surface, level_folder: str, level_gr_unconverted: dict,
+            bg_gr: pygame.sprite.Group, level_gr: pygame.sprite.Group) -> bool | dict:
+    while True:
+        bg_gr.draw(screen)
+        level_gr.draw(screen)
+
+        draw_grid(screen)
+        ui_other_gr.draw(screen)
+
+        screen.blit(imgfile_text, imgfile_rect)
+        screen.blit(objecttype_text, objecttype_rect)
+        screen.blit(objectcolor_text, objectcolor_rect)
+        screen.blit(movementmode_text, movementmode_rect)
+
+        lp = level_properties.loop(screen, level_folder, "edit", True,
+                                   (level_gr_unconverted["info"]["name"],
+                                    save_file.open_sf(SAVE_FILE_PATH).playerdata["name"],
+                                    level_gr_unconverted["info"]["stars"],
+                                    level_gr_unconverted["data"]["gamemode"]),
+                                    level_gr_unconverted)
+        pygame.display.update()
+
+        if lp == CONTINUE:
+            pass
+        elif lp == EXIT:
+            return False
+        else:
+            return lp
+
+
+def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconverted: dict,
+         bg_gr: pygame.sprite.Group, background: game_sprites.Background, background_2: game_sprites.Background,
+         level_folder: str) -> tuple:
     global bg_2_front, movement, total_movement, movement_mode, selected_sprite, option, type_index, color_index, img_index
     global objecttype_text, objectcolor_text, movementmode_text, imgfile_text
     global objectcolor_text, objectcolor_rect, movementmode_rect, imgfile_rect, objectinfo_surface_rect
@@ -255,9 +291,17 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, bg_gr: pygame.sp
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if exit_button.rect.collidepoint(*pygame.mouse.get_pos()):
                 total_movement = 0
+                level_properties.name, level_properties.creator, level_properties.stars, level_properties.gamemode = \
+                    None, None, None, None
                 return (EXIT, None, None)
             elif save_button.rect.collidepoint(*pygame.mouse.get_pos()):
-                return (SAVE_LEVEL, level_gr, total_movement)            
+                return (SAVE_LEVEL, level_gr, total_movement)
+            elif edit_icon.rect.collidepoint(*pygame.mouse.get_pos()):
+                lp_r = lp_loop(screen, level_folder, level_gr_unconverted, bg_gr, level_gr)
+                if lp_r:
+                    return (SAVE_LEVEL_PROPERTIES, level_gr_unconverted, 0)
+                else:
+                    break
             elif objectinfo_surface_rect.collidepoint(*pygame.mouse.get_pos()):
                 option += 1
                 option = limit(option, 3, True)
@@ -378,7 +422,6 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, bg_gr: pygame.sp
     draw_grid(screen)
     ui_other_gr.draw(screen)
 
-    # screen.blit(objectinfo_surface, objectinfo_surface_rect)
     screen.blit(imgfile_text, imgfile_rect)
     screen.blit(objecttype_text, objecttype_rect)
     screen.blit(objectcolor_text, objectcolor_rect)

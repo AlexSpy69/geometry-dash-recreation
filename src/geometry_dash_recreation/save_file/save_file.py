@@ -34,7 +34,6 @@ class SaveFile(object):
 def save_sf(obj: SaveFile, fn) -> None:
     with open(fn, 'wb') as outp:
         pickle.dump(obj, outp, pickle.HIGHEST_PROTOCOL)
-        outp.close()
 
 
 def open_sf(fn) -> SaveFile:
@@ -49,4 +48,3 @@ def open_sf(fn) -> SaveFile:
 def truncate_sf(fn) -> None:
     with open(fn, 'wb') as outp:
         pickle.dump(SaveFile(), outp, pickle.HIGHEST_PROTOCOL)
-        outp.close()

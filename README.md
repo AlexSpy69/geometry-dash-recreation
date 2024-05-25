@@ -1,12 +1,12 @@
 # geometry-dash-recreation
 
-Recreation of Geometry Dash.
+Recreation of Geometry Dash by RobTop Games.
 
 ## Installation
 
 To install this package, you have to run `pip install .` in its root directory.
 
-To run it, you can run `python3 -m geometry_dash_recreation` from any directory.
+To run it, you can run `python3 -m geometry_dash_recreation` (from any directory).
 
 ## Resources
 
@@ -28,6 +28,12 @@ Build icon: https://www.pngkey.com/detail/u2w7w7u2a9e6q8y3_build-icon/
 Level editor icons: https://fertile-soil-productions.itch.io/level-editor-icons-pixel-art
 
 Exit button: https://1pageicon.blogspot.com/2014/07/exit-icon-buttons-for-project.html
+
+Plus icon: https://www.iconfinder.com/icons/61658/add_green_plus_icon
+
+Trash icon: https://www.iconarchive.com/show/vista-general-icons-by-iconshock/trash-icon.html
+
+Edit icon: https://www.pngegg.com/en/png-wjihl
 
 ## Used code
 

@@ -19,22 +19,22 @@ except FileExistsError:
 
 # Textanzeigen
 levelname_text = fonts.pusab_big.render('', True, (255, 255, 255))
-levelname_rect = levelname_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2.7))
+levelname_rect = levelname_text.get_rect()
 
 difficulty_text = fonts.aller_normal.render('', True, (255, 255, 255))
-difficulty_rect = difficulty_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+difficulty_rect = difficulty_text.get_rect()
 
 creator_text = fonts.aller_normal.render('', True, (255, 255, 255))
-creator_rect = creator_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.8))
+creator_rect = creator_text.get_rect()
 
 comp_text = fonts.aller_normal.render('', True, (255, 255, 255))
-comp_rect = comp_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.6))
+comp_rect = comp_text.get_rect()
 
 folder_text = fonts.aller_small.render('', True, (255, 255, 255))
-folder_rect = folder_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.2))
+folder_rect = folder_text.get_rect()
 
 error_text = fonts.aller_small.render('', True, (255, 0, 0))
-error_rect = error_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.1))
+error_rect = error_text.get_rect()
 
 # Sprites
 arrow_left = ui_sprites.Arrow(right=False)
@@ -47,12 +47,18 @@ user_icon = ui_sprites.UserIcon()
 user_icon.rect.x, user_icon.rect.y = SCREEN_WIDTH * 0.02, SCREEN_HEIGHT * 0.015
 
 build_icon = ui_sprites.BuildIcon()
-build_icon.rect.x, build_icon.rect.y = SCREEN_WIDTH * 0.05 + UNIT, SCREEN_WIDTH * 0.01
+build_icon.rect.x, build_icon.rect.y = SCREEN_WIDTH * 0.68, SCREEN_HEIGHT * 0.04
+
+plus_icon = ui_sprites.PlusIcon()
+plus_icon.rect.x, plus_icon.rect.y = SCREEN_WIDTH * 0.74, SCREEN_HEIGHT * 0.04
+
+trash_icon = ui_sprites.TrashIcon()
+trash_icon.rect.x, trash_icon.rect.y = SCREEN_WIDTH * 0.8, SCREEN_HEIGHT * 0.04
 
 exit_button = ui_sprites.ExitButton()
 exit_button.rect.x, exit_button.rect.y = SCREEN_WIDTH * 0.91, SCREEN_HEIGHT * 0.03
 
-ui_other_gr = pygame.sprite.Group(user_icon, build_icon, exit_button)
+ui_other_gr = pygame.sprite.Group(user_icon, build_icon, exit_button, plus_icon, trash_icon)
 
 # Level-Variablen
 level_folder = LEVELS_FOLDER
@@ -110,6 +116,12 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
                 return (VIEW_SAVE_FILE, 0)
             elif build_icon.rect.collidepoint(*pygame.mouse.get_pos()):
                 return (OPEN_LEVEL_EDITOR, selected_level())
+            elif plus_icon.rect.collidepoint(*pygame.mouse.get_pos()):
+                return (NEW_LEVEL, level_folder)
+            elif trash_icon.rect.collidepoint(*pygame.mouse.get_pos()):
+                os.remove(level_folder + "/" + level_list[level_nr])
+                level_nr -= 1
+                level_list = os.listdir(level_folder)
             elif arrow_left.rect.collidepoint(*pygame.mouse.get_pos()):
                 prev_level()
             elif arrow_right.rect.collidepoint(*pygame.mouse.get_pos()):
@@ -133,7 +145,7 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
                 if not level_folder_edit:
                     sys.exit(0)
 
-            if level_folder_edit and event.key != pygame.K_BACKSPACE and event.key != pygame.K_RETURN:
+            if level_folder_edit and event.key not in (pygame.K_BACKSPACE, pygame.K_RETURN):
                 level_folder += event.unicode
 
     screen.fill((50, 0, 25))

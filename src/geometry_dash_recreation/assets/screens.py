@@ -14,3 +14,9 @@ def returnWinScreen() -> pygame.Surface:
         pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/win_screen.png").convert_alpha(),
         (SCREEN_WIDTH, SCREEN_HEIGHT)
     )
+
+def returnSemiTransparentScreen() -> pygame.Surface:
+    return pygame.transform.scale(
+        pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/semi_transparent.png").convert_alpha(),
+        (SCREEN_WIDTH, SCREEN_HEIGHT)
+    )

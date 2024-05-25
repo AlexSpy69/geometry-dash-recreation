@@ -14,7 +14,7 @@ pygame.display.set_caption("Geometry Dash Recreation")
 from geometry_dash_recreation.assets import game_sprites, ui_sprites, fonts, screens, error_screen
 from geometry_dash_recreation.level import level, level_select, convert
 from geometry_dash_recreation.save_file import save_file, view_save_file
-from geometry_dash_recreation.level_editor import editor
+from geometry_dash_recreation.level_editor import editor, level_properties
 
 # Sprites
 background = game_sprites.Background()  # Der Hintergrund, der sich nach links bewegt.
@@ -280,6 +280,8 @@ def lvl_select() -> None:
         mode = "level editor"
     elif level_screen[0] == PLAY_LEVEL:
         mode = "init level"
+    elif level_screen[0] == NEW_LEVEL:
+        mode = "new level"
 
 
 def savefile_view() -> None:
@@ -293,7 +295,9 @@ def savefile_view() -> None:
 
 def level_editor_func() -> None:
     global mode, level_gr
-    exit_code, level_group, total_movement_ = editor.loop(screen, level_gr, bg_gr, background, background_2)
+    exit_code, level_group, total_movement_ = editor.loop(screen, level_gr, level_gr_unconverted,
+                                                          bg_gr, background, background_2,
+                                                          level_select.level_folder)
 
     if exit_code == CONTINUE:
         pass
@@ -303,7 +307,21 @@ def level_editor_func() -> None:
         for sprite in level_gr:
             level_gr_unconverted["sprites"].append(convert.sprite_to_data(sprite, True))
         level.save_level_data(current_level_name, level_gr_unconverted)
+    elif exit_code == SAVE_LEVEL_PROPERTIES:
+        level_gr_unconverted["info"], level_gr_unconverted["data"] = \
+            level_group["info"], level_group["data"]
+        level.save_level_data(current_level_name, level_gr_unconverted)
     elif exit_code == EXIT:
+        mode = "level select"
+
+
+def new_level_func() -> None:
+    global mode
+    lp = level_properties.loop(screen, level_select.level_folder, "create")
+
+    if lp == CONTINUE:
+        pass
+    elif lp == EXIT:
         mode = "level select"
 
 
@@ -320,6 +338,8 @@ def main_loop() -> int:
             savefile_view()
         case "level editor":
             level_editor_func()
+        case "new level":
+            new_level_func()
         case "exit":
             return EXIT
         case "init level":
