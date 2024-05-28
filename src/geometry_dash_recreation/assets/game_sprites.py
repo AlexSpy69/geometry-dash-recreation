@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 import pygame
 from pygame.sprite import AbstractGroup
 from geometry_dash_recreation.constants import *
@@ -57,8 +59,8 @@ class HitboxSprite(pygame.sprite.Sprite):
 
 
 # Spieler-Sprites
-class Gamemode(HitboxSprite):
-    def __init__(self, filename, *groups: AbstractGroup) -> None:
+class Gamemode(ABC, HitboxSprite):
+    def __init__(self, filename: str, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         self.original_image = pygame.image.load(f"{ASSETS_FOLDER}/textures/icons/{filename}").convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, (UNIT, UNIT))
@@ -76,7 +78,7 @@ class Gamemode(HitboxSprite):
         self.vel = 0
         self.hitbox.right, self.hitbox.bottom = 0, PLAYER_Y
 
-    def jump(self, mul) -> None:
+    def jump(self, mul: int) -> None:
         self.vel = -JUMP_VEL * mul
 
     def death_touch(self, gravity: int, sprite: pygame.sprite.Sprite) -> bool:
@@ -85,12 +87,12 @@ class Gamemode(HitboxSprite):
         elif gravity == -1:
             return self.hitbox.bottom + DEATH_ACCURACY <= sprite.hitbox.top
     
-    def controls(self, ev, click, gravity, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
+    @abstractmethod
+    def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
                  level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:
-        return NORMAL
+        pass
 
     def update(self) -> None:
-        # self.angle %= 360
         self.image = pygame.transform.rotate(self.original_image, self.angle)
         self.rect = self.image.get_rect(center=self.hitbox.center)
 
@@ -99,7 +101,7 @@ class Cube(Gamemode):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__("cubes/icon_1.png", *groups)
 
-    def controls(self, ev, click, gravity, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
+    def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
                  level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:
         # Springen
         if ev:
@@ -177,7 +179,7 @@ class Ship(Gamemode):
         self.rect.x = x
         self.vel = -self.vel
 
-    def controls(self, ev, click, gravity, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
+    def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
                  level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:    
         if click:
             for sprite in level_gr:
@@ -245,14 +247,14 @@ class Ball(Gamemode):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__("balls/ball_1.png", *groups)
     
-    def jump(self, mul) -> None:
+    def jump(self, mul: int) -> None:
         self.vel = -JUMP_VEL * mul * 0.7
     
-    def change_gravity(self, gravity):
+    def change_gravity(self, gravity: int) -> int:
         self.vel = VEL_ADD * -gravity * 5
         return CHANGE_GRAVITY
 
-    def controls(self, ev, click, gravity, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
+    def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
                  level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:    
         if click:
             for sprite in level_gr:

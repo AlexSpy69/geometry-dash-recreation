@@ -6,71 +6,55 @@ from geometry_dash_recreation.assets import spritesheets
 pygame.init()
 
 
-# Sprite für den Pause-Knopf
-class PauseButton(pygame.sprite.Sprite):
-    def __init__(self, *groups: AbstractGroup) -> None:
+class UIElement(pygame.sprite.Sprite):
+    def __init__(self, filename: str, size: tuple, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/pause_button.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
+        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/{filename}").convert_alpha()
+        self.image = pygame.transform.scale(self.image, size)
         self.rect = self.image.get_rect()
+
+
+class PauseButton(UIElement):
+    def __init__(self, *groups: AbstractGroup) -> None:
+        super().__init__("pause_button.png", (UNIT, UNIT), *groups)
         self.rect.right, self.rect.top = SCREEN_WIDTH, 0
 
 
-class Arrow(pygame.sprite.Sprite):
+class Arrow(UIElement):
     def __init__(self, right: bool, *groups: AbstractGroup) -> None:
-        super().__init__(*groups)
-        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/arrow_left.png").convert_alpha()
+        super().__init__("arrow_left.png", (UNIT*1.5, UNIT*1.5), *groups)
         self.image = pygame.transform.flip(self.image, True, False) if right else self.image
-        self.image = pygame.transform.scale(self.image, (UNIT*1.5, UNIT*1.5))
         self.rect = self.image.get_rect()
 
 
-class UserIcon(pygame.sprite.Sprite):
+class UserIcon(UIElement):
     def __init__(self, *groups: AbstractGroup) -> None:
-        super().__init__(*groups)
-        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/user_icon.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
-        self.rect = self.image.get_rect()
+        super().__init__("user_icon.png", (UNIT, UNIT), *groups)
 
 
-class BuildIcon(pygame.sprite.Sprite):
+class BuildIcon(UIElement):
     def __init__(self, *groups: AbstractGroup) -> None:
-        super().__init__(*groups)
-        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/build_icon.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
-        self.rect = self.image.get_rect()
+        super().__init__("build_icon.png", (UNIT, UNIT), *groups)
 
 
-class ExitButton(pygame.sprite.Sprite):
+class ExitButton(UIElement):
     def __init__(self, *groups: AbstractGroup) -> None:
-        super().__init__(*groups)
-        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/exit_button.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (UNIT*1.5, UNIT*1.5))
-        self.rect = self.image.get_rect()
+        super().__init__("exit_button.png", (UNIT*1.5, UNIT*1.5), *groups)
 
 
-class PlusIcon(pygame.sprite.Sprite):
+class PlusIcon(UIElement):
     def __init__(self, *groups: AbstractGroup) -> None:
-        super().__init__(*groups)
-        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/plus_icon.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
-        self.rect = self.image.get_rect()
+        super().__init__("plus_icon.png", (UNIT, UNIT), *groups)
 
 
-class TrashIcon(pygame.sprite.Sprite):
+class TrashIcon(UIElement):
     def __init__(self, *groups: AbstractGroup) -> None:
-        super().__init__(*groups)
-        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/trash_icon.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
-        self.rect = self.image.get_rect()
+        super().__init__("trash_icon.png", (UNIT, UNIT), *groups)
 
 
-class EditIcon(pygame.sprite.Sprite):
+class EditIcon(UIElement):
     def __init__(self, *groups: AbstractGroup) -> None:
-        super().__init__(*groups)
-        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/edit_icon.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
-        self.rect = self.image.get_rect()
+        super().__init__("edit_icon.png", (UNIT, UNIT), *groups)
 
 
 class EditorIconsSheet(spritesheets.spritesheet):
@@ -90,9 +74,6 @@ class EditorIcon(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
 
-class EditorBarLabel(pygame.sprite.Sprite):
+class EditorBarLabel(UIElement):
     def __init__(self, *groups: AbstractGroup) -> None:
-        super().__init__(*groups)
-        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/editor_bar_label.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT-GROUND_HEIGHT))
-        self.rect = self.image.get_rect()
+        super().__init__("editor_bar_label.png", (SCREEN_WIDTH, SCREEN_HEIGHT-GROUND_HEIGHT), *groups)
