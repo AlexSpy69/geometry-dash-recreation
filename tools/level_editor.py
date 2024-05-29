@@ -1,4 +1,4 @@
-from geometry_dash_recreation.level import level, convert
+from geometry_dash_recreation.level import convert, level_files
 from geometry_dash_recreation.constants import LEVELS_FOLDER, ASSETS_FOLDER
 import pygame
 import sys
@@ -19,9 +19,9 @@ def execute(command) -> None:
         return
     inp = command.split()
     if inp[0] == "open":
-        current_level = level.open_level_data(inp[1].replace("levels/", LEVELS_FOLDER + "/"))
+        current_level = level_files.open_level_data(inp[1].replace("levels/", LEVELS_FOLDER + "/"))
     elif inp[0] == "save":
-        level.save_level_data(inp[1].replace("levels/", LEVELS_FOLDER + "/"), current_level)
+        level_files.save_level_data(inp[1].replace("levels/", LEVELS_FOLDER + "/"), current_level)
     elif inp[0] == "add":
         if inp[1] == "comp":
             current_level["sprites"].append(convert.CompSprite(imgfile=f"{ASSETS_FOLDER}/textures/components/{inp[2]}",

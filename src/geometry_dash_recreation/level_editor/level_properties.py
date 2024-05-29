@@ -1,7 +1,7 @@
 import pygame
 from geometry_dash_recreation.constants import *
 from geometry_dash_recreation.assets import fonts, ui_sprites, screens
-from geometry_dash_recreation.level import convert, level
+from geometry_dash_recreation.level import convert, level_files
 from geometry_dash_recreation.save_file import save_file
 
 pygame.init()
@@ -76,7 +76,7 @@ def loop(screen: pygame.Surface, level_folder: str, mode: str, transparent: bool
                     r = convert.Level()
                     r["info"]["name"], r["info"]["creator"], r["info"]["stars"], r["data"]["gamemode"] = \
                         name, creator, stars, gamemode
-                    level.save_level_data(level_folder + "/" + name, r)
+                    level_files.save_level_data(level_folder + "/" + name, r)
                     return EXIT
                 elif mode == "edit":
                     level_gr_unconverted["info"]["name"], level_gr_unconverted["info"]["creator"], \

@@ -13,7 +13,7 @@ class Level(dict):
                         "creator": "",
                         "stars": "0"}
         self["data"] = {"gamemode": "cube",
-                        "song": ""}
+                        "song": ""}    # noch unbenutzt!
         self["sprites"] = []
 
 
@@ -34,13 +34,13 @@ class CompSprite(dict):
         self["color"] = color
 
 
-def round_position(pos: list, spritetype: str):
+def round_position(pos: list, spritetype: str) -> list:
     if spritetype == "pad":
         return [round(pos[0], 1), round(pos[1], 1)]
     return [round(pos[0]), round(pos[1])]
 
 
-def round_size(size: list, spritetype: str):
+def round_size(size: list, spritetype: str) -> list:
     if spritetype in ("gravityportal", "formportal", "pad"):
         return [round(size[0], 1), round(size[1], 1)]
     return [round(size[0]), round(size[1])]
@@ -64,3 +64,10 @@ def sprite_to_data(sprite: game_sprites.Component, initial_rect: bool = False) -
                                                                         [sprite.initial_rect.x/UNIT, sprite.initial_rect.y/UNIT], sprite.type),
                       size=round_size([sprite.rect.width/UNIT, sprite.rect.height/UNIT], sprite.type), angle=sprite.angle,
                       hb_mul=sprite.hitbox.width / sprite.rect.width, type_=sprite.type, color=sprite.color)
+
+
+def group_to_data(level_gr: pygame.sprite.Group, initial_rect: bool = False) -> list:
+    dgr = []
+    for sprite in level_gr:
+        dgr.append(sprite_to_data(sprite, initial_rect))
+    return dgr

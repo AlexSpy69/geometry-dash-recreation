@@ -61,9 +61,9 @@ class EditorIconsSheet(spritesheets.spritesheet):
     def __init__(self):
         super().__init__(f"{ASSETS_FOLDER}/textures/ui/editor_icons.png")
 
-    def image_at(self, rectangle, colorkey=None):
+    def image_at(self, rectangle: tuple) -> pygame.Surface:
         rectangle = [x * 32 for x in rectangle]
-        return super().image_at(rectangle, colorkey)
+        return super().image_at(rectangle)
 
 
 class EditorIcon(pygame.sprite.Sprite):

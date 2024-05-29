@@ -12,7 +12,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREE
 pygame.display.set_caption("Geometry Dash Recreation")
 
 from geometry_dash_recreation.assets import game_sprites, ui_sprites, fonts, screens, error_screen
-from geometry_dash_recreation.level import level, level_select, convert
+from geometry_dash_recreation.level import level_files, level_select, convert
 from geometry_dash_recreation.save_file import save_file, view_save_file
 from geometry_dash_recreation.level_editor import editor, level_properties
 
@@ -226,7 +226,7 @@ def init_level() -> str:
             gravity, current_level_name, x_to_level, level_end, current_attempt_rect, current_attempt
         
         # Leveldaten
-        level_gr_unconverted = level.open_level_data(current_level_name)
+        level_gr_unconverted = level_files.open_level_data(current_level_name)
         level_gr = convert.data_to_group(level_gr_unconverted)
 
         # Sprites
@@ -303,14 +303,12 @@ def level_editor_func() -> None:
         pass
     elif exit_code == SAVE_LEVEL:
         level_gr = level_group
-        level_gr_unconverted["sprites"] = []
-        for sprite in level_gr:
-            level_gr_unconverted["sprites"].append(convert.sprite_to_data(sprite, True))
-        level.save_level_data(current_level_name, level_gr_unconverted)
+        level_gr_unconverted["sprites"] = convert.group_to_data(level_gr, True)
+        level_files.save_level_data(current_level_name, level_gr_unconverted)
     elif exit_code == SAVE_LEVEL_PROPERTIES:
         level_gr_unconverted["info"], level_gr_unconverted["data"] = \
             level_group["info"], level_group["data"]
-        level.save_level_data(current_level_name, level_gr_unconverted)
+        level_files.save_level_data(current_level_name, level_gr_unconverted)
     elif exit_code == EXIT:
         mode = "level select"
 

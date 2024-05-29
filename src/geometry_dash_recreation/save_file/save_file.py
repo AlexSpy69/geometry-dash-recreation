@@ -1,5 +1,5 @@
 import pickle
-from geometry_dash_recreation.level import level
+from geometry_dash_recreation.level import level_files
 
 
 class SaveFile(object):
@@ -25,7 +25,7 @@ class SaveFile(object):
             self.playerstats[cat] = 0
         for lvl in self.lvldict.keys():
             try:
-                lvlinfo = level.open_level_data(lvl)["info"]
+                lvlinfo = level_files.open_level_data(lvl)["info"]
                 self.playerstats["stars"] += int(lvlinfo["stars"])
             except FileNotFoundError:
                 pass

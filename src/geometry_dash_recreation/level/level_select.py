@@ -4,7 +4,7 @@ import sys
 import pygame
 from geometry_dash_recreation.constants import *
 from geometry_dash_recreation.assets import fonts, ui_sprites, error_screen
-from geometry_dash_recreation.level import level, convert
+from geometry_dash_recreation.level import convert, level_files
 from geometry_dash_recreation.save_file import save_file
 
 pygame.init()
@@ -154,7 +154,7 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
         if not level_folder_edit:
             level_list = os.listdir(level_folder)
             if len(level_list) != 0:
-                level_info = level.open_level_data(level_folder + "/" + level_list[level_nr])["info"]
+                level_info = level_files.open_level_data(level_folder + "/" + level_list[level_nr])["info"]
             else:
                 level_info = convert.Level()["info"]
         else:
