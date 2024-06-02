@@ -78,20 +78,23 @@ EDITOR_LEVEL_MOVEMENT = LEVEL_SCROLL_SPEED * 2
 EDITOR_BACKGROUND_MOVEMENT = BACKGROUND_SCROLL_SPEED * 2
 
 # Exit Codes für Funktionen im Spiel
-CONTINUE = 0
-EXIT = 1
-PLAY_LEVEL = 2
-VIEW_SAVE_FILE = 3
-OPEN_LEVEL_EDITOR = 4
-SAVE_LEVEL = 5
-SAVE_LEVEL_PROPERTIES = 6
-NEW_LEVEL = 7
 
-NORMAL = 10
-DEATH = 11
-WIN = 12
-CHANGE_GRAVITY = 13
+# level.level_select.loop()
+CONTINUE = 0                # Der Loop fährt normal fort.
+EXIT = 1                    # Das Spiel soll beendet werden.
+PLAY_LEVEL = 2              # Das gerade ausgewählte Level soll gespielt werden.
+VIEW_SAVE_FILE = 3          # Der Save-File-Viewer soll geöffnet werden.
+OPEN_LEVEL_EDITOR = 4       # Der Level-Editor soll geöffnet werden.
+SAVE_LEVEL = 5              # Das Level soll gespeichert werden.
+SAVE_LEVEL_PROPERTIES = 6   # Die Level-Eigenschaften sollen gespeichert werden.
+NEW_LEVEL = 7               # Es soll ein neues Level erzeugt werden.
 
-CUBE_GAMEMODE = 20
-SHIP_GAMEMODE = 21
-BALL_GAMEMODE = 22
+# game_sprites.Gamemode().controls()
+NORMAL = 10                 # Das Spiel fährt normal fort.
+DEATH = 11                  # Der Spieler soll getötet werden.
+WIN = 12                    # Der Spieler hat das Ende des Levels erreicht.
+CHANGE_GRAVITY = 13         # Die Grawitationsrichtung soll gewechselt werden.
+
+CUBE_GAMEMODE = 20          # Das Spiel soll zum Cube-Gamemode wechseln.
+SHIP_GAMEMODE = 21          # Das Spiel soll zum Ship-Gamemode wechseln.
+BALL_GAMEMODE = 22          # Das Spiel soll zum Ball-Gamemode wechseln.
