@@ -47,13 +47,12 @@ VEL_ADD = 2                     # Stärke der Einwirkung der Gravitation
 JUMP_VEL = 27                   # Stärke des Sprungs des Spielers
 LEVEL_SCROLL_SPEED = DELTA_TIME*13*RESIZE  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
 BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE  # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
-START_LEVEL = "levels/start"    # Das Level, mit dem das Spiel automatisch beginnt
-DEATH_ACCURACY = 20
+DEATH_ACCURACY = UNIT
 OUT_OF_BOUNDS = -6000
 ATTEMPT_COUNT_POS = (SCREEN_WIDTH * 0.35, SCREEN_HEIGHT * 0.4)
 
 # Mögliche Level-Komponenten-Eigenschaften
-COMPONENT_IMGFILE_LIST = sorted(util.list_files(ASSETS_FOLDER + "/textures/components", ".png"))
+COMPONENT_IMGFILE_LIST = tuple(sorted(util.list_files(ASSETS_FOLDER + "/textures/components", ".png")))
 #COMPONENT_TYPE_LIST = ("", "platform", "hazard", "ring", "pad", "formportal", "gravityportal", "deco")
 COMPONENT_TYPE_LIST = ("", "platform", "hazard", "ring", "pad", "formportal", "deco")
 COMPONENT_COLOR_LIST = ("", "magenta", "yellow", "red", "cyan", "green")
@@ -75,9 +74,8 @@ DIFFICULTY = ("", "Auto", "Easy", "Normal", "Hard", "Hard",
 SAVE_FILE_PATH = HOME_FOLDER + "/Documents/gdr_savefile"
 
 # Level-Editor
-EDITOR_MOVE_MUL = 2
-EDITOR_VIEW_MOVEMENT = 1
-EDITOR_SPRITE_MOVEMENT = LEVEL_SCROLL_SPEED * EDITOR_MOVE_MUL * EDITOR_VIEW_MOVEMENT
+EDITOR_LEVEL_MOVEMENT = LEVEL_SCROLL_SPEED * 2
+EDITOR_BACKGROUND_MOVEMENT = BACKGROUND_SCROLL_SPEED * 2
 
 # Exit Codes für Funktionen im Spiel
 CONTINUE = 0

@@ -295,9 +295,9 @@ def savefile_view() -> None:
 
 def level_editor_func() -> None:
     global mode, level_gr
-    exit_code, level_group, total_movement_ = editor.loop(screen, level_gr, level_gr_unconverted,
-                                                          bg_gr, background, background_2,
-                                                          level_select.level_folder)
+    exit_code, level_group = editor.loop(screen, level_gr, level_gr_unconverted,
+                                         bg_gr, background, background_2,
+                                         level_select.level_folder)
 
     if exit_code == CONTINUE:
         pass
@@ -374,7 +374,7 @@ def main_proc() -> None:
         if ml == CONTINUE:
             pass
         elif ml == EXIT:
-            break
+            running = False
         pygame.display.update()
         clock.tick(FPS)
     pygame.quit()

@@ -10,8 +10,6 @@ from geometry_dash_recreation.save_file import save_file
 pygame.init()
 pygame.font.init()
 
-folder_empty = False
-
 try:
     os.mkdir(LEVELS_FOLDER)
 except FileExistsError:

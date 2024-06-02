@@ -79,7 +79,7 @@ def loop(screen: pygame.Surface, sf: save_file.SaveFile) -> int:
     lotext = fonts.aller_normal.render(SAVE_FILE_PATH, True, (255, 255, 255))
     lorect = lotext.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.1))
     
-    screen.blit()
+    screen.fill((50, 0, 25))
     screen.blit(exit_text, exit_rect)
     screen.blit(pdtext, pdrect)
     screen.blit(ntext, nrect)

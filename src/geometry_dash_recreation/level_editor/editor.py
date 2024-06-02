@@ -93,14 +93,14 @@ type_index = 0
 color_index = 0
 
 
-def snap_position(xpos: int, ypos: int, add_unit=0) -> tuple:
+def snap_position(xpos: int, ypos: int) -> tuple:
     ypos -= 1
     xpos += 1
     return (round(xpos - xpos % UNIT + total_movement % UNIT, 2),
-            round(ypos - ypos % UNIT + UNIT * int(add_unit) + UNIT, 2))
+            round(ypos - ypos % UNIT + UNIT, 2))
 
 
-def current_to_initial_x(x: int):
+def current_to_initial_x(x: int) -> int:
     global total_movement
     return x - total_movement
 
@@ -166,7 +166,7 @@ def move_rotate_button(sprite: game_sprites.HitboxSprite) -> bool:
     return True
 
 
-def update_label():
+def update_label() -> None:
     global imgfile_text, objecttype_text, objectcolor_text, movementmode_text, option
     imgfile_text = fonts.aller_small.render(
         f'Image Name: {selected_sprite.image_filename[len(ASSETS_FOLDER + "/textures/components")::]}',
@@ -179,7 +179,7 @@ def update_label():
     movementmode_text = fonts.aller_small.render(f'Selected: {movement_mode}', True, (255, 255, 255))
 
 
-def option_handle(option: int, option_increase: int):
+def option_handle(option: int, option_increase: int) -> None:
     global selected_sprite, img_index, type_index, color_index
     if option == 1 and type(selected_sprite) != game_sprites.HitboxSprite:
         img_index += option_increase
@@ -205,11 +205,10 @@ def option_handle(option: int, option_increase: int):
         selected_sprite.color = COMPONENT_COLOR_LIST[color_index]
 
 
-def limit(x: int, l: int, no_0: bool=False) -> int:
-    x %= l + 1
-    if no_0:
-        x = 1 if x == 0 else x
-    return x
+def option_limit() -> None:
+    global option
+    option %= 4
+    option = 1 if option == 0 else option
 
 
 def option_button() -> bool:
@@ -225,7 +224,7 @@ def option_button() -> bool:
     else:
         return False
     
-    option = limit(option, 3, True)
+    option_limit()
 
     return True
 
@@ -287,24 +286,24 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
     global objectcolor_text, objectcolor_rect, movementmode_rect, imgfile_rect, objectinfo_surface_rect
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            return (EXIT, None, None)
+            return (EXIT, None)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if exit_button.rect.collidepoint(*pygame.mouse.get_pos()):
                 total_movement = 0
                 level_properties.name, level_properties.creator, level_properties.stars, level_properties.gamemode = \
                     None, None, None, None
-                return (EXIT, None, None)
+                return (EXIT, None)
             elif save_button.rect.collidepoint(*pygame.mouse.get_pos()):
-                return (SAVE_LEVEL, level_gr, total_movement)
+                return (SAVE_LEVEL, level_gr)
             elif edit_icon.rect.collidepoint(*pygame.mouse.get_pos()):
                 lp_r = lp_loop(screen, level_folder, level_gr_unconverted, bg_gr, level_gr)
                 if lp_r:
-                    return (SAVE_LEVEL_PROPERTIES, level_gr_unconverted, 0)
+                    return (SAVE_LEVEL_PROPERTIES, level_gr_unconverted)
                 else:
                     break
             elif objectinfo_surface_rect.collidepoint(*pygame.mouse.get_pos()):
                 option += 1
-                option = limit(option, 3, True)
+                option_limit()
                 update_label()
                 break
 
@@ -375,7 +374,7 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
                 option -= 1
             elif event.key == pygame.K_DOWN:
                 option += 1
-            option = limit(option, 3, True)
+            option_limit()
 
             if event.key == pygame.K_o:
                 option_handle(option, 1)
@@ -397,9 +396,9 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
     
     type_index, color_index = COMPONENT_TYPE_LIST.index(selected_sprite.type), COMPONENT_COLOR_LIST.index(selected_sprite.color)
 
-    background.rect.x += BACKGROUND_SCROLL_SPEED * EDITOR_MOVE_MUL * EDITOR_VIEW_MOVEMENT * movement
+    background.rect.x += BACKGROUND_SCROLL_SPEED * movement
 
-    total_movement += EDITOR_SPRITE_MOVEMENT * movement
+    total_movement += EDITOR_LEVEL_MOVEMENT * movement
     for sprite in level_gr:
         sprite.set_sprite_position((sprite.initial_rect.x + total_movement, sprite.initial_rect.y))
 
@@ -427,4 +426,4 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
     screen.blit(objectcolor_text, objectcolor_rect)
     screen.blit(movementmode_text, movementmode_rect)
     
-    return (CONTINUE, None, None)
+    return (CONTINUE, None)
