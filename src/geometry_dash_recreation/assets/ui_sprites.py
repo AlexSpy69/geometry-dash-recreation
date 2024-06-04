@@ -68,7 +68,7 @@ class EditorIconsSheet(spritesheets.Spritesheet):
 class EditorIcon(pygame.sprite.Sprite):
     def __init__(self, pos: list, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.image = EditorIconsSheet().image_at(pos)
+        self.image = EditorIconsSheet().get_image(pos)
         self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
         self.rect = self.image.get_rect()
 
