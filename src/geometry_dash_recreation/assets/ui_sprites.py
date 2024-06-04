@@ -1,4 +1,3 @@
-from typing import Any
 import pygame
 from pygame.sprite import AbstractGroup
 from geometry_dash_recreation.constants import *
@@ -57,11 +56,11 @@ class EditIcon(UIElement):
         super().__init__("edit_icon.png", (UNIT, UNIT), *groups)
 
 
-class EditorIconsSheet(spritesheets.spritesheet):
+class EditorIconsSheet(spritesheets.Spritesheet):
     def __init__(self):
         super().__init__(f"{ASSETS_FOLDER}/textures/ui/editor_icons.png")
 
-    def image_at(self, rectangle: tuple) -> pygame.Surface:
+    def get_image(self, rectangle: tuple) -> pygame.Surface:
         rectangle = [x * 32 for x in rectangle]
         return super().image_at(rectangle)
 

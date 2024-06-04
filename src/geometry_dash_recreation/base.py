@@ -35,8 +35,8 @@ pause_button = ui_sprites.PauseButton()
 ingame_ui_gr = pygame.sprite.Group(pause_button)
 
 # Screens
-pause_screen = screens.returnPauseScreen()
-win_screen = screens.returnWinScreen()
+pause_screen = screens.return_pause_screen()
+win_screen = screens.return_win_screen()
 
 current_percent_text = fonts.pusab_small.render('100%', True, (255, 255, 255))
 current_percent_rect = current_percent_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.05))
@@ -58,7 +58,6 @@ current_sf = save_file.open_sf(SAVE_FILE_PATH)
 current_sf.update_stats()
 
 # Level
-# level.save_level_data("levels/start", level.convert.Level())""
 level_gr = pygame.sprite.Group()
 level_gr_unconverted = convert.Level()
 current_level_name = ""
@@ -137,7 +136,7 @@ def game_func() -> None:
 
     if x_to_level >= level_end:
         mode = "win"
-    
+
     if player_spr.sprite.hitbox.right < PLAYER_X:
         player_spr.sprite.hitbox.right += LEVEL_SCROLL_SPEED
     else:
@@ -145,7 +144,7 @@ def game_func() -> None:
         for sprite in level_gr:
             sprite.rect.x -= LEVEL_SCROLL_SPEED
             sprite.hitbox.center = sprite.rect.center
-        
+
         # Bewegen des Hintergrunds
         background.rect.x -= BACKGROUND_SCROLL_SPEED
 
@@ -224,7 +223,7 @@ def init_level() -> str:
     def proc() -> None:
         global mode, level_gr, level_gr_unconverted, player_spr, ev, click, \
             gravity, current_level_name, x_to_level, level_end, current_attempt_rect, current_attempt
-        
+
         # Leveldaten
         level_gr_unconverted = level_files.open_level_data(current_level_name)
         level_gr = convert.data_to_group(level_gr_unconverted)
@@ -380,6 +379,6 @@ def main_proc() -> None:
     pygame.quit()
 
 
-# Die Funktion, die von __main__.py  aufgerufen wird.
+# Die Funktion, die von __main__.py aufgerufen wird.
 def main():
     main_proc()

@@ -1,5 +1,4 @@
 import os
-import sys
 
 import pygame
 from geometry_dash_recreation.constants import *
@@ -106,16 +105,16 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if levelname_rect.collidepoint(*pygame.mouse.get_pos()):
                 if len(level_list) != 0:
-                    return (PLAY_LEVEL, selected_level())
+                    return PLAY_LEVEL, selected_level()
             elif folder_rect.collidepoint(*pygame.mouse.get_pos()):
                 level_folder_edit = not level_folder_edit
                 continue
             elif user_icon.rect.collidepoint(*pygame.mouse.get_pos()):
-                return (VIEW_SAVE_FILE, 0)
+                return VIEW_SAVE_FILE, 0
             elif build_icon.rect.collidepoint(*pygame.mouse.get_pos()):
-                return (OPEN_LEVEL_EDITOR, selected_level())
+                return OPEN_LEVEL_EDITOR, selected_level()
             elif plus_icon.rect.collidepoint(*pygame.mouse.get_pos()):
-                return (NEW_LEVEL, level_folder)
+                return NEW_LEVEL, level_folder
             elif trash_icon.rect.collidepoint(*pygame.mouse.get_pos()):
                 os.remove(level_folder + "/" + level_list[level_nr])
                 level_nr -= 1
@@ -135,7 +134,7 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
                 if level_folder_edit:
                     level_folder_edit = False
                 else:
-                    return selected_level()
+                    return PLAY_LEVEL, selected_level()
             elif event.key == pygame.K_BACKSPACE and level_folder_edit:
                 if len(level_folder) > 0:
                     level_folder = level_folder[:-1]
@@ -215,7 +214,7 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
 
     ui_other_gr.draw(screen)
 
-    return (CONTINUE, selected_level())
+    return CONTINUE, selected_level()
 
 
 def loop(screen: pygame.Surface) -> tuple:

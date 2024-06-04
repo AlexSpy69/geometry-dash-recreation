@@ -19,21 +19,22 @@ class HitboxSprite(pygame.sprite.Sprite):
         self.type = ""
         self.color = ""
         self.angle = 0
-    
+
     def __str__(self) -> str:
-        return f"Type: {self.type}\nColor: {self.color}\nRect: {self.rect}\nHitbox: {self.hitbox}\nAngle: {self.angle}\n"
+        return (f"Type: {self.type}\nColor: {self.color}\nRect: {self.rect}\n"
+                f"Hitbox: {self.hitbox}\nAngle: {self.angle}\n")
 
     def move_sprite(self, x: int, y: int):
         self.rect.x += x
         self.rect.y += y
         self.hitbox.center = self.rect.center
-    
+
     def move_initial(self, x: int, y: int):
         self.move_sprite(x, y)
         self.initial_rect.x += x
         self.initial_rect.y += y
 
-    def set_sprite_position(self, pos: tuple, mode: str= "xy"):
+    def set_sprite_position(self, pos: tuple, mode: str = "xy"):
         if mode == "xy":
             self.rect.x, self.rect.y = pos
         elif mode == "lt":
@@ -50,10 +51,10 @@ class HitboxSprite(pygame.sprite.Sprite):
         self.angle %= 360
         self.image = pygame.transform.rotate(self.original_image, self.angle)
         self.rect = self.image.get_rect(center=old_center)
-    
+
     def smooth_angle(self, goal_angle: int = 0) -> None:
         dif = self.angle - goal_angle
-        self.angle -= dif/2
+        self.angle -= dif / 2
         if round(dif, 1) == 0:
             self.angle = goal_angle
 
@@ -72,7 +73,7 @@ class Gamemode(ABC, HitboxSprite):
 
         self.vel = 0
         self.angle = 0
-    
+
     def reset(self) -> None:
         self.angle = 0
         self.vel = 0
@@ -86,7 +87,7 @@ class Gamemode(ABC, HitboxSprite):
             return self.hitbox.bottom - DEATH_ACCURACY >= sprite.hitbox.top
         elif gravity == -1:
             return self.hitbox.bottom + DEATH_ACCURACY <= sprite.hitbox.top
-    
+
     @abstractmethod
     def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
                  level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:
@@ -110,7 +111,7 @@ class Cube(Gamemode):
             for sprite in level_gr:
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)) and sprite.type == "platform":
                     self.jump(gravity)
-        
+
         if click:
             for sprite in level_gr:
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
@@ -119,7 +120,7 @@ class Cube(Gamemode):
                             self.vel = -gravity * JUMP_VEL / 1.5
                             return CHANGE_GRAVITY
                         self.jump(gravity * RING_VEL[sprite.color])
-        
+
         # Einwirkung der Gravitation
         self.hitbox.y += self.vel * DELTA_TIME * RESIZE
         self.vel += VEL_ADD * gravity * DELTA_TIME
@@ -128,7 +129,7 @@ class Cube(Gamemode):
 
         if self.hitbox.y < OUT_OF_BOUNDS:
             return DEATH
-        
+
         # Landen auf dem Boden
         if self.hitbox.colliderect(ground.rect.move(0, -gravity)):
             if gravity == -1:
@@ -136,7 +137,7 @@ class Cube(Gamemode):
             self.angle = round(self.angle / 90) * 90
             self.hitbox.bottom = ground.rect.top
             self.vel = 0
-        
+
         # Landen auf Level-Komponenten
         for sprite in level_gr:
             if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
@@ -158,7 +159,7 @@ class Cube(Gamemode):
                         return SHIP_GAMEMODE
                     elif sprite.color == "red":
                         return BALL_GAMEMODE
-        
+
         self.angle = 0 if self.angle == 360 or self.angle == -360 else self.angle
 
         return NORMAL
@@ -168,7 +169,7 @@ class Ship(Gamemode):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__("ships/ship_01.png", *groups)
         self.upsidedown = False
-            
+
     def flip(self) -> None:
         self.upsidedown = not self.upsidedown
         y = self.rect.y
@@ -180,7 +181,7 @@ class Ship(Gamemode):
         self.vel = -self.vel
 
     def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
-                 level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:    
+                 level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:
         if click:
             for sprite in level_gr:
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
@@ -190,7 +191,7 @@ class Ship(Gamemode):
                             self.flip()
                             return CHANGE_GRAVITY
                         self.jump(gravity * RING_VEL[sprite.color])
-        
+
         # Einwirkung der Gravitation
         self.hitbox.y += self.vel * DELTA_TIME * RESIZE
 
@@ -199,7 +200,7 @@ class Ship(Gamemode):
             self.vel -= VEL_ADD * gravity * DELTA_TIME / 2
         else:
             self.vel += VEL_ADD * gravity * DELTA_TIME / 2
-        
+
         self.vel = -20 if self.vel <= -20 else self.vel
         self.vel = 20 if self.vel >= 20 else self.vel
 
@@ -220,7 +221,7 @@ class Ship(Gamemode):
                 self.vel = 0
         else:
             self.angle = -self.vel * 2
-        
+
         # Landen auf Level-Komponenten
         for sprite in level_gr:
             if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
@@ -239,23 +240,23 @@ class Ship(Gamemode):
                         return CUBE_GAMEMODE
                     elif sprite.color == "red":
                         return BALL_GAMEMODE
-        
+
         return NORMAL
 
 
 class Ball(Gamemode):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__("balls/ball_1.png", *groups)
-    
+
     def jump(self, mul: int) -> None:
         self.vel = -JUMP_VEL * mul * 0.7
-    
+
     def change_gravity(self, gravity: int) -> int:
         self.vel = VEL_ADD * -gravity * 5
         return CHANGE_GRAVITY
 
     def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
-                 level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:    
+                 level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:
         if click:
             for sprite in level_gr:
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
@@ -264,12 +265,12 @@ class Ball(Gamemode):
                             # self.vel = -gravity * JUMP_VEL / 1.5
                             return self.change_gravity(gravity)
                         self.jump(gravity * RING_VEL[sprite.color])
-        
+
         # Einwirkung der Gravitation
         self.hitbox.y += self.vel * DELTA_TIME * RESIZE
 
         self.vel += VEL_ADD * gravity * DELTA_TIME / 2
-        
+
         self.vel = -40 if self.vel <= -40 else self.vel
         self.vel = 40 if self.vel >= 40 else self.vel
 
@@ -280,12 +281,12 @@ class Ball(Gamemode):
             self.hitbox.bottom = ground.rect.top
             if click:
                 return self.change_gravity(gravity)
-        
+
         if self.hitbox.colliderect(ceiling.rect.move(0, -gravity)):
             self.hitbox.top = ceiling.rect.bottom
             if click:
                 return self.change_gravity(gravity)
-        
+
         # Landen auf Level-Komponenten
         for sprite in level_gr:
             if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
@@ -308,7 +309,7 @@ class Ball(Gamemode):
                         return CUBE_GAMEMODE
                     elif sprite.color == "magenta":
                         return SHIP_GAMEMODE
-        
+
         self.angle = 0 if self.angle == 360 or self.angle == -360 else self.angle
 
         return NORMAL
@@ -319,7 +320,7 @@ class Ground(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/bg/ground.jpg").convert()
-        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH+UNIT, SCREEN_HEIGHT))
+        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH + UNIT, SCREEN_HEIGHT))
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = -UNIT, GROUND_HEIGHT
 
@@ -328,12 +329,12 @@ class Background(pygame.sprite.Sprite):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/bg/background.png").convert()
-        self.image = pygame.transform.scale(self.image, (SCREEN_HEIGHT*2*(16/9), SCREEN_HEIGHT*2))
+        self.image = pygame.transform.scale(self.image, (SCREEN_HEIGHT * 2 * (16 / 9), SCREEN_HEIGHT * 2))
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT/4
-    
+        self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT / 4
+
     def reset(self):
-        self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT/4
+        self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT / 4
 
 
 class Ceiling(pygame.sprite.Sprite):
@@ -345,10 +346,10 @@ class Ceiling(pygame.sprite.Sprite):
         self.rect.left, self.rect.bottom = 0, 0
 
         self.activated = False
-    
+
     def update(self) -> None:
         if self.activated:
-            if self.rect.bottom < CEILING_HEIGHT-CEILING_MOVE:
+            if self.rect.bottom < CEILING_HEIGHT - CEILING_MOVE:
                 self.rect.bottom += CEILING_MOVE
         else:
             if self.rect.bottom > -CEILING_MOVE:
@@ -366,30 +367,31 @@ class Component(HitboxSprite):
             pos = [0.0, 0.0]
         if size is None:
             size = [1.0, 1.0]
+        # Positions-Attribut
         self.pos = pos
+        # Größen-Attribut (in UNIT)
         self.size = size
+        # Rotation/Winkel-Attribut
         self.angle = angle
+        # Attrbut zum Verhältnis der Größe des Sprites (rect) und der des Hitboxes (hitbox)
         self.hb_mul = hb_mul
-        self.type = type_   # platform: Man kann darauf landen und davon abspringen
-                            # hazard: Man stirbt, wenn man es berührt
-                            # deco: Es zählt als Dekoration und wird vom Spieler ignioriert
-                            # ring: Rings, von denen man abspringen kann, wenn man die Maustaste drückt
-                            # gravportal: Portale, die die Gravitationsrichtung wechseln
-                            # formportal: Portale, die den Spielmodus wechseln
-        self.color = color  # Wird als Indentifikation für Rings und Portale verwendet.
+        # Typ-Attribut des Level-Komponenten
+        self.type = type_
+        # Farben-Attribut des Level-Komponenten: Wird als Indentifikation für Rings und Portale verwendet.
+        self.color = color
 
         self.real_init()
-    
+
     def real_init(self):
         self.original_image = pygame.image.load(self.image_filename).convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (UNIT*self.size[0], UNIT*self.size[1]))
+        self.original_image = pygame.transform.scale(self.original_image, (UNIT * self.size[0], UNIT * self.size[1]))
         self.image = self.original_image
         self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = self.pos[0]*UNIT, self.pos[1]*UNIT  # Position des Komponenten
+        self.rect.x, self.rect.y = self.pos[0] * UNIT, self.pos[1] * UNIT  # Position des Komponenten
         self.initial_rect = self.image.get_rect()
-        self.initial_rect.x, self.initial_rect.y = self.pos[0]*UNIT, self.pos[1]*UNIT
+        self.initial_rect.x, self.initial_rect.y = self.pos[0] * UNIT, self.pos[1] * UNIT
         self.hitbox = self.image.get_rect()
-        self.hitbox.x, self.hitbox.y = self.pos[0]*UNIT, self.pos[1]*UNIT
+        self.hitbox.x, self.hitbox.y = self.pos[0] * UNIT, self.pos[1] * UNIT
         self.hitbox.width, self.hitbox.height = \
             self.rect.width * self.hb_mul, self.rect.height * self.hb_mul
         # Der Hitbox kann um einen bestimmten Faktor vergrößert oder verkleinert werden

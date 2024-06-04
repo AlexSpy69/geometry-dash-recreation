@@ -1,6 +1,7 @@
 import pygame
 from geometry_dash_recreation.constants import *
 from geometry_dash_recreation.assets import ui_sprites, game_sprites, fonts
+from geometry_dash_recreation.level import convert
 from geometry_dash_recreation.level_editor import level_properties
 from geometry_dash_recreation.save_file import save_file
 from geometry_dash_recreation import util
@@ -19,34 +20,34 @@ edit_icon = ui_sprites.EditIcon()
 edit_icon.rect.x, edit_icon.rect.y = SCREEN_WIDTH * 0.74, SCREEN_HEIGHT * 0.04
 
 up_button = ui_sprites.EditorIcon([6, 1, 0.45, 0.55])
-up_button.rect.left, up_button.rect.top = UNIT*3.5, GROUND_HEIGHT
+up_button.rect.left, up_button.rect.top = UNIT * 3.5, GROUND_HEIGHT
 
 down_button = ui_sprites.EditorIcon([6.575, 1.5, 0.45, 0.5])
-down_button.rect.left, down_button.rect.top = UNIT*3.5, GROUND_HEIGHT+UNIT*1.2
+down_button.rect.left, down_button.rect.top = UNIT * 3.5, GROUND_HEIGHT + UNIT * 1.2
 
 left_button = ui_sprites.EditorIcon([6.5, 1, 0.5, 0.45])
-left_button.rect.left, left_button.rect.top = UNIT*3.5+UNIT*1.2, GROUND_HEIGHT
+left_button.rect.left, left_button.rect.top = UNIT * 3.5 + UNIT * 1.2, GROUND_HEIGHT
 
 right_button = ui_sprites.EditorIcon([6, 1.575, 0.5, 0.45])
-right_button.rect.left, right_button.rect.top = UNIT*3.5+UNIT*1.2, GROUND_HEIGHT+UNIT*1.2
+right_button.rect.left, right_button.rect.top = UNIT * 3.5 + UNIT * 1.2, GROUND_HEIGHT + UNIT * 1.2
 
 rotate_right_button = ui_sprites.EditorIcon([2, 3, 1, 1])
-rotate_right_button.rect.left, rotate_right_button.rect.top = UNIT*3.5+UNIT*2.4, GROUND_HEIGHT
+rotate_right_button.rect.left, rotate_right_button.rect.top = UNIT * 3.5 + UNIT * 2.4, GROUND_HEIGHT
 
 delete_button = ui_sprites.EditorIcon([4, 0, 1, 1])
-delete_button.rect.left, delete_button.rect.top = UNIT*3.5+UNIT*2.4, GROUND_HEIGHT+UNIT*1.2
+delete_button.rect.left, delete_button.rect.top = UNIT * 3.5 + UNIT * 2.4, GROUND_HEIGHT + UNIT * 1.2
 
 option_up = ui_sprites.EditorIcon([6, 1, 0.45, 0.55])
-option_up.rect.left, option_up.rect.top = UNIT*13, GROUND_HEIGHT
+option_up.rect.left, option_up.rect.top = UNIT * 13, GROUND_HEIGHT
 
 option_down = ui_sprites.EditorIcon([6.575, 1.5, 0.45, 0.5])
-option_down.rect.left, option_down.rect.top = UNIT*13, GROUND_HEIGHT+UNIT*1.2
+option_down.rect.left, option_down.rect.top = UNIT * 13, GROUND_HEIGHT + UNIT * 1.2
 
 option_left = ui_sprites.EditorIcon([6.5, 1, 0.5, 0.45])
-option_left.rect.left, option_left.rect.top = UNIT*13+UNIT*1.2, GROUND_HEIGHT
+option_left.rect.left, option_left.rect.top = UNIT * 13 + UNIT * 1.2, GROUND_HEIGHT
 
 option_right = ui_sprites.EditorIcon([6, 1.575, 0.5, 0.45])
-option_right.rect.left, option_right.rect.top = UNIT*13+UNIT*1.2, GROUND_HEIGHT+UNIT*1.2
+option_right.rect.left, option_right.rect.top = UNIT * 13 + UNIT * 1.2, GROUND_HEIGHT + UNIT * 1.2
 
 level_move_left = ui_sprites.Arrow(False)
 level_move_left.rect.x, level_move_left.rect.y = SCREEN_WIDTH * 0.04, SCREEN_HEIGHT * 0.45
@@ -59,7 +60,7 @@ editor_bar_label.rect.left, editor_bar_label.rect.top = 0, GROUND_HEIGHT
 
 ui_other_gr = pygame.sprite.Group(exit_button, save_button, edit_icon,
                                   up_button, down_button, left_button, right_button,
-                                  rotate_right_button, delete_button, 
+                                  rotate_right_button, delete_button,
                                   option_up, option_down, option_left,
                                   option_right, editor_bar_label,
                                   level_move_left, level_move_right)
@@ -85,7 +86,7 @@ bg_2_front = False
 movement = 0
 total_movement = 0
 movement_mode = "single"
-selected_sprite = game_sprites.HitboxSprite()
+selected_sprite = game_sprites.Component()
 
 option = 0
 img_index = 0
@@ -134,7 +135,7 @@ def move_rotate_event(sprite: game_sprites.HitboxSprite, event: pygame.event.Eve
         selected_sprite = game_sprites.HitboxSprite()
     else:
         return
-    
+
     if not rotate:
         sprite.set_sprite_position(snap_position(sprite.rect.left, sprite.rect.bottom), "lb")
 
@@ -159,7 +160,7 @@ def move_rotate_button(sprite: game_sprites.HitboxSprite) -> bool:
         selected_sprite = game_sprites.HitboxSprite()
     else:
         return False
-    
+
     if not rotate:
         sprite.set_sprite_position(snap_position(sprite.rect.left, sprite.rect.bottom), "lb")
 
@@ -172,33 +173,36 @@ def update_label() -> None:
         f'Image Name: {selected_sprite.image_filename[len(ASSETS_FOLDER + "/textures/components")::]}',
         True, (0, 255, 0) if option == 1 else (255, 255, 255)
     )
-    objecttype_text = fonts.aller_small.render(f'Type: {selected_sprite.type if selected_sprite.type != "" else "(no value)"}',
-                                               True, (0, 255, 0) if option == 2 else (255, 255, 255))
-    objectcolor_text = fonts.aller_small.render(f'Color: {selected_sprite.color if selected_sprite.color != "" else "(no value)"}',
-                                                True, (0, 255, 0) if option == 3 else (255, 255, 255))
+    objecttype_text = fonts.aller_small.render(
+        f'Type: {selected_sprite.type if selected_sprite.type != "" else "(no value)"}',
+        True, (0, 255, 0) if option == 2 else (255, 255, 255))
+    objectcolor_text = fonts.aller_small.render(
+        f'Color: {selected_sprite.color if selected_sprite.color != "" else "(no value)"}',
+        True, (0, 255, 0) if option == 3 else (255, 255, 255))
     movementmode_text = fonts.aller_small.render(f'Selected: {movement_mode}', True, (255, 255, 255))
 
 
-def option_handle(option: int, option_increase: int) -> None:
+def option_handle(option_increase: int) -> None:
     global selected_sprite, img_index, type_index, color_index
-    if option == 1 and type(selected_sprite) != game_sprites.HitboxSprite:
+    if option == 1 and type(selected_sprite) is not game_sprites.HitboxSprite:
         img_index += option_increase
         img_index %= len(COMPONENT_IMGFILE_LIST)
         temp_initial_rect = selected_sprite.initial_rect.left, selected_sprite.initial_rect.bottom
         temp_rect = selected_sprite.rect.left, selected_sprite.rect.bottom
         selected_sprite.image_filename = COMPONENT_IMGFILE_LIST[img_index]
-        selected_sprite.size, selected_sprite.angle, selected_sprite.hb_mul, selected_sprite.type, selected_sprite.color = \
+        (selected_sprite.size, selected_sprite.angle, selected_sprite.hb_mul,
+         selected_sprite.type, selected_sprite.color) = \
             util.csv_reader(selected_sprite.image_filename + ".csv")
         selected_sprite.real_init()
         selected_sprite.initial_rect.left, selected_sprite.initial_rect.bottom = temp_initial_rect
         selected_sprite.rect.left, selected_sprite.rect.bottom = temp_rect
         selected_sprite.set_sprite_position(snap_position(selected_sprite.rect.left, selected_sprite.rect.bottom), "lb")
-        
+
     elif option == 2:
         type_index += option_increase
         type_index %= len(COMPONENT_TYPE_LIST)
         selected_sprite.type = COMPONENT_TYPE_LIST[type_index]
-    
+
     elif option == 3:
         color_index += option_increase
         color_index %= len(COMPONENT_COLOR_LIST)
@@ -218,12 +222,12 @@ def option_button() -> bool:
     elif option_down.rect.collidepoint(*pygame.mouse.get_pos()):
         option += 1
     elif option_left.rect.collidepoint(*pygame.mouse.get_pos()):
-        option_handle(option, -1)
+        option_handle(-1)
     elif option_right.rect.collidepoint(*pygame.mouse.get_pos()):
-        option_handle(option, 1)
+        option_handle(1)
     else:
         return False
-    
+
     option_limit()
 
     return True
@@ -243,12 +247,14 @@ def move_level_button() -> bool:
 def draw_grid(screen: pygame.Surface):
     global total_movement
     for x in range(0, int(SCREEN_WIDTH / UNIT)):
-        pygame.draw.line(screen, (0, 0, 0), snap_position(x * UNIT, -UNIT), (snap_position(x * UNIT, 0)[0], SCREEN_HEIGHT))
+        pygame.draw.line(screen, (0, 0, 0), snap_position(x * UNIT, -UNIT), (
+            snap_position(x * UNIT, 0)[0], SCREEN_HEIGHT)
+                         )
     for y in range(0, int(SCREEN_HEIGHT / UNIT)):
         pygame.draw.line(screen, (0, 0, 0), (0, y * UNIT), (SCREEN_WIDTH, y * UNIT))
 
 
-def lp_loop(screen: pygame.Surface, level_folder: str, level_gr_unconverted: dict,
+def lp_loop(screen: pygame.Surface, level_folder: str, level_gr_unconverted: convert.Level,
             bg_gr: pygame.sprite.Group, level_gr: pygame.sprite.Group) -> bool | dict:
     while True:
         bg_gr.draw(screen)
@@ -267,7 +273,7 @@ def lp_loop(screen: pygame.Surface, level_folder: str, level_gr_unconverted: dic
                                     save_file.open_sf(SAVE_FILE_PATH).playerdata["name"],
                                     level_gr_unconverted["info"]["stars"],
                                     level_gr_unconverted["data"]["gamemode"]),
-                                    level_gr_unconverted)
+                                   level_gr_unconverted)
         pygame.display.update()
 
         if lp == CONTINUE:
@@ -278,27 +284,28 @@ def lp_loop(screen: pygame.Surface, level_folder: str, level_gr_unconverted: dic
             return lp
 
 
-def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconverted: dict,
+def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconverted: convert.Level,
          bg_gr: pygame.sprite.Group, background: game_sprites.Background, background_2: game_sprites.Background,
          level_folder: str) -> tuple:
-    global bg_2_front, movement, total_movement, movement_mode, selected_sprite, option, type_index, color_index, img_index
+    global bg_2_front, movement, total_movement, movement_mode, selected_sprite, \
+        option, type_index, color_index, img_index
     global objecttype_text, objectcolor_text, movementmode_text, imgfile_text
     global objectcolor_text, objectcolor_rect, movementmode_rect, imgfile_rect, objectinfo_surface_rect
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            return (EXIT, None)
+            return EXIT, None
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if exit_button.rect.collidepoint(*pygame.mouse.get_pos()):
                 total_movement = 0
                 level_properties.name, level_properties.creator, level_properties.stars, level_properties.gamemode = \
                     None, None, None, None
-                return (EXIT, None)
+                return EXIT, None
             elif save_button.rect.collidepoint(*pygame.mouse.get_pos()):
-                return (SAVE_LEVEL, level_gr)
+                return SAVE_LEVEL, level_gr
             elif edit_icon.rect.collidepoint(*pygame.mouse.get_pos()):
                 lp_r = lp_loop(screen, level_folder, level_gr_unconverted, bg_gr, level_gr)
                 if lp_r:
-                    return (SAVE_LEVEL_PROPERTIES, level_gr_unconverted)
+                    return SAVE_LEVEL_PROPERTIES, level_gr_unconverted
                 else:
                     break
             elif objectinfo_surface_rect.collidepoint(*pygame.mouse.get_pos()):
@@ -310,10 +317,10 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
             if option_button():
                 update_label()
                 break
-            
+
             if move_level_button():
                 break
-            
+
             if movement_mode == "single":
                 if move_rotate_button(selected_sprite):
                     break
@@ -321,13 +328,13 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
                 for sprite in level_gr:
                     if move_rotate_button(sprite):
                         break
-            
+
             for sprite in level_gr:
                 if sprite.rect.collidepoint(*pygame.mouse.get_pos()):
                     selected_sprite = sprite
                     break
-            
-            if not "sprite" in locals():
+
+            if "sprite" not in locals():
                 sprite = game_sprites.HitboxSprite()
 
             if selected_sprite is not sprite:
@@ -339,14 +346,14 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
                     type_="platform",
                     color=""
                 ))
-            
+
             update_label()
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if level_move_left.rect.collidepoint(*pygame.mouse.get_pos()) or \
-                level_move_right.rect.collidepoint(*pygame.mouse.get_pos()):
+                    level_move_right.rect.collidepoint(*pygame.mouse.get_pos()):
                 movement = 0
-        
+
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 selected_sprite = game_sprites.HitboxSprite()
@@ -362,14 +369,14 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
             elif movement_mode == "all":
                 for sprite in level_gr:
                     move_rotate_event(sprite, event)
-            
+
             # Editor shortcut
             if event.key == pygame.K_m:
                 if movement_mode == "single":
                     movement_mode = "all"
                 elif movement_mode == "all":
                     movement_mode = "single"
-            
+
             if event.key == pygame.K_UP:
                 option -= 1
             elif event.key == pygame.K_DOWN:
@@ -380,21 +387,22 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
                 option_handle(option, 1)
             elif event.key == pygame.K_l:
                 option_handle(option, -1)
-            
+
             update_label()
-            
+
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or \
-                event.key == pygame.K_RIGHT:
+                    event.key == pygame.K_RIGHT:
                 movement = 0
-    
+
     if background.rect.left >= 0 and movement == 1:
         for sprite in level_gr:
             sprite.move_sprite(-total_movement, 0)
         total_movement = 0
         movement = 0
-    
-    type_index, color_index = COMPONENT_TYPE_LIST.index(selected_sprite.type), COMPONENT_COLOR_LIST.index(selected_sprite.color)
+
+    type_index, color_index = COMPONENT_TYPE_LIST.index(selected_sprite.type), COMPONENT_COLOR_LIST.index(
+        selected_sprite.color)
 
     background.rect.x += BACKGROUND_SCROLL_SPEED * movement
 
@@ -408,7 +416,7 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
     elif background_2.rect.right == 0:
         background.rect.left = 0
         bg_2_front = False
-    
+
     if not bg_2_front:
         background_2.rect.left = background.rect.right
     else:
@@ -425,5 +433,5 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
     screen.blit(objecttype_text, objecttype_rect)
     screen.blit(objectcolor_text, objectcolor_rect)
     screen.blit(movementmode_text, movementmode_rect)
-    
-    return (CONTINUE, None)
+
+    return CONTINUE, None

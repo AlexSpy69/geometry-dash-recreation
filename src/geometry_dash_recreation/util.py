@@ -1,6 +1,7 @@
 import os
 
-def list_files(directory: str, extenstion: str="") -> list:
+
+def list_files(directory: str, extenstion: str = "") -> list:
     file_list = []
     for root, dirs, files in os.walk(directory):
         for file in files:
@@ -20,7 +21,7 @@ def try_detuple(t: tuple):
     return t[0] if len(t) == 1 else t
 
 
-def csv_reader(filename: str, line_single: bool=True) -> tuple:
+def csv_reader(filename: str, line_single: bool = True) -> tuple:
     output_list = []
     with open(filename) as f:
         for line in f.readlines():

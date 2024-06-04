@@ -5,10 +5,11 @@ import sys
 from geometry_dash_recreation import util
 
 
-def adapt_res(width, height) -> tuple:
-    if width/height != 16/9:
-        height = int(width * 9/16)
-    return width, height
+def adapt_res(w: int, h: int) -> tuple:
+    if w/h != 16/9:
+        w = int(w * 9/16)
+    return w, h
+
 
 try:
     width, height = map(int, sys.argv[1:3])
@@ -47,13 +48,12 @@ VEL_ADD = 2                     # Stärke der Einwirkung der Gravitation
 JUMP_VEL = 27                   # Stärke des Sprungs des Spielers
 LEVEL_SCROLL_SPEED = DELTA_TIME*13*RESIZE  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
 BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE  # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
-DEATH_ACCURACY = UNIT
+DEATH_ACCURACY = UNIT / 4
 OUT_OF_BOUNDS = -6000
 ATTEMPT_COUNT_POS = (SCREEN_WIDTH * 0.35, SCREEN_HEIGHT * 0.4)
 
 # Mögliche Level-Komponenten-Eigenschaften
 COMPONENT_IMGFILE_LIST = tuple(sorted(util.list_files(ASSETS_FOLDER + "/textures/components", ".png")))
-#COMPONENT_TYPE_LIST = ("", "platform", "hazard", "ring", "pad", "formportal", "gravityportal", "deco")
 COMPONENT_TYPE_LIST = ("", "platform", "hazard", "ring", "pad", "formportal", "deco")
 COMPONENT_COLOR_LIST = ("", "magenta", "yellow", "red", "cyan", "green")
 

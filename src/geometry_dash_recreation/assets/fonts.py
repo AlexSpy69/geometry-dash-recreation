@@ -6,6 +6,8 @@ pygame.font.init()
 
 # https://stackoverflow.com/questions/54363047/how-to-draw-outline-on-the-fontpygame
 _circle_cache = {}
+
+
 def _circlepoints(r):
     r = int(round(r))
     if r in _circle_cache:

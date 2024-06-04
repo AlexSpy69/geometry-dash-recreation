@@ -25,7 +25,7 @@ gamemode_rect = name_text.get_rect(center=(SCREEN_WIDTH * 0.3, SCREEN_HEIGHT * 0
 go_text = fonts.pusab_big.render("Create level", True, (255, 255, 255))
 go_rect = go_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.8))
 
-transparent_screen = screens.returnSemiTransparentScreen()
+transparent_screen = screens.return_semi_transparent_screen()
 
 name_edit = False
 creator_edit = False
@@ -37,24 +37,27 @@ creator = None
 stars = None
 gamemode = None
 
+
 def loop(screen: pygame.Surface, level_folder: str, mode: str, transparent: bool = False,
          def_vals: tuple = ("", save_file.open_sf(SAVE_FILE_PATH).playerdata["name"],
                             "", "cube"),
          level_gr_unconverted: convert.Level = None) -> int | convert.Level:
     global name, creator, stars, gamemode
     global name_edit, creator_edit, stars_edit, gamemode_edit
+    global name_text, creator_text, stars_text, gamemode_text
+    global name_rect, creator_rect, stars_rect, gamemode_rect
     global go_text, go_rect
 
-    if name == None:
+    if name is None:
         name = def_vals[0]
-    if creator == None:
+    if creator is None:
         creator = def_vals[1]
-    if stars == None:
+    if stars is None:
         stars = def_vals[2]
-    if gamemode == None:
+    if gamemode is None:
         gamemode = def_vals[3]
 
-    if level_gr_unconverted == None:
+    if level_gr_unconverted is None:
         level_gr_unconverted = convert.Level()
 
     for event in pygame.event.get():
@@ -106,21 +109,23 @@ def loop(screen: pygame.Surface, level_folder: str, mode: str, transparent: bool
                 elif gamemode_edit:
                     if len(gamemode) > 0:
                         gamemode = gamemode[:-1]
-    
+
     name_text = fonts.aller_small.render(f"Level name: {name}", True, (0, 255, 0) if name_edit else (255, 255, 255))
 
-    creator_text = fonts.aller_small.render(f"Creator: {creator}", True, (0, 255, 0) if creator_edit else (255, 255, 255))
+    creator_text = fonts.aller_small.render(f"Creator: {creator}", True,
+                                            (0, 255, 0) if creator_edit else (255, 255, 255))
 
     stars_text = fonts.aller_small.render(f"Stars: {stars}", True, (0, 255, 0) if stars_edit else (255, 255, 255))
 
-    gamemode_text = fonts.aller_small.render(f"Starting gamemode: {gamemode}", True, (0, 255, 0) if gamemode_edit else (255, 255, 255))
+    gamemode_text = fonts.aller_small.render(f"Starting gamemode: {gamemode}", True,
+                                             (0, 255, 0) if gamemode_edit else (255, 255, 255))
 
-    go_text = fonts.pusab_big.render("Save new properties" if mode == "edit" else "Create empty level file", True, \
+    go_text = fonts.pusab_big.render("Save new properties" if mode == "edit" else "Create empty level file", True,
                                      (0, 255, 0) if go_rect.collidepoint(*pygame.mouse.get_pos()) else (255, 255, 255))
     go_rect = go_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.8))
 
     if transparent:
-        screen.blit(transparent_screen, (0, 0))    
+        screen.blit(transparent_screen, (0, 0))
     else:
         screen.fill((50, 0, 25))
     screen.blit(name_text, name_rect)
