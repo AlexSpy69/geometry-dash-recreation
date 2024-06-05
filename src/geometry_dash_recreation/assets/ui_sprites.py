@@ -1,3 +1,5 @@
+"""Modul, das die Klassen für GUI-Elemente enthält."""
+
 import pygame
 from pygame.sprite import AbstractGroup
 from geometry_dash_recreation.constants import *
@@ -6,7 +8,19 @@ pygame.init()
 
 
 class UIElement(pygame.sprite.Sprite):
+    """
+    Sprite-Klasse für die UI-Elemente.
+    """
+
     def __init__(self, filename: str, size: tuple, *groups: AbstractGroup) -> None:
+        """
+        Konstruktormethode von UIElement.
+
+        :param filename: Dateiname der Image-Datei, die als Textur verwendet werden soll
+        :param size: Größe des Sprites
+        :param groups: Gruppen, in die der Sprite enthalten sein soll
+        """
+
         super().__init__(*groups)
         self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/{filename}").convert_alpha()
         self.image = pygame.transform.scale(self.image, size)
@@ -21,6 +35,13 @@ class PauseButton(UIElement):
 
 class Arrow(UIElement):
     def __init__(self, right: bool, *groups: AbstractGroup) -> None:
+        """
+        Konstruktormethode von Arrow.
+
+        :param right: Soll der Pfeil nach rechts zeigen?
+        :param groups: Gruppen, in die der Sprite enthalten sein soll
+        """
+
         super().__init__("arrow_left.png", (UNIT*1.5, UNIT*1.5), *groups)
         self.image = pygame.transform.flip(self.image, True, False) if right else self.image
         self.rect = self.image.get_rect()
@@ -57,18 +78,29 @@ class EditIcon(UIElement):
 
 
 class EditorIconsSheet(spritesheets.Spritesheet):
+    """
+    Für das Editor-Icons-Spritesheet bestimmte Subklasse von gdr.assets.spritesheets.Spritesheet.
+    """
+
     def __init__(self):
         super().__init__(f"{ASSETS_FOLDER}/textures/ui/editor_icons.png")
 
     def get_image(self, rectangle: tuple) -> pygame.Surface:
+        """
+        Liefert ein Teilimage des Spritesheets mit einer bestimmten Position und Größe.
+
+        :param rectangle: Position und Größe des Teilimage (Format: left, top, width, height; Wert 1 = 32 Pixel)
+        :return: pygame.Surface mit dem Teilimage
+        """
+
         rectangle = [x * 32 for x in rectangle]
         return super().image_at(rectangle)
 
 
 class EditorIcon(pygame.sprite.Sprite):
-    def __init__(self, pos: list, *groups: AbstractGroup) -> None:
+    def __init__(self, pos: tuple | list, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.image = EditorIconsSheet().get_image(pos)
+        self.image = EditorIconsSheet().get_image(tuple(pos))
         self.image = pygame.transform.scale(self.image, (UNIT, UNIT))
         self.rect = self.image.get_rect()
 

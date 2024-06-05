@@ -1,3 +1,5 @@
+"""Modul, das für das Levelmenü zuständig ist"""
+
 import os
 
 import pygame
@@ -69,6 +71,12 @@ level_info = {}
 
 
 def prev_level() -> None:
+    """
+    Wählt das Level in der Level-Liste aus, das sich vor dem aktuellen Level befindet.
+
+    :return:
+    """
+
     global level_nr
     if len(level_list) in (0, 1):
         return
@@ -77,6 +85,12 @@ def prev_level() -> None:
 
 
 def next_level() -> None:
+    """
+    Wählt das Level in der Level-Liste aus, das sich nach dem aktuellen Level befindet.
+
+    :return:
+    """
+
     global level_nr
     if len(level_list) in (0, 1):
         return
@@ -85,6 +99,12 @@ def next_level() -> None:
 
 
 def selected_level() -> str:
+    """
+    Liefert den Dateinamen des Levels, das gerade ausgewählt ist.
+
+    :return: Dateiname des ausgewählten Levels
+    """
+
     if len(level_list) != 0:
         return f'{level_folder}/{level_list[level_nr]}'
     else:
@@ -92,10 +112,25 @@ def selected_level() -> str:
 
 
 def current_level_percentage() -> int:
+    """
+    Liefert den maximalen Prozentsatz, den der Spieler im aktuellen Level erreicht hat
+
+    :return: Der Prozentsatz
+    """
+
     return save_file.open_sf(SAVE_FILE_PATH).get_level_percent(selected_level())
 
 
 def loop_no_exception(screen: pygame.Surface) -> tuple:
+    """
+    Loop-Funktion für das Levelmenü. Fehler, die während dem Laufen der Funktion auftreten, können nicht abgefangen
+    werden.
+
+    :param screen: pygame.Surface, auf das das Levelmenü gezeichnet werden soll.
+    :return: Tupel mit einem Exit-Code als erstes Element und dem Levelnamen als zweites
+        (Ausnahmen: (VIEW_SAVE_FILE, None); (NEW_LEVEL, level_folder))
+    """
+
     global levelname_text, difficulty_text, creator_text, comp_text, folder_text, error_text
     global levelname_rect, difficulty_rect, creator_rect, comp_rect, folder_rect, error_rect
     global level_folder, level_list, level_nr, level_folder_edit, folder_error, level_info
@@ -110,7 +145,7 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
                 level_folder_edit = not level_folder_edit
                 continue
             elif user_icon.rect.collidepoint(*pygame.mouse.get_pos()):
-                return VIEW_SAVE_FILE, 0
+                return VIEW_SAVE_FILE, None
             elif build_icon.rect.collidepoint(*pygame.mouse.get_pos()):
                 return OPEN_LEVEL_EDITOR, selected_level()
             elif plus_icon.rect.collidepoint(*pygame.mouse.get_pos()):
@@ -218,6 +253,16 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
 
 
 def loop(screen: pygame.Surface) -> tuple:
+    """
+    Loop-Funktion für das Levelmenü, die gdr.level.level_select.loop aufruft, um Fehler abfangen zu können. Falls ein
+    Fehler auftritt, wird mit gdr.assets.error_screen.loop die entsprechende Fehlermeldung angezeigt und der Mainloop
+    aus gdr.base unterbrochen, bis der Spieler die Maustaste drückt.
+
+    :param screen: pygame.Surface, auf das das Levelmenü gezeichnet werden soll.
+    :return: Tupel mit einem Exit-Code als erstes Element und dem Levelnamen als zweites
+    (Ausnahmen: (VIEW_SAVE_FILE, None); (NEW_LEVEL, level_folder))
+    """
+
     global level_folder
     try:
         return loop_no_exception(screen)

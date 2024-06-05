@@ -1,3 +1,6 @@
+"""Dieses Modul ist das Hauptprogramm des Spiels, in dem alle anderen Module "zusammengefügt" werden, um das gesamte
+Spiel zu erzeugen."""
+
 import pygame
 from pygame.locals import *
 from geometry_dash_recreation.constants import *
@@ -68,7 +71,14 @@ current_attempt = 0
 running = True
 
 
-def change_gamemode(name: str, init: bool = False) -> None:
+def change_gamemode(name: str) -> None:
+    """
+    Ändert den Gamemode im Spiel.
+
+    :param name: Name des Gamemodes (mögliche Werte: "cube", "ball", "ship")
+    :return:
+    """
+
     global player_spr, ceiling
     old_y = player_spr.sprite.hitbox.y
     old_vel = player_spr.sprite.vel
@@ -79,15 +89,20 @@ def change_gamemode(name: str, init: bool = False) -> None:
         ceiling.activated = False
     elif name in ("ship", "ball"):
         ceiling.activated = True
-    if init:
-        if ceiling.activated:
-            ceiling.rect.bottom = CEILING_HEIGHT
-        else:
-            ceiling.rect.bottom = 0
+    if ceiling.activated:
+        ceiling.rect.bottom = CEILING_HEIGHT
+    else:
+        ceiling.rect.bottom = 0
 
 
 def screen_func(surface: pygame.Surface) -> None:
-    global mode
+    """
+    Zeigt ein pygame.Surface auf dem Bildschirm an und wartet, bis der Spieler eine Taste oder die Maustaste drückt.
+
+    :param surface: Das pygame.Surface, das auf dem Bildschirm angezeigt werden soll
+    :return:
+    """
+
     clicked = False
     screen.blit(surface, (0, 0))
     pygame.display.flip()
@@ -101,12 +116,24 @@ def screen_func(surface: pygame.Surface) -> None:
 
 
 def get_current_level_percent() -> int:
+    """
+    Liefert den Prozentsatz des Verhältnisses zwischen der Weite, die der Spieler im aktuellen Level erreicht hat,
+    und der Länge des Levels.
+
+    :return: Der Prozentsatz
+    """
+
     global x_to_level, level_end
     return int(x_to_level / level_end * 100)
 
 
-# Diese Funktion wird von main_loop() aufgerufen, wenn der Spieler gerade im Spiel ist.
 def game_func() -> None:
+    """
+    Funktion mit einem Mainloop-Durchgang für das richtige Spielen.
+
+    :return:
+    """
+
     global mode, ev, click, gravity, level_gr, level_gr_unconverted, x_to_level, level_end, bg_2_front, current_attempt
     global current_percent_text, current_percent_rect, current_attempt_text, current_attempt_rect
     for event in pygame.event.get():
@@ -207,6 +234,13 @@ def game_func() -> None:
 
 
 def get_level_end() -> int:
+    """
+    Berechnet und liefert das Ende des aktuellen Levels, das in der globalen Variable level_gr_unconverted
+    gespeichert ist.
+
+    :return: Entfernung zwischen dem Anfang und dem Ende des Levels in Levelblockweiten (gdr.constants.UNIT)
+    """
+
     global level_gr_unconverted
     max_value = 0
     for sprite in level_gr_unconverted["sprites"]:
@@ -215,8 +249,13 @@ def get_level_end() -> int:
     return max_value + 10
 
 
-# Wird aufgerufen, um das Level zu initialisieren
 def init_level() -> str:
+    """
+    Initialisiert das Level mit dem Dateinamen in der globalen Variable current_level_name.
+
+    :return:
+    """
+
     global mode, level_gr, level_gr_unconverted, player_spr, ev, click, \
         gravity, current_level_name, x_to_level, level_end, current_attempt_rect, current_attempt
 
@@ -236,7 +275,7 @@ def init_level() -> str:
         level_end = get_level_end()
 
         # Gamemode
-        change_gamemode(level_gr_unconverted["data"]["gamemode"], True)
+        change_gamemode(level_gr_unconverted["data"]["gamemode"])
         player_spr.sprite.reset()
 
         # Physik
@@ -256,6 +295,16 @@ def init_level() -> str:
 
 
 def level_error() -> None:
+    """
+    Hauptschleifen-Durchgang für den Level-Error-Screen (gdr.error_screen.loop). Es wird die Fehlermeldung in der
+    globalen Variable level_error_msg engezeigt. Die globale Variable mode wird bei dem Schließen des Screens auf
+    "level select" gesetzt.
+
+    mode-Wert: "level error"
+
+    :return:
+    """
+
     global mode, level_error_msg
     error_scr = error_screen.loop(screen, level_error_msg)
     if error_scr == CONTINUE:
@@ -264,7 +313,16 @@ def level_error() -> None:
         mode = "level select"
 
 
-def lvl_select() -> None:
+def level_select_func() -> None:
+    """
+    Hauptschleifen-Durchgang für das Levelmenü (gdr.level.level_select.loop). Die globale Variable mode kann zu
+    folgenden Werten geändert werden: "view save file", "level editor", "init level", "new level".
+
+    mode-Wert: "level select"
+
+    :return:
+    """
+
     global mode, current_level_name, current_attempt
     current_attempt = 0
 
@@ -283,7 +341,16 @@ def lvl_select() -> None:
         mode = "new level"
 
 
-def savefile_view() -> None:
+def view_save_file_func() -> None:
+    """
+    Hauptschleifen-Durchgang für den Save-File-Viewer (gdr.save_file.view_save_file.loop). Die globale Variable mode
+    wird bei dem Schließen des Viewers auf "level select" gesetzt.
+
+    mode-Wert: "view save file"
+
+    :return:
+    """
+
     global mode
     savefile_screen = view_save_file.loop(screen, current_sf)
     if savefile_screen == CONTINUE:
@@ -293,6 +360,15 @@ def savefile_view() -> None:
 
 
 def level_editor_func() -> None:
+    """
+    Hauptschleifen-Durchgang für den Level-Editor (gdr.level_editor.editor.loop). Die globale Variable mode wird bei dem
+    Schließen des Editors auf "level select" gesetzt.
+
+    mode-Wert: "level editor"
+
+    :return:
+    """
+
     global mode, level_gr
     exit_code, level_group = editor.loop(screen, level_gr, level_gr_unconverted,
                                          bg_gr, background, background_2,
@@ -313,6 +389,15 @@ def level_editor_func() -> None:
 
 
 def new_level_func() -> None:
+    """
+    Hauptschleifen-Durchgang für das Menü zum Erstellen einer neuen Leveldatei (gdr.level_editor.level_properties.loop).
+    Die globale Variable mode wird bei dem Schließen des Editors auf "level select" gesetzt.
+
+    mode-Wert: "new level"
+
+    :return:
+    """
+
     global mode
     lp = level_properties.loop(screen, level_select.level_folder, "create")
 
@@ -322,17 +407,22 @@ def new_level_func() -> None:
         mode = "level select"
 
 
-# Die Mainloop-Funktion, die in jedem Frame aufgerufen wird und für bestimmte
-# Ereignisse einen Exit-Code zurückgibt.
 def main_loop() -> int:
+    """
+    Die Funktion, die in jedem Frame in der Funktion gdr.base.main_proc einmal aufgerufen wird und für verschiedene
+    Werte der globalen Variable mode die richtige Hauptschleifen-Durchgangs-Funktion ausführt
+
+    :return: Exit-Code (gdr.constants.CONTINUE oder gdr.constants.EXIT)
+    """
+
     global mode, level_error_msg, level_end, x_to_level
     match mode:
         case "game":
             game_func()
         case "level select":
-            lvl_select()
+            level_select_func()
         case "view save file":
-            savefile_view()
+            view_save_file_func()
         case "level editor":
             level_editor_func()
         case "new level":
@@ -363,9 +453,15 @@ def main_loop() -> int:
     return CONTINUE
 
 
-# Die Hauptfunktion, die nur einmal aufgerufen wird. Der while-Loop ruft
-# die Mainloop-Funktion auf und verwaltet ihre Exit-Codes.
-def main_proc() -> None:
+def main_process() -> None:
+    """
+    Die Hauptfunktion, die nur einmal bei dem Starten des Spiels von der Funktion gdr.base.main aufgerufen wird und
+    das ganze Spiel lang läuft. Hier befindet sich die Hauptschleife des Spiels, in der die Funktion gdr.base.main_loop
+    aufgerufen wird.
+
+    :return:
+    """
+
     global running
     clock = pygame.time.Clock()
     while running:
@@ -379,6 +475,11 @@ def main_proc() -> None:
     pygame.quit()
 
 
-# Die Funktion, die von __main__.py aufgerufen wird.
 def main():
-    main_proc()
+    """
+    Die Funktion, die von gdr.__main__ aufgerufen wird und selbst gdr.base.main_process aufruft.
+
+    :return:
+    """
+
+    main_process()

@@ -1,4 +1,4 @@
-import sys
+"""Dieses Modul ist für den Save-File-Viewer zuständig."""
 
 import pygame
 from geometry_dash_recreation.constants import *
@@ -19,22 +19,48 @@ name_edit = False
 name_temp = None
 
 
-def save_name(sf: save_file.SaveFile, name: str):
+def save_name(sf: save_file.SaveFile, name: str) -> None:
+    """
+    Speichert den Spielernamen in ein SaveFile-Objekt und serialisiert es.
+
+    :param sf: SaveFile-Objekt
+    :param name: Spielername
+    :return:
+    """
+
     sf.playerdata["name"] = name
     save_file.save_sf(sf, SAVE_FILE_PATH)
 
 
-def render_level_list(txt, pos, screen) -> None:
+def render_level_list(txt: str, ypos: int, screen: pygame.Surface) -> None:
+    """
+    Zeichnet ein Element der Level-Liste auf den Bildschirm.
+
+    :param txt: Der Textabschnitt, der angezeigt werden soll
+    :param ypos: y-Position des Textes zu SCREEN_HEIGHT * 0.67 (vordefinierte Position des Starts der Levelliste)
+        (wird mit SCREEN_HEIGHT * 0.04 multipliziert)
+    :param screen: pygame.Surface, auf das der Text gezeichnet werden soll
+    :return:
+    """
+
     render = fonts.aller_smaller.render(txt, True, (255, 255, 255))
     screen.blit(render, render.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.67 +
-                                                SCREEN_HEIGHT * 0.04 * pos)))
+                                                SCREEN_HEIGHT * 0.04 * ypos)))
 
 
 def loop(screen: pygame.Surface, sf: save_file.SaveFile) -> int:
+    """
+    Die Loop-Funktion des Save-File-Viewers.
+
+    :param screen: Der pygame.Surface, auf den der Viewer gezeichnet werden soll
+    :param sf: Das SaveFile-Objekt, dessen Inhalt angezeigt werden soll
+    :return: Exit-Code
+    """
+
     global exit_text, exit_rect, ntext, nrect
     global name_edit, name_temp
 
-    if name_temp == None:
+    if name_temp is None:
         name_temp = sf.playerdata["name"]
 
     for event in pygame.event.get():

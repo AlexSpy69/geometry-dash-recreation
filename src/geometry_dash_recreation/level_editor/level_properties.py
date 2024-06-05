@@ -1,3 +1,5 @@
+"""Das Modul, das für das Menü zum Bearbeiten der Eigenschaften eines Levels zuständig ist."""
+
 import pygame
 from geometry_dash_recreation.constants import *
 from geometry_dash_recreation.assets import fonts, ui_sprites, screens
@@ -42,6 +44,20 @@ def loop(screen: pygame.Surface, level_folder: str, mode: str, transparent: bool
          def_vals: tuple = ("", save_file.open_sf(SAVE_FILE_PATH).playerdata["name"],
                             "", "cube"),
          level_gr_unconverted: convert.Level = None) -> int | convert.Level:
+    """
+    Die Loop-Funktion für das Menü zum Bearbeiten von Leveleigenschaften.
+
+    :param screen: Der pygame.Surface, auf den das Menü gezeichnet werden soll.
+    :param level_folder: Der Level-Ordner des aktuellen Levels
+    :param mode: Aufschrift des Buttons zum Ausführen: "edit" für "Save new properties", ansonsten "Create empty level
+        file
+    :param transparent: Soll ein semitransparenter Hintergrund verwendet werden?
+    :param def_vals: Startwerte für die verschiedenen Level-Eigenschaften.
+    :param level_gr_unconverted: Leveldaten-Dictionary des aktuellen Levels.
+    :return: CONTINUE für das normale Fortfahren, EXIT für das Abbrechen des Menüs, oder level_gr_unconverted mit
+        den bearbeiteten Eigenschaften
+    """
+
     global name, creator, stars, gamemode
     global name_edit, creator_edit, stars_edit, gamemode_edit
     global name_text, creator_text, stars_text, gamemode_text

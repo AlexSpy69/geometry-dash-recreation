@@ -1,3 +1,5 @@
+"""Modul mit den Schriftarten und weiteren Funktionen zu ihnen."""
+
 import pygame
 from geometry_dash_recreation.constants import *
 
@@ -47,9 +49,23 @@ def render(text, font, gfcolor, ocolor, opx):
     surf.blit(textsurface, (opx, opx))
     return surf
 
+####################################################################################
 
-def text_with_outline(text: str, font: pygame.font.Font, outline_size: int=5,
-                      normal_color: tuple=(255, 255, 255), outline_color: tuple=(0, 0, 0)) -> pygame.Surface:
+
+def text_with_outline(text: str, font: pygame.font.Font, outline_size: int = 5,
+                      normal_color: tuple = (255, 255, 255), outline_color: tuple = (0, 0, 0)) \
+        -> pygame.Surface:
+    """
+    Liefert einen Text mit Umriss.
+
+    :param text: Beschriftung
+    :param font: Schriftart, die verwendet werden soll
+    :param outline_size: Größe des Umrisses in Pixeln
+    :param normal_color: Farbe der Hauptschrift
+    :param outline_color: Farbe des Umrisses
+    :return:
+    """
+
     return render(text, font, normal_color, outline_color, outline_size)
 
 

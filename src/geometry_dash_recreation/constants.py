@@ -1,3 +1,7 @@
+"""Dieses Modul enthält Konstanten mit wichtigen Einstellungen, an denen sich das gesamte Programm richtet,
+wie z. B. die Fenstergröße, die Seitenlänge eines einzelnen Spielblocks oder die Höhe, mit der der Spieler springt.
+Diese können bei Bedarf vom Benutzer eingestellt oder angepasst werden."""
+
 import screeninfo
 from pathlib import Path
 import pkg_resources
@@ -6,6 +10,15 @@ from geometry_dash_recreation import util
 
 
 def adapt_res(w: int, h: int) -> tuple:
+    """
+    Liefert ein Tupel mit einer für den Fullscreen-Modus angepassten Bildschirmgröße.
+
+    :param w: Bildschirmweite
+    :param h: Bildschirmhöhe
+
+    :returns: w, w * 9/16
+    """
+
     if w/h != 16/9:
         w = int(w * 9/16)
     return w, h

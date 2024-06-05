@@ -1,3 +1,5 @@
+"""Das Modul, das für den Level-Editor zuständig ist."""
+
 import pygame
 from geometry_dash_recreation.constants import *
 from geometry_dash_recreation.assets import ui_sprites, game_sprites, fonts
@@ -95,26 +97,59 @@ color_index = 0
 
 
 def snap_position(xpos: int, ypos: int) -> tuple:
+    """
+    Passt die angegebene Position zum Hauptraster des Spiels an.
+
+    :param xpos: x-Position
+    :param ypos: y-Position
+    :return: Die angepasste Position
+    """
+
     ypos -= 1
     xpos += 1
     return (round(xpos - xpos % UNIT + total_movement % UNIT, 2),
-            round(ypos - ypos % UNIT + UNIT, 2))
+            round(ypos - ypos % UNIT, 2))
 
 
 def current_to_initial_x(x: int) -> int:
+    """
+    Berechnet den x-Wert des Komponenten-Attributs initial_rect mithilfe des x-Werts des Komponenten-Attributs rect und
+    der global Variable total_movement.
+
+    :param x: x-Wert des rect-Attributs (rect.x)
+    :return: Zugehöriger x-Wert für initial_rect
+    """
+
     global total_movement
     return x - total_movement
 
 
 def add_component(level_gr: pygame.sprite.Group, component: game_sprites.Component) -> game_sprites.Component:
-    component.set_sprite_position(snap_position(*util.iter_add(pygame.mouse.get_pos(), (0, 0))), "lb")
+    """
+    Fügt eine Level-Komponente zu einer Level-Spritegruppe hinzu und passt seine Position dem Mauszeiger des Spielers
+    an.
+
+    :param level_gr: Level-Spritegruppe, zu der der Level-Komponent hinzufügt werden soll.
+    :param component: Die Level-Komponente
+    :return: Referenz zum Level-Komponenten
+    """
+
+    component.set_sprite_position(snap_position(*util.iter_add(pygame.mouse.get_pos(), (0, 0))))
     component.initial_rect.x = current_to_initial_x(component.rect.x)
     component.initial_rect.y = component.rect.y
     level_gr.add(component)
     return component
 
 
-def move_rotate_event(sprite: game_sprites.HitboxSprite, event: pygame.event.Event):
+def move_rotate_event(sprite: game_sprites.Component, event: pygame.event.Event):
+    """
+    Bewegt oder dreht einen Komponenten-Sprite anhand der Tastatureingabe des Spielers mithilfe von Pygame-Events.
+
+    :param sprite: gdr.assets.game_sprites.Component-Objekt
+    :param event: pygame.event.Event-Objekt
+    :return:
+    """
+
     global selected_sprite
     rotate = False
 
@@ -137,10 +172,17 @@ def move_rotate_event(sprite: game_sprites.HitboxSprite, event: pygame.event.Eve
         return
 
     if not rotate:
-        sprite.set_sprite_position(snap_position(sprite.rect.left, sprite.rect.bottom), "lb")
+        sprite.set_sprite_position(snap_position(sprite.rect.left, sprite.rect.bottom))
 
 
 def move_rotate_button(sprite: game_sprites.HitboxSprite) -> bool:
+    """
+    Bewegt oder dreht einen Komponenten-Sprite anhand der entsprechenden UI-Buttons im Editor.
+
+    :param sprite: gdr.assets.game_sprites.Component-Objekt
+    :return: Wurde einer der Buttons gedrückt?
+    """
+
     global selected_sprite
     rotate = False
 
@@ -162,12 +204,18 @@ def move_rotate_button(sprite: game_sprites.HitboxSprite) -> bool:
         return False
 
     if not rotate:
-        sprite.set_sprite_position(snap_position(sprite.rect.left, sprite.rect.bottom), "lb")
+        sprite.set_sprite_position(snap_position(sprite.rect.left, sprite.rect.bottom))
 
     return True
 
 
 def update_label() -> None:
+    """
+    Aktualisiert den Inhalt der Kompoenten-Attribut-Labels.
+
+    :return:
+    """
+
     global imgfile_text, objecttype_text, objectcolor_text, movementmode_text, option
     imgfile_text = fonts.aller_small.render(
         f'Image Name: {selected_sprite.image_filename[len(ASSETS_FOLDER + "/textures/components")::]}',
@@ -183,6 +231,19 @@ def update_label() -> None:
 
 
 def option_handle(option_increase: int) -> None:
+    """
+    Ändert das ausgewählte Komponenten-Attribut. Das ausgewählte Attribut hängt von dem Wert der globalen Variable
+    option ab:
+
+    * option == 1: image_filename
+    * option == 2: type
+    * option == 3: color
+
+    :param option_increase: Inkrementierwert des Indexes in der Wertliste des aktuellen Attributs
+        (Möglichkeiten: COMPONENT_IMGFILE_LIST, COMPONENT_TYPE_LIST, COMPONENT_COLOR_LIST)
+    :return:
+    """
+
     global selected_sprite, img_index, type_index, color_index
     if option == 1 and type(selected_sprite) is not game_sprites.HitboxSprite:
         img_index += option_increase
@@ -196,7 +257,7 @@ def option_handle(option_increase: int) -> None:
         selected_sprite.real_init()
         selected_sprite.initial_rect.left, selected_sprite.initial_rect.bottom = temp_initial_rect
         selected_sprite.rect.left, selected_sprite.rect.bottom = temp_rect
-        selected_sprite.set_sprite_position(snap_position(selected_sprite.rect.left, selected_sprite.rect.bottom), "lb")
+        selected_sprite.set_sprite_position(snap_position(selected_sprite.rect.left, selected_sprite.rect.bottom))
 
     elif option == 2:
         type_index += option_increase
@@ -210,12 +271,25 @@ def option_handle(option_increase: int) -> None:
 
 
 def option_limit() -> None:
+    """
+    Sorgt dafür, dass die globale Variable option niemals 3 überschreitet oder 1 unterschreitet. Diese Funktion wird
+    jedes Mal aufgerufen, nachdem der Wert von option geändert wird.
+
+    :return:
+    """
+
     global option
     option %= 4
     option = 1 if option == 0 else option
 
 
 def option_button() -> bool:
+    """
+    Ändert den Wert der globalen Variable option anhand der entsprechenden UI-Buttons im Editor.
+
+    :return: Wurde einer der Buttons gedrückt?
+    """
+
     global option
     if option_up.rect.collidepoint(*pygame.mouse.get_pos()):
         option -= 1
@@ -233,7 +307,13 @@ def option_button() -> bool:
     return True
 
 
-def move_level_button() -> bool:
+def move_level_view_button() -> bool:
+    """
+    Bewegt den View auf das Level anhand der entsprechenden UI-Buttons im Editor.
+
+    :return: Wurde einer der Buttons gedrückt?
+    """
+
     global movement
     if level_move_left.rect.collidepoint(*pygame.mouse.get_pos()):
         movement = 1
@@ -244,7 +324,13 @@ def move_level_button() -> bool:
     return True
 
 
-def draw_grid(screen: pygame.Surface):
+def draw_grid(screen: pygame.Surface) -> None:
+    """
+    Zeichnet das Level-Raster.
+    :param screen: pygame.Surface, auf das das Raster gezeichnet werden soll
+    :return:
+    """
+
     global total_movement
     for x in range(0, int(SCREEN_WIDTH / UNIT)):
         pygame.draw.line(screen, (0, 0, 0), snap_position(x * UNIT, -UNIT), (
@@ -256,6 +342,19 @@ def draw_grid(screen: pygame.Surface):
 
 def lp_loop(screen: pygame.Surface, level_folder: str, level_gr_unconverted: convert.Level,
             bg_gr: pygame.sprite.Group, level_gr: pygame.sprite.Group) -> bool | dict:
+    """
+    Loop-Funktion für das Menü zum Ändern der Level-Eigenschaften des aktuellen Levels. In dieser Funktion wird der
+    Mainloop unterbrochen.
+
+    :param screen: pygame.Surface, auf den das Menü gezeichnet werden soll
+    :param level_folder: Levelordner, in dem sich das Level befindet
+    :param level_gr_unconverted: Das entsprechende gdr.level.convert.Level-Objekt
+    :param bg_gr: Pygame-Spritegruppe mit den Background-Sprites (Hintergrund, Boden, Decke)
+    :param level_gr: Level-Spritegruppe des aktuellen Levels
+    :return: Dictionary mit den neuen Werten für ["info"]["name"], ["info"]["creator"], ["info"]["stars"],
+        ["data"]["gamemode"]; ansonsten False, wenn der Spieler das Menü abbricht
+    """
+
     while True:
         bg_gr.draw(screen)
         level_gr.draw(screen)
@@ -287,6 +386,23 @@ def lp_loop(screen: pygame.Surface, level_folder: str, level_gr_unconverted: con
 def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconverted: convert.Level,
          bg_gr: pygame.sprite.Group, background: game_sprites.Background, background_2: game_sprites.Background,
          level_folder: str) -> tuple:
+    """
+    Loop-Funktion für den Level-Editor, die in gdr.base aufgerufen wird.
+
+    :param screen: pygame.Surface, auf den der Editor gezeichnet werden soll
+    :param level_gr: Level-Spritegruppe des aktuellen Levels
+    :param level_gr_unconverted: Leveldaten-Dictionary des aktuellen Levels
+    :param bg_gr: Pygame-Spritegruppe mit den Background-Sprites (Hintergrund, Boden, Decke)
+    :param background: Der erste Background-Sprite aus gdr.base
+    :param background_2: Der zweite Background-Sprite aus gdr.base
+    :param level_folder: Der Ordner, in dem sich der aktuelle Level befindet
+    :return: Folgende Tupel-Kombinationen sind möglich:
+        (CONTINUE, None),
+        (EXIT, None),
+        (SAVE_LEVEL, level_gr),
+        (SAVE_LEVEL_PROPERTIES, level_gr_unconverted)
+    """
+
     global bg_2_front, movement, total_movement, movement_mode, selected_sprite, \
         option, type_index, color_index, img_index
     global objecttype_text, objectcolor_text, movementmode_text, imgfile_text
@@ -318,7 +434,7 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
                 update_label()
                 break
 
-            if move_level_button():
+            if move_level_view_button():
                 break
 
             if movement_mode == "single":
