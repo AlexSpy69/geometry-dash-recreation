@@ -121,6 +121,22 @@ def current_level_percentage() -> int:
     return save_file.open_sf(SAVE_FILE_PATH).get_level_percent(selected_level())
 
 
+def sort_level_list_by_difficulty() -> None:
+    """
+    Sortierd die Level-Liste (globale Variable level_list) anhand der Schwierigkeitsgrade der Levels.
+
+    :return:
+    """
+
+    def get_level_stars(levelname: str) -> int:
+        return int(level_files.open_level_data(f'{level_folder}/{levelname}')["info"]["stars"])
+
+    for i in range(len(level_list)):
+        for j in range(i, len(level_list)):
+            if get_level_stars(level_list[i]) > get_level_stars(level_list[j]):
+                level_list[i], level_list[j] = level_list[j], level_list[i]
+
+
 def loop_no_exception(screen: pygame.Surface) -> tuple:
     """
     Loop-Funktion für das Levelmenü. Fehler, die während dem Laufen der Funktion auftreten, können nicht abgefangen
@@ -185,6 +201,7 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
     try:
         if not level_folder_edit:
             level_list = os.listdir(level_folder)
+            sort_level_list_by_difficulty()
             if len(level_list) != 0:
                 level_info = level_files.open_level_data(level_folder + "/" + level_list[level_nr])["info"]
             else:

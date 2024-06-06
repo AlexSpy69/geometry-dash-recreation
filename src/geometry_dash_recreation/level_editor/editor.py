@@ -500,9 +500,9 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
             option_limit()
 
             if event.key == pygame.K_o:
-                option_handle(option, 1)
+                option_handle(1)
             elif event.key == pygame.K_l:
-                option_handle(option, -1)
+                option_handle(-1)
 
             update_label()
 

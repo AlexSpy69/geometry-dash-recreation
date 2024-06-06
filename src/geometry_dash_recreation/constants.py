@@ -43,7 +43,7 @@ HOME_FOLDER = str(Path.home())
 
 # Ressourcen-Ordner
 ASSETS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "assets")
-LEVELS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "levels")
+LEVELS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "main_levels_folder")
 
 # Ingame-Konstanten
 FPS = 60                        # Bilder pro Sekunde
