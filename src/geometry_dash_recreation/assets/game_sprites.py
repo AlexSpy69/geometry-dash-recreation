@@ -274,7 +274,7 @@ class Cube(Gamemode):
                         return DEATH
                     case "pad":
                         self.jump(gravity * PAD_VEL[sprite.color])
-                    case "forportal":
+                    case "formportal":
                         match sprite.color:
                             case "magenta":
                                 return SHIP_GAMEMODE
