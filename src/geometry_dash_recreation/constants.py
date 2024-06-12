@@ -24,18 +24,24 @@ def adapt_res(w: int, h: int) -> tuple:
     return w, h
 
 
+FULLSCREEN = None
+MONITOR_NR = None
+
 try:
     width, height = map(int, sys.argv[1:3])
     FULLSCREEN = False
+    MONITOR_NR = -1
 except (ValueError, IndexError):
     try:
         MONITOR_NR = int(sys.argv[1])
+        width = screeninfo.get_monitors()[MONITOR_NR].width
+        height = screeninfo.get_monitors()[MONITOR_NR].height
+        width, height = adapt_res(width, height)
+        FULLSCREEN = True
     except (ValueError, IndexError):
-        MONITOR_NR = 0
-    width = screeninfo.get_monitors()[MONITOR_NR].width
-    height = screeninfo.get_monitors()[MONITOR_NR].height
-    width, height = adapt_res(width, height)
-    FULLSCREEN = True
+        width, height = 640, 360
+        FULLSCREEN = False
+        MONITOR_NR = -1
 
 
 # Home-Ordner
@@ -43,7 +49,8 @@ HOME_FOLDER = str(Path.home())
 
 # Ressourcen-Ordner
 ASSETS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "assets")
-LEVELS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "main_levels_folder")
+MAIN_LEVELS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "main_levels_folder")
+USER_LEVELS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "user_levels_folder")
 
 # Ingame-Konstanten
 FPS = 60                        # Bilder pro Sekunde
@@ -111,3 +118,15 @@ CHANGE_GRAVITY = 13         # Die Grawitationsrichtung soll gewechselt werden.
 CUBE_GAMEMODE = 20          # Das Spiel soll zum Cube-Gamemode wechseln.
 SHIP_GAMEMODE = 21          # Das Spiel soll zum Ship-Gamemode wechseln.
 BALL_GAMEMODE = 22          # Das Spiel soll zum Ball-Gamemode wechseln.
+
+
+def create_all_list() -> list:
+    all_vars = list(globals().keys())
+    to_remove = "screeninfo", "Path", "pkg_resources", "sys", "util", "width", "height", "adapt_res", "create_all_list"
+    for to_remove_element in to_remove:
+        all_vars.remove(to_remove_element)
+
+    return all_vars
+
+
+__all__ = create_all_list()

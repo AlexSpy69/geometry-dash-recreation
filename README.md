@@ -1,16 +1,16 @@
 # geometry-dash-recreation
 
-Recreation of Geometry Dash by RobTop Games.
+Recreation of the game "Geometry Dash" by RobTop Games.
 
 ## Installation
 
 To install this package, you have to run `pip install .` in its root directory.
 
-To run it, you can run `python3 -m geometry_dash_recreation` (from any directory).
+To run the game, you have to run `python3 -m geometry_dash_recreation` (from any directory).
 
 ## Resources
 
-Icons: https://gdbrowser.com/iconkit/
+Player Icons: https://gdbrowser.com/iconkit/
 
 Level Components: https://geometry-wiki-dash.fandom.com/wiki/Level_Components
 
@@ -40,3 +40,7 @@ Edit icon: https://www.pngegg.com/en/png-wjihl
 /src/geometry_dash_recreation/assets/spritesheets.py - https://www.pygame.org/wiki/Spritesheet - for spritesheet handling
 
 /src/geometry_dash_recreation/assets/fonts.py - https://stackoverflow.com/questions/54363047/how-to-draw-outline-on-the-fontpygame - to add outline to text label
+
+## Links
+
+RobTop Games: https://www.robtopgames.com/

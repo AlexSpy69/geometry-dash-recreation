@@ -1,8 +1,8 @@
-"""Dieses Modul ist das Hauptprogramm des Spiels, in dem alle anderen Module "zusammengefügt" werden, um das gesamte
+"""Dieses Modul ist das Hauptprogramm des Spiels, in dem alle anderen Module zusammengefügt werden, um das gesamte
 Spiel zu erzeugen."""
 
+import time
 import pygame
-from pygame.locals import *
 from geometry_dash_recreation.constants import *
 
 # Pygame-Initialisierung
@@ -89,30 +89,38 @@ def change_gamemode(name: str) -> None:
         ceiling.activated = False
     elif name in ("ship", "ball"):
         ceiling.activated = True
-    if ceiling.activated:
-        ceiling.rect.bottom = CEILING_HEIGHT
-    else:
-        ceiling.rect.bottom = 0
 
 
 def screen_func(surface: pygame.Surface) -> None:
     """
     Zeigt ein pygame.Surface auf dem Bildschirm an und wartet, bis der Spieler eine Taste oder die Maustaste drückt.
+    Falls der Spieler einen Doppelclick ausführt, wird die globale Variable mode auf "level select" gesetzt.
 
     :param surface: Das pygame.Surface, das auf dem Bildschirm angezeigt werden soll
     :return:
     """
 
+    global mode
+
     clicked = False
+    start_time = None
+    next_click_second = False
+
     screen.blit(surface, (0, 0))
     pygame.display.flip()
     while not clicked:
+        if next_click_second and time.time() - start_time > 0.2:
+            clicked = True
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == pygame.QUIT:
                 clicked = True
-            if event.type == MOUSEBUTTONDOWN or \
-                    event.type == KEYDOWN:
-                clicked = True
+            if event.type == pygame.MOUSEBUTTONDOWN or \
+                    event.type == pygame.KEYDOWN:
+                if next_click_second and time.time() - start_time < 0.2:
+                    mode = "level select"
+                    clicked = True
+                start_time = time.time()
+                next_click_second = True
 
 
 def get_current_level_percent() -> int:
@@ -129,7 +137,7 @@ def get_current_level_percent() -> int:
 
 def game_func() -> None:
     """
-    Funktion mit einem Mainloop-Durchgang für das richtige Spielen.
+    Funktion mit einem Mainloop-Durchgang für das Spielen eines Levels.
 
     :return:
     """
@@ -137,25 +145,25 @@ def game_func() -> None:
     global mode, ev, click, gravity, level_gr, level_gr_unconverted, x_to_level, level_end, bg_2_front, current_attempt
     global current_percent_text, current_percent_rect, current_attempt_text, current_attempt_rect
     for event in pygame.event.get():
-        if event.type == QUIT:
+        if event.type == pygame.QUIT:
             mode = "level select"
-        elif event.type == MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             if pause_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 screen_func(pause_screen)
                 continue
             ev = True
             click = True
-        elif event.type == MOUSEBUTTONUP:
+        elif event.type == pygame.MOUSEBUTTONUP:
             ev = False
-        elif event.type == KEYDOWN:
-            if event.key == K_SPACE or event.key == K_UP:
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
                 ev = True
                 click = True
-            if event.key == K_ESCAPE:
+            if event.key == pygame.K_ESCAPE:
                 screen_func(pause_screen)
                 continue
-        elif event.type == KEYUP:
-            if event.key == K_SPACE or event.key == K_UP:
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
                 ev = False
 
     # Überprüfen, ob der Spieler das Levelende erreicht hat
@@ -475,7 +483,7 @@ def main_process() -> None:
     pygame.quit()
 
 
-def main():
+def main() -> None:
     """
     Die Funktion, die von gdr.__main__ aufgerufen wird und selbst gdr.base.main_process aufruft.
 

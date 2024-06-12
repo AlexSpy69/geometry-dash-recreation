@@ -94,7 +94,7 @@ def loop(screen: pygame.Surface, level_folder: str, mode: str, transparent: bool
                 if mode == "create":
                     r = convert.Level()
                     r["info"]["name"], r["info"]["creator"], r["info"]["stars"], r["data"]["gamemode"] = \
-                        name, creator, stars, gamemode
+                        name, creator, stars, gamemode.lower()
                     level_files.save_level_data(level_folder + "/" + name, r)
                     return EXIT
                 elif mode == "edit":

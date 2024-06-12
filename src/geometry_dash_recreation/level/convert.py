@@ -2,7 +2,7 @@
 
 import pygame
 from geometry_dash_recreation.assets import game_sprites
-from geometry_dash_recreation.constants import *
+from geometry_dash_recreation.constants import UNIT, ASSETS_FOLDER
 
 pygame.init()
 

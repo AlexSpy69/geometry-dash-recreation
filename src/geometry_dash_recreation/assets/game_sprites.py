@@ -143,6 +143,7 @@ class Gamemode(ABC, HitboxSprite):
         self.hitbox = self.image.get_rect()
         self.hitbox.right, self.hitbox.bottom = PLAYER_X, PLAYER_Y
 
+        self.image_filename = f"{ASSETS_FOLDER}/textures/icons/{filename}"
         self.vel = 0
         self.angle = 0
 
@@ -179,7 +180,7 @@ class Gamemode(ABC, HitboxSprite):
         if gravity == 1:
             return self.hitbox.bottom - DEATH_ACCURACY >= sprite.hitbox.top
         elif gravity == -1:
-            return self.hitbox.bottom + DEATH_ACCURACY <= sprite.hitbox.top
+            return self.hitbox.top + DEATH_ACCURACY <= sprite.hitbox.bottom
 
     @abstractmethod
     def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
@@ -259,24 +260,26 @@ class Cube(Gamemode):
         # Landen auf Level-Komponenten
         for sprite in level_gr:
             if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
-                if sprite.type == "platform":
-                    if self.death_touch(gravity, sprite):
+                match sprite.type:
+                    case "platform":
+                        if self.death_touch(gravity, sprite):
+                            return DEATH
+                        self.angle = round(self.angle / 90) * 90
+                        if gravity == 1:
+                            self.hitbox.bottom = sprite.hitbox.top
+                        elif gravity == -1:
+                            self.hitbox.top = sprite.hitbox.bottom
+                        self.vel = 0
+                    case "hazard":
                         return DEATH
-                    self.angle = round(self.angle / 90) * 90
-                    if gravity == 1:
-                        self.hitbox.bottom = sprite.hitbox.top
-                    elif gravity == -1:
-                        self.hitbox.top = sprite.hitbox.bottom
-                    self.vel = 0
-                elif sprite.type == "hazard":
-                    return DEATH
-                elif sprite.type == "pad":
-                    self.jump(gravity * PAD_VEL[sprite.color])
-                elif sprite.type == "formportal":
-                    if sprite.color == "magenta":
-                        return SHIP_GAMEMODE
-                    elif sprite.color == "red":
-                        return BALL_GAMEMODE
+                    case "pad":
+                        self.jump(gravity * PAD_VEL[sprite.color])
+                    case "forportal":
+                        match sprite.color:
+                            case "magenta":
+                                return SHIP_GAMEMODE
+                            case "red":
+                                return BALL_GAMEMODE
 
         self.angle = 0 if self.angle == 360 or self.angle == -360 else self.angle
 
@@ -353,21 +356,25 @@ class Ship(Gamemode):
         # Landen auf Level-Komponenten
         for sprite in level_gr:
             if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
-                if sprite.type == "platform":
-                    if self.death_touch(gravity, sprite):
+                match sprite.type:
+                    case "platform":
+                        normal_death = self.death_touch(gravity, sprite)
+                        upside_down_death = self.death_touch(-gravity, sprite)
+                        if normal_death and upside_down_death:
+                            return DEATH
+                        self.smooth_angle()
+                        if not normal_death or not upside_down_death:
+                            self.vel = 0
+                    case "hazard":
                         return DEATH
-                    self.smooth_angle()
-                    if not ev:
-                        self.vel = 0
-                elif sprite.type == "hazard":
-                    return DEATH
-                elif sprite.type == "pad":
-                    self.jump(gravity * PAD_VEL[sprite.color])
-                elif sprite.type == "formportal":
-                    if sprite.color == "green":
-                        return CUBE_GAMEMODE
-                    elif sprite.color == "red":
-                        return BALL_GAMEMODE
+                    case "pad":
+                        self.jump(gravity * PAD_VEL[sprite.color])
+                    case "formportal":
+                        match sprite.color:
+                            case "green":
+                                return CUBE_GAMEMODE
+                            case "red":
+                                return BALL_GAMEMODE
 
         return NORMAL
 
@@ -428,25 +435,27 @@ class Ball(Gamemode):
         # Landen auf Level-Komponenten
         for sprite in level_gr:
             if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
-                if sprite.type == "platform":
-                    if self.death_touch(gravity, sprite):
+                match sprite.type:
+                    case "platform":
+                        if self.death_touch(gravity, sprite):
+                            return DEATH
+                        if gravity == 1:
+                            self.hitbox.bottom = sprite.hitbox.top
+                        else:
+                            self.hitbox.top = sprite.hitbox.bottom
+                        self.vel = 0
+                        if click:
+                            return self.change_gravity(gravity)
+                    case "hazard":
                         return DEATH
-                    if gravity == 1:
-                        self.hitbox.bottom = sprite.hitbox.top
-                    else:
-                        self.hitbox.top = sprite.hitbox.bottom
-                    self.vel = 0
-                    if click:
-                        return self.change_gravity(gravity)
-                elif sprite.type == "hazard":
-                    return DEATH
-                elif sprite.type == "pad":
-                    self.jump(gravity * PAD_VEL[sprite.color])
-                elif sprite.type == "formportal":
-                    if sprite.color == "green":
-                        return CUBE_GAMEMODE
-                    elif sprite.color == "magenta":
-                        return SHIP_GAMEMODE
+                    case "pad":
+                        self.jump(gravity * PAD_VEL[sprite.color])
+                    case "formportal":
+                        match sprite.color:
+                            case "green":
+                                return CUBE_GAMEMODE
+                            case "magenta":
+                                return SHIP_GAMEMODE
 
         self.angle = 0 if self.angle == 360 or self.angle == -360 else self.angle
 
@@ -500,7 +509,9 @@ class Ceiling(pygame.sprite.Sprite):
     def update(self) -> None:
         """
         Lässt die Decke ab, falls das Attribut activated True ist, und bewegt sie wieder nach oben, wenn activated
-        False ist. :return:
+        False ist.
+
+        :return:
         """
 
         if self.activated:
@@ -515,6 +526,7 @@ class Ceiling(pygame.sprite.Sprite):
 class Component(HitboxSprite):
     """
     Klasse für die Level-Komponenten.
+
     :var image_filename: Dateiname der Image-Datei, die als Textur verwendet werden soll.
     :var pos: Tupel mit der Position des Sprites in UNIT.
     :var size: Größe des Sprites in UNIT.
@@ -529,6 +541,7 @@ class Component(HitboxSprite):
                  *groups: AbstractGroup) -> None:
         """
         Konstruktormethode von Component.
+
         :param imgfile: Dateiname der Image-Datei, die als Textur verwendet werden soll.
         :param pos: Tupel mit der Position des Sprites in UNIT.
         :param size: Größe des Sprites in UNIT.

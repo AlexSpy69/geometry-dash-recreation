@@ -1,6 +1,6 @@
 """Modul, das für das Levelmenü zuständig ist"""
 
-import os
+import os, sys
 
 import pygame
 from geometry_dash_recreation.constants import *
@@ -12,7 +12,7 @@ pygame.init()
 pygame.font.init()
 
 try:
-    os.mkdir(LEVELS_FOLDER)
+    os.mkdir(USER_LEVELS_FOLDER)
 except FileExistsError:
     pass
 
@@ -60,7 +60,7 @@ exit_button.rect.x, exit_button.rect.y = SCREEN_WIDTH * 0.91, SCREEN_HEIGHT * 0.
 ui_other_gr = pygame.sprite.Group(user_icon, build_icon, exit_button, plus_icon, trash_icon)
 
 # Level-Variablen
-level_folder = LEVELS_FOLDER
+level_folder = MAIN_LEVELS_FOLDER
 level_list = os.listdir(level_folder)
 level_nr = 0
 
@@ -123,7 +123,7 @@ def current_level_percentage() -> int:
 
 def sort_level_list_by_difficulty() -> None:
     """
-    Sortierd die Level-Liste (globale Variable level_list) anhand der Schwierigkeitsgrade der Levels.
+    Sortiert die Level-Liste (globale Variable level_list) anhand der Schwierigkeitsgrade der Levels.
 
     :return:
     """
@@ -158,7 +158,12 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
                 if len(level_list) != 0:
                     return PLAY_LEVEL, selected_level()
             elif folder_rect.collidepoint(*pygame.mouse.get_pos()):
-                level_folder_edit = not level_folder_edit
+                if not level_folder_edit:
+                    level_folder_edit = True
+                else:
+                    level_folder = level_folder.replace("Main levels folder", MAIN_LEVELS_FOLDER)
+                    level_folder = level_folder.replace("User levels folder", USER_LEVELS_FOLDER)
+                    level_folder_edit = False
                 continue
             elif user_icon.rect.collidepoint(*pygame.mouse.get_pos()):
                 return VIEW_SAVE_FILE, None
@@ -183,17 +188,22 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
                 prev_level()
             elif event.key == pygame.K_RETURN:
                 if level_folder_edit:
+                    level_folder = level_folder.replace("Main levels folder", MAIN_LEVELS_FOLDER)
+                    level_folder = level_folder.replace("User levels folder", USER_LEVELS_FOLDER)
                     level_folder_edit = False
                 else:
                     return PLAY_LEVEL, selected_level()
             elif event.key == pygame.K_BACKSPACE and level_folder_edit:
                 if len(level_folder) > 0:
                     level_folder = level_folder[:-1]
+            elif event.key == pygame.K_DELETE:
+                if level_folder_edit:
+                    level_folder = ""
             elif event.key == pygame.K_ESCAPE:
                 if not level_folder_edit:
                     sys.exit(0)
 
-            if level_folder_edit and event.key not in (pygame.K_BACKSPACE, pygame.K_RETURN):
+            if level_folder_edit and event.key not in (pygame.K_BACKSPACE, pygame.K_RETURN, pygame.K_DELETE):
                 level_folder += event.unicode
 
     screen.fill((50, 0, 25))
@@ -239,12 +249,14 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
         comp_text = fonts.aller_normal.render(f'{current_level_percentage()}% Completed', True, (255, 100, 100))
 
     if not level_folder_edit:
-        if level_folder == LEVELS_FOLDER:
-            folder_text = fonts.aller_small.render(f'Current level folder: Default level folder', True, (255, 255, 255))
+        if level_folder == MAIN_LEVELS_FOLDER:
+            folder_text = fonts.aller_small.render(f'Current levels folder: Main levels folder', True, (255, 255, 255))
+        elif level_folder == USER_LEVELS_FOLDER:
+            folder_text = fonts.aller_small.render(f'Current levels folder: User levels folder', True, (255, 255, 255))
         else:
-            folder_text = fonts.aller_small.render(f'Current level folder: {level_folder}', True, (255, 255, 255))
+            folder_text = fonts.aller_small.render(f'Current levels folder: {level_folder}', True, (255, 255, 255))
     else:
-        folder_text = fonts.aller_small.render(f'Current level folder: {level_folder}', True,
+        folder_text = fonts.aller_small.render(f'Current levels folder: {level_folder}', True,
                                                (0, 255, 0))
 
     levelname_rect = levelname_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2.7))
@@ -286,5 +298,5 @@ def loop(screen: pygame.Surface) -> tuple:
     except Exception as e:
         while error_screen.loop(screen, str(e)) != EXIT:
             pygame.display.update()
-        level_folder = LEVELS_FOLDER
+        level_folder = MAIN_LEVELS_FOLDER
         return loop_no_exception(screen)

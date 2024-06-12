@@ -116,8 +116,10 @@ def loop(screen: pygame.Surface, sf: save_file.SaveFile) -> int:
 
     counter = 0
     for lvlname in sf.lvldict.keys():
-        if lvlname.startswith(LEVELS_FOLDER):
-            txt = f'Default levels/{lvlname.split("/")[-1]}, {sf.lvldict[lvlname]}%'
+        if lvlname.startswith(MAIN_LEVELS_FOLDER):
+            txt = f'Main levels/{lvlname.split("/")[-1]}, {sf.lvldict[lvlname]}%'
+        elif lvlname.startswith(USER_LEVELS_FOLDER):
+            txt = f'User levels/{lvlname.split("/")[-1]}, {sf.lvldict[lvlname]}%'
         elif lvlname.startswith(HOME_FOLDER):
             txt = f'{lvlname.strip(HOME_FOLDER)}, {sf.lvldict[lvlname]}%'
         else:

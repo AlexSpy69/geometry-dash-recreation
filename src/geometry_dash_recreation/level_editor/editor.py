@@ -421,7 +421,7 @@ def loop(screen: pygame.Surface, level_gr: pygame.sprite.Group, level_gr_unconve
             elif edit_icon.rect.collidepoint(*pygame.mouse.get_pos()):
                 lp_r = lp_loop(screen, level_folder, level_gr_unconverted, bg_gr, level_gr)
                 if lp_r:
-                    return SAVE_LEVEL_PROPERTIES, level_gr_unconverted
+                    return SAVE_LEVEL_PROPERTIES, lp_r
                 else:
                     break
             elif objectinfo_surface_rect.collidepoint(*pygame.mouse.get_pos()):
