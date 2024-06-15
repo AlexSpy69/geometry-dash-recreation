@@ -4,9 +4,9 @@ Diese können bei Bedarf vom Benutzer eingestellt oder angepasst werden."""
 
 import screeninfo
 from pathlib import Path
-import pkg_resources
+from importlib import resources
 import sys
-from geometry_dash_recreation import util
+from geometry_dash_recreation import util, help
 
 
 def adapt_res(w: int, h: int) -> tuple:
@@ -42,15 +42,16 @@ except (ValueError, IndexError):
         width, height = 640, 360
         FULLSCREEN = False
         MONITOR_NR = -1
+        help.print_help()
 
 
 # Home-Ordner
 HOME_FOLDER = str(Path.home())
 
 # Ressourcen-Ordner
-ASSETS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "assets")
-MAIN_LEVELS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "main_levels_folder")
-USER_LEVELS_FOLDER = pkg_resources.resource_filename("geometry_dash_recreation", "user_levels_folder")
+ASSETS_FOLDER = str(resources.path("geometry_dash_recreation", "assets"))
+MAIN_LEVELS_FOLDER = str(resources.path("geometry_dash_recreation", "main_levels_folder"))
+USER_LEVELS_FOLDER = str(resources.path("geometry_dash_recreation", "user_levels_folder"))
 
 # Ingame-Konstanten
 FPS = 60                        # Bilder pro Sekunde

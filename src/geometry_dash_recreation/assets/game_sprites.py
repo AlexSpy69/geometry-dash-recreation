@@ -115,6 +115,139 @@ class HitboxSprite(pygame.sprite.Sprite):
             self.angle = goal_angle
 
 
+# Background-Sprites
+class Ground(pygame.sprite.Sprite):
+    """
+    Sprite-Klasse für den Boden im Spiel.
+    """
+
+    def __init__(self, *groups: AbstractGroup) -> None:
+        super().__init__(*groups)
+        self.image = pygame.image.load(f"{const.ASSETS_FOLDER}/textures/bg/ground.jpg").convert()
+        self.image = pygame.transform.scale(self.image, (const.SCREEN_WIDTH + const.UNIT, const.SCREEN_HEIGHT))
+        self.rect = self.image.get_rect()
+        self.rect.left, self.rect.top = -const.UNIT, const.GROUND_HEIGHT
+
+
+class Background(pygame.sprite.Sprite):
+    """
+    Sprite-Klasse für den Hintergrund im Spiel.
+    """
+
+    def __init__(self, *groups: AbstractGroup) -> None:
+        super().__init__(*groups)
+        self.image = pygame.image.load(f"{const.ASSETS_FOLDER}/textures/bg/background.png").convert()
+        self.image = pygame.transform.scale(self.image, (const.SCREEN_HEIGHT * 2 * (16 / 9),
+                                                         const.SCREEN_HEIGHT * 2))
+        self.rect = self.image.get_rect()
+        self.rect.left, self.rect.top = 0, -const.SCREEN_HEIGHT / 4
+
+    def reset(self):
+        self.rect.left, self.rect.top = 0, -const.SCREEN_HEIGHT / 4
+
+
+class Ceiling(pygame.sprite.Sprite):
+    """
+    Sprite-Klasse für die Decke im Spiel.
+    """
+
+    def __init__(self, *groups: AbstractGroup) -> None:
+        super().__init__(*groups)
+        self.image = pygame.image.load(f"{const.ASSETS_FOLDER}/textures/bg/ground.jpg").convert()
+        self.image = pygame.transform.scale(self.image, (const.SCREEN_WIDTH, const.SCREEN_HEIGHT))
+        self.rect = self.image.get_rect()
+        self.rect.left, self.rect.bottom = 0, 0
+
+        self.activated = False
+
+    def update(self) -> None:
+        """
+        Lässt die Decke ab, falls das Attribut activated True ist, und bewegt sie wieder nach oben, wenn activated
+        False ist.
+
+        :return:
+        """
+
+        if self.activated:
+            if self.rect.bottom < const.CEILING_HEIGHT - const.CEILING_MOVE:
+                self.rect.bottom += const.CEILING_MOVE
+        else:
+            if self.rect.bottom > -const.CEILING_MOVE:
+                self.rect.bottom -= const.CEILING_MOVE
+
+
+# Component-Sprite (für die Hindernisse im Spiel)
+class Component(HitboxSprite):
+    """
+    Klasse für die Level-Komponenten.
+
+    :var image_filename: Dateiname der Image-Datei, die als Textur verwendet werden soll.
+    :var pos: Tupel mit der Position des Sprites in UNIT.
+    :var size: Größe des Sprites in UNIT.
+    :var angle: Winkel des Sprites in Grad.
+    :var hb_mul: Verhältnis der Größe von hitbox zur Größe von rect.
+    :var type: Typ der Komponente.
+    :var color: Farbe der Komponente.
+    """
+
+    def __init__(self, imgfile=f"{const.ASSETS_FOLDER}/textures/transparent.png",
+                 pos: tuple = None, size: tuple = None, angle=0, hb_mul=1.0, type_="", color="",
+                 *groups: AbstractGroup) -> None:
+        """
+        Konstruktormethode von Component.
+
+        :param imgfile: Dateiname der Image-Datei, die als Textur verwendet werden soll.
+        :param pos: Tupel mit der Position des Sprites in UNIT.
+        :param size: Größe des Sprites in UNIT.
+        :param angle: Winkel des Sprites in Grad.
+        :param hb_mul: Verhältnis der Größe von hitbox zur Größe von rect.
+        :param type_: Initialisierungswert des Attributs type.
+        :param color: Initialisierungswert des Attributs color.
+        :param groups: Die Spritegruppen, in die dieser Sprite enthalten sein soll.
+        """
+
+        super().__init__(*groups)
+        self.image_filename = imgfile
+        if pos is None:
+            pos = [0.0, 0.0]
+        if size is None:
+            size = [1.0, 1.0]
+        self.pos = pos
+        self.size = size
+        self.angle = angle
+        self.hb_mul = hb_mul
+        self.type = type_
+        self.color = color
+
+        self.real_init()
+
+    def real_init(self):
+        """
+        Neubestimmung der Attribute original_image, image, rect, initial_rect und hitbox anhand der Werte in den
+        Attributen pos, size, angle, hb_mul, type und color. Wird auch von __init__ aufgerufen.
+
+        :return:
+        """
+
+        self.original_image = pygame.image.load(self.image_filename).convert_alpha()
+        self.original_image = pygame.transform.scale(self.original_image, (const.UNIT * self.size[0],
+                                                                           const.UNIT * self.size[1]))
+        self.image = self.original_image
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = self.pos[0] * const.UNIT, self.pos[1] * const.UNIT  # Position des Komponenten
+        self.initial_rect = self.image.get_rect()
+        self.initial_rect.x, self.initial_rect.y = self.pos[0] * const.UNIT, self.pos[1] * const.UNIT
+        self.hitbox = self.image.get_rect()
+        self.hitbox.x, self.hitbox.y = self.pos[0] * const.UNIT, self.pos[1] * const.UNIT
+        self.hitbox.width, self.hitbox.height = \
+            self.rect.width * self.hb_mul, self.rect.height * self.hb_mul
+        # Der Hitbox kann um einen bestimmten Faktor vergrößert oder verkleinert werden
+
+        old_center = self.rect.center
+        self.image = pygame.transform.rotate(self.original_image, self.angle)
+        self.rect = self.image.get_rect(center=old_center)
+
+
 # Spieler-Sprites
 class Gamemode(ABC, HitboxSprite):
     """
@@ -168,7 +301,7 @@ class Gamemode(ABC, HitboxSprite):
 
         self.vel = -const.JUMP_VEL * mul
 
-    def death_touch(self, gravity: int, sprite: pygame.sprite.Sprite) -> bool:
+    def death_touch(self, gravity: int, sprite: Component) -> bool:
         """
         Bestimmt, ob der Spieler sterben soll.
 
@@ -183,7 +316,7 @@ class Gamemode(ABC, HitboxSprite):
             return self.hitbox.top + const.DEATH_ACCURACY <= sprite.hitbox.bottom
 
     @abstractmethod
-    def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
+    def controls(self, ev: bool, click: bool, gravity: int, ground: Ground, ceiling: Ceiling,
                  level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:
         """
         Abstrakte Methode für die Controls des Gamemodes (die für jede Subklasse anders implementiert wird).
@@ -221,7 +354,7 @@ class Cube(Gamemode):
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__("cubes/icon_1.png", *groups)
 
-    def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
+    def controls(self, ev: bool, click: bool, gravity: int, ground: Ground, ceiling: Ceiling,
                  level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:
         # Springen
         if ev:
@@ -311,7 +444,7 @@ class Ship(Gamemode):
         self.rect.x = x
         self.vel = -self.vel
 
-    def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
+    def controls(self, ev: bool, click: bool, gravity: int, ground: Ground, ceiling: Ceiling,
                  level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:
         if click:
             for sprite in level_gr:
@@ -400,7 +533,7 @@ class Ball(Gamemode):
         self.vel = const.VEL_ADD * -gravity * 5
         return const.CHANGE_GRAVITY
 
-    def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
+    def controls(self, ev: bool, click: bool, gravity: int, ground: Ground, ceiling: Ceiling,
                  level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:
         if click:
             for sprite in level_gr:
@@ -460,142 +593,3 @@ class Ball(Gamemode):
         self.angle = 0 if self.angle == 360 or self.angle == -360 else self.angle
 
         return const.NORMAL
-
-
-# Background-Sprites
-class Ground(pygame.sprite.Sprite):
-    """
-    Sprite-Klasse für den Boden im Spiel.
-    """
-
-    def __init__(self, *groups: AbstractGroup) -> None:
-        super().__init__(*groups)
-        self.image = pygame.image.load(f"{const.ASSETS_FOLDER}/textures/bg/ground.jpg").convert()
-        self.image = pygame.transform.scale(self.image, (const.SCREEN_WIDTH + const.UNIT, const.SCREEN_HEIGHT))
-        self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = -const.UNIT, const.GROUND_HEIGHT
-
-
-class Background(pygame.sprite.Sprite):
-    """
-    Sprite-Klasse für den Hintergrund im Spiel.
-    """
-
-    def __init__(self, *groups: AbstractGroup) -> None:
-        super().__init__(*groups)
-        self.image = pygame.image.load(f"{const.ASSETS_FOLDER}/textures/bg/background.png").convert()
-        self.image = pygame.transform.scale(self.image, (const.SCREEN_HEIGHT * 2 * (16 / 9),
-                                                         const.SCREEN_HEIGHT * 2))
-        self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = 0, -const.SCREEN_HEIGHT / 4
-
-    def reset(self):
-        self.rect.left, self.rect.top = 0, -const.SCREEN_HEIGHT / 4
-
-
-class Ceiling(pygame.sprite.Sprite):
-    """
-    Sprite-Klasse für die Decke im Spiel.
-    """
-
-    def __init__(self, *groups: AbstractGroup) -> None:
-        super().__init__(*groups)
-        self.image = pygame.image.load(f"{const.ASSETS_FOLDER}/textures/bg/ground.jpg").convert()
-        self.image = pygame.transform.scale(self.image, (const.SCREEN_WIDTH, const.SCREEN_HEIGHT))
-        self.rect = self.image.get_rect()
-        self.rect.left, self.rect.bottom = 0, 0
-
-        self.activated = False
-
-    def update(self) -> None:
-        """
-        Lässt die Decke ab, falls das Attribut activated True ist, und bewegt sie wieder nach oben, wenn activated
-        False ist.
-
-        :return:
-        """
-
-        if self.activated:
-            if self.rect.bottom < const.CEILING_HEIGHT - const.CEILING_MOVE:
-                self.rect.bottom += const.CEILING_MOVE
-        else:
-            if self.rect.bottom > -const.CEILING_MOVE:
-                self.rect.bottom -= const.CEILING_MOVE
-
-
-# Component-Sprite (für die Hindernisse im Spiel)
-class Component(HitboxSprite):
-    """
-    Klasse für die Level-Komponenten.
-
-    :var image_filename: Dateiname der Image-Datei, die als Textur verwendet werden soll.
-    :var pos: Tupel mit der Position des Sprites in UNIT.
-    :var size: Größe des Sprites in UNIT.
-    :var angle: Winkel des Sprites in Grad.
-    :var hb_mul: Verhältnis der Größe von hitbox zur Größe von rect.
-    :var type: Typ der Komponente.
-    :var color: Farbe der Komponente.
-    """
-
-    def __init__(self, imgfile=f"{const.ASSETS_FOLDER}/textures/transparent.png",
-                 pos: tuple = None, size: tuple = None, angle=0, hb_mul=1.0, type_="deco", color="yellow",
-                 *groups: AbstractGroup) -> None:
-        """
-        Konstruktormethode von Component.
-
-        :param imgfile: Dateiname der Image-Datei, die als Textur verwendet werden soll.
-        :param pos: Tupel mit der Position des Sprites in UNIT.
-        :param size: Größe des Sprites in UNIT.
-        :param angle: Winkel des Sprites in Grad.
-        :param hb_mul: Verhältnis der Größe von hitbox zur Größe von rect.
-        :param type_: Initialisierungswert des Attributs type.
-        :param color: Initialisierungswert des Attributs color.
-        :param groups: Die Spritegruppen, in die dieser Sprite enthalten sein soll.
-        """
-
-        super().__init__(*groups)
-        self.image_filename = imgfile
-        if pos is None:
-            pos = [0.0, 0.0]
-        if size is None:
-            size = [1.0, 1.0]
-        # Positions-Attribut
-        self.pos = pos
-        # Größen-Attribut (in UNIT)
-        self.size = size
-        # Rotation/Winkel-Attribut
-        self.angle = angle
-        # Attrbut zum Verhältnis der Größe des Sprites (rect) und der des Hitboxes (hitbox)
-        self.hb_mul = hb_mul
-        # Typ-Attribut des Level-Komponenten
-        self.type = type_
-        # Farben-Attribut des Level-Komponenten: Wird als Indentifikation für Rings und Portale verwendet.
-        self.color = color
-
-        self.real_init()
-
-    def real_init(self):
-        """
-        Neubestimmung der Attribute original_image, image, rect, initial_rect und hitbox anhand der Werte in den
-        Attributen pos, size, angle, hb_mul, type und color. Wird auch von __init__ aufgerufen.
-
-        :return:
-        """
-
-        self.original_image = pygame.image.load(self.image_filename).convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (const.UNIT * self.size[0],
-                                                                           const.UNIT * self.size[1]))
-        self.image = self.original_image
-        self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = self.pos[0] * const.UNIT, self.pos[1] * const.UNIT  # Position des Komponenten
-        self.initial_rect = self.image.get_rect()
-        self.initial_rect.x, self.initial_rect.y = self.pos[0] * const.UNIT, self.pos[1] * const.UNIT
-        self.hitbox = self.image.get_rect()
-        self.hitbox.x, self.hitbox.y = self.pos[0] * const.UNIT, self.pos[1] * const.UNIT
-        self.hitbox.width, self.hitbox.height = \
-            self.rect.width * self.hb_mul, self.rect.height * self.hb_mul
-        # Der Hitbox kann um einen bestimmten Faktor vergrößert oder verkleinert werden
-
-        old_center = self.rect.center
-        self.image = pygame.transform.rotate(self.original_image, self.angle)
-        self.rect = self.image.get_rect(center=old_center)
