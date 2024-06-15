@@ -3,7 +3,7 @@ Spiel zu erzeugen."""
 
 import time
 import pygame
-from geometry_dash_recreation.constants import *
+from geometry_dash_recreation import constants as const
 
 # Pygame-Initialisierung
 pygame.init()
@@ -11,7 +11,8 @@ pygame.mixer.init()
 pygame.font.init()
 
 # Spielfenster
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN if FULLSCREEN else 0)
+screen = pygame.display.set_mode((const.SCREEN_WIDTH, const.SCREEN_HEIGHT),
+                                 pygame.FULLSCREEN if const.FULLSCREEN else 0)
 pygame.display.set_caption("Geometry Dash Recreation")
 
 from geometry_dash_recreation.assets import game_sprites, ui_sprites, fonts, screens, error_screen
@@ -42,10 +43,10 @@ pause_screen = screens.return_pause_screen()
 win_screen = screens.return_win_screen()
 
 current_percent_text = fonts.pusab_small.render('100%', True, (255, 255, 255))
-current_percent_rect = current_percent_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.05))
+current_percent_rect = current_percent_text.get_rect(center=(const.SCREEN_WIDTH / 2, const.SCREEN_HEIGHT * 0.05))
 
 current_attempt_text = fonts.text_with_outline("Attempt 0", fonts.pusab_big, 3)
-current_attempt_rect = current_attempt_text.get_rect(center=ATTEMPT_COUNT_POS)
+current_attempt_rect = current_attempt_text.get_rect(center=const.ATTEMPT_COUNT_POS)
 
 # Variablen
 ev = False  # True, wenn der Spieler die linke Maustaste gedrückt hält, und False, wenn er sie nicht gedrückt hält
@@ -57,7 +58,7 @@ x_to_level = 0
 mode = "level select"  # Der "Zustand" des Spiels.
 
 # Save File
-current_sf = save_file.open_sf(SAVE_FILE_PATH)
+current_sf = save_file.open_sf(const.SAVE_FILE_PATH)
 current_sf.update_stats()
 
 # Level
@@ -91,12 +92,14 @@ def change_gamemode(name: str) -> None:
         ceiling.activated = True
 
 
-def screen_func(surface: pygame.Surface) -> None:
+def screen_func(surface: pygame.Surface, go_to_level_menu_at_double_click: bool = False) -> None:
     """
     Zeigt ein pygame.Surface auf dem Bildschirm an und wartet, bis der Spieler eine Taste oder die Maustaste drückt.
-    Falls der Spieler einen Doppelclick ausführt, wird die globale Variable mode auf "level select" gesetzt.
+    Falls der Spieler einen Doppelclick ausführt, kann die globale Variable mode auf "level select" gesetzt werden.
 
     :param surface: Das pygame.Surface, das auf dem Bildschirm angezeigt werden soll
+    :param go_to_level_menu_at_double_click: Soll die globale Variable mode bei Doppelclick auf "level select" gesetzt
+    werden?
     :return:
     """
 
@@ -108,6 +111,7 @@ def screen_func(surface: pygame.Surface) -> None:
 
     screen.blit(surface, (0, 0))
     pygame.display.flip()
+
     while not clicked:
         if next_click_second and time.time() - start_time > 0.2:
             clicked = True
@@ -116,6 +120,9 @@ def screen_func(surface: pygame.Surface) -> None:
                 clicked = True
             if event.type == pygame.MOUSEBUTTONDOWN or \
                     event.type == pygame.KEYDOWN:
+                if not go_to_level_menu_at_double_click:
+                    clicked = True
+                    break
                 if next_click_second and time.time() - start_time < 0.2:
                     mode = "level select"
                     clicked = True
@@ -149,7 +156,7 @@ def game_func() -> None:
             mode = "level select"
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if pause_button.rect.collidepoint(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                screen_func(pause_screen)
+                screen_func(pause_screen, True)
                 continue
             ev = True
             click = True
@@ -160,32 +167,32 @@ def game_func() -> None:
                 ev = True
                 click = True
             if event.key == pygame.K_ESCAPE:
-                screen_func(pause_screen)
+                screen_func(pause_screen, True)
                 continue
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
                 ev = False
 
     # Überprüfen, ob der Spieler das Levelende erreicht hat
-    x_to_level += LEVEL_SCROLL_SPEED / UNIT
+    x_to_level += const.LEVEL_SCROLL_SPEED / const.UNIT
 
     if x_to_level >= level_end:
         mode = "win"
 
-    if player_spr.sprite.hitbox.right < PLAYER_X:
-        player_spr.sprite.hitbox.right += LEVEL_SCROLL_SPEED
+    if player_spr.sprite.hitbox.right < const.PLAYER_X:
+        player_spr.sprite.hitbox.right += const.LEVEL_SCROLL_SPEED
     else:
         # Bewegen der Level-Komponenten
         for sprite in level_gr:
-            sprite.rect.x -= LEVEL_SCROLL_SPEED
+            sprite.rect.x -= const.LEVEL_SCROLL_SPEED
             sprite.hitbox.center = sprite.rect.center
 
         # Bewegen des Hintergrunds
-        background.rect.x -= BACKGROUND_SCROLL_SPEED
+        background.rect.x -= const.BACKGROUND_SCROLL_SPEED
 
         # Bewegen des Attempt-Labels
         if current_attempt_rect.right > 0:
-            current_attempt_rect.x -= LEVEL_SCROLL_SPEED
+            current_attempt_rect.x -= const.LEVEL_SCROLL_SPEED
 
     if background.rect.right == 0:
         background.rect.left = background_2.rect.width
@@ -202,19 +209,19 @@ def game_func() -> None:
     # Kontrolle des Spielers
     controls = player_spr.sprite.controls(ev, click, gravity, ground, ceiling, level_gr, level_gr_unconverted)
 
-    if controls == NORMAL:
+    if controls == const.NORMAL:
         pass
-    elif controls == DEATH:
+    elif controls == const.DEATH:
         mode = "death"
-    elif controls == WIN:
+    elif controls == const.WIN:
         mode = "win"
-    elif controls == CHANGE_GRAVITY:
+    elif controls == const.CHANGE_GRAVITY:
         gravity = gravity * -1
-    elif controls == CUBE_GAMEMODE:
+    elif controls == const.CUBE_GAMEMODE:
         change_gamemode("cube")
-    elif controls == SHIP_GAMEMODE:
+    elif controls == const.SHIP_GAMEMODE:
         change_gamemode("ship")
-    elif controls == BALL_GAMEMODE:
+    elif controls == const.BALL_GAMEMODE:
         change_gamemode("ball")
 
     click = False
@@ -224,7 +231,7 @@ def game_func() -> None:
     player_spr.update()
 
     current_percent_text = fonts.pusab_small.render(f"{get_current_level_percent()}%", True, (255, 255, 255))
-    current_percent_rect = current_percent_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.05))
+    current_percent_rect = current_percent_text.get_rect(center=(const.SCREEN_WIDTH / 2, const.SCREEN_HEIGHT * 0.05))
 
     current_attempt_text = fonts.text_with_outline(f"Attempt {current_attempt}", fonts.pusab_big, 3)
 
@@ -292,7 +299,7 @@ def init_level() -> str:
 
         # Attempt
         current_attempt += 1
-        current_attempt_rect.center = ATTEMPT_COUNT_POS
+        current_attempt_rect.center = const.ATTEMPT_COUNT_POS
 
     try:
         proc()
@@ -315,9 +322,9 @@ def level_error() -> None:
 
     global mode, level_error_msg
     error_scr = error_screen.loop(screen, level_error_msg)
-    if error_scr == CONTINUE:
+    if error_scr == const.CONTINUE:
         pass
-    elif error_scr == EXIT:
+    elif error_scr == const.EXIT:
         mode = "level select"
 
 
@@ -336,16 +343,16 @@ def level_select_func() -> None:
 
     level_screen = level_select.loop(screen)
 
-    if level_screen[0] == CONTINUE:
+    if level_screen[0] == const.CONTINUE:
         current_level_name = level_screen[1]
-    elif level_screen[0] == VIEW_SAVE_FILE:
+    elif level_screen[0] == const.VIEW_SAVE_FILE:
         mode = "view save file"
-    elif level_screen[0] == OPEN_LEVEL_EDITOR:
+    elif level_screen[0] == const.OPEN_LEVEL_EDITOR:
         init_level()
         mode = "level editor"
-    elif level_screen[0] == PLAY_LEVEL:
+    elif level_screen[0] == const.PLAY_LEVEL:
         mode = "init level"
-    elif level_screen[0] == NEW_LEVEL:
+    elif level_screen[0] == const.NEW_LEVEL:
         mode = "new level"
 
 
@@ -361,9 +368,9 @@ def view_save_file_func() -> None:
 
     global mode
     savefile_screen = view_save_file.loop(screen, current_sf)
-    if savefile_screen == CONTINUE:
+    if savefile_screen == const.CONTINUE:
         pass
-    elif savefile_screen == EXIT:
+    elif savefile_screen == const.EXIT:
         mode = "level select"
 
 
@@ -382,17 +389,17 @@ def level_editor_func() -> None:
                                          bg_gr, background, background_2,
                                          level_select.level_folder)
 
-    if exit_code == CONTINUE:
+    if exit_code == const.CONTINUE:
         pass
-    elif exit_code == SAVE_LEVEL:
+    elif exit_code == const.SAVE_LEVEL:
         level_gr = level_group
         level_gr_unconverted["sprites"] = convert.group_to_data(level_gr, True)
         level_files.save_level_data(current_level_name, level_gr_unconverted)
-    elif exit_code == SAVE_LEVEL_PROPERTIES:
+    elif exit_code == const.SAVE_LEVEL_PROPERTIES:
         level_gr_unconverted["info"], level_gr_unconverted["data"] = \
             level_group["info"], level_group["data"]
         level_files.save_level_data(current_level_name, level_gr_unconverted)
-    elif exit_code == EXIT:
+    elif exit_code == const.EXIT:
         mode = "level select"
 
 
@@ -409,9 +416,9 @@ def new_level_func() -> None:
     global mode
     lp = level_properties.loop(screen, level_select.level_folder, "create")
 
-    if lp == CONTINUE:
+    if lp == const.CONTINUE:
         pass
-    elif lp == EXIT:
+    elif lp == const.EXIT:
         mode = "level select"
 
 
@@ -436,7 +443,7 @@ def main_loop() -> int:
         case "new level":
             new_level_func()
         case "exit":
-            return EXIT
+            return const.EXIT
         case "init level":
             level_error_msg = init_level()
             if level_error_msg != "":
@@ -448,17 +455,17 @@ def main_loop() -> int:
         case "death":
             if get_current_level_percent() > current_sf.get_level_percent(current_level_name):
                 current_sf.set_level(current_level_name, get_current_level_percent())
-            save_file.save_sf(current_sf, SAVE_FILE_PATH)
+            save_file.save_sf(current_sf, const.SAVE_FILE_PATH)
             pygame.time.wait(500)
             mode = "init level"
         case "win":
             current_sf.set_level(current_level_name, 100)
             current_sf.update_stats()
-            save_file.save_sf(current_sf, SAVE_FILE_PATH)
+            save_file.save_sf(current_sf, const.SAVE_FILE_PATH)
             screen_func(win_screen)
             mode = "level select"
 
-    return CONTINUE
+    return const.CONTINUE
 
 
 def main_process() -> None:
@@ -474,12 +481,12 @@ def main_process() -> None:
     clock = pygame.time.Clock()
     while running:
         ml = main_loop()
-        if ml == CONTINUE:
+        if ml == const.CONTINUE:
             pass
-        elif ml == EXIT:
+        elif ml == const.EXIT:
             running = False
         pygame.display.update()
-        clock.tick(FPS)
+        clock.tick(const.FPS)
     pygame.quit()
 
 

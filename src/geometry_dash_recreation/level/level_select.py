@@ -1,9 +1,10 @@
 """Modul, das für das Levelmenü zuständig ist"""
 
-import os, sys
+import os
+import sys
 
 import pygame
-from geometry_dash_recreation.constants import *
+from geometry_dash_recreation import constants as const
 from geometry_dash_recreation.assets import fonts, ui_sprites, error_screen
 from geometry_dash_recreation.level import convert, level_files
 from geometry_dash_recreation.save_file import save_file
@@ -12,7 +13,7 @@ pygame.init()
 pygame.font.init()
 
 try:
-    os.mkdir(USER_LEVELS_FOLDER)
+    os.mkdir(const.USER_LEVELS_FOLDER)
 except FileExistsError:
     pass
 
@@ -37,30 +38,30 @@ error_rect = error_text.get_rect()
 
 # Sprites
 arrow_left = ui_sprites.Arrow(right=False)
-arrow_left.rect.x, arrow_left.rect.y = SCREEN_WIDTH * 0.04, SCREEN_HEIGHT * 0.45
+arrow_left.rect.x, arrow_left.rect.y = const.SCREEN_WIDTH * 0.04, const.SCREEN_HEIGHT * 0.45
 arrow_right = ui_sprites.Arrow(right=True)
-arrow_right.rect.x, arrow_right.rect.y = SCREEN_WIDTH * 0.90, SCREEN_HEIGHT * 0.45
+arrow_right.rect.x, arrow_right.rect.y = const.SCREEN_WIDTH * 0.90, const.SCREEN_HEIGHT * 0.45
 arrow_gr = pygame.sprite.Group(arrow_left, arrow_right)
 
 user_icon = ui_sprites.UserIcon()
-user_icon.rect.x, user_icon.rect.y = SCREEN_WIDTH * 0.02, SCREEN_HEIGHT * 0.015
+user_icon.rect.x, user_icon.rect.y = const.SCREEN_WIDTH * 0.02, const.SCREEN_HEIGHT * 0.015
 
 build_icon = ui_sprites.BuildIcon()
-build_icon.rect.x, build_icon.rect.y = SCREEN_WIDTH * 0.68, SCREEN_HEIGHT * 0.04
+build_icon.rect.x, build_icon.rect.y = const.SCREEN_WIDTH * 0.68, const.SCREEN_HEIGHT * 0.04
 
 plus_icon = ui_sprites.PlusIcon()
-plus_icon.rect.x, plus_icon.rect.y = SCREEN_WIDTH * 0.74, SCREEN_HEIGHT * 0.04
+plus_icon.rect.x, plus_icon.rect.y = const.SCREEN_WIDTH * 0.74, const.SCREEN_HEIGHT * 0.04
 
 trash_icon = ui_sprites.TrashIcon()
-trash_icon.rect.x, trash_icon.rect.y = SCREEN_WIDTH * 0.8, SCREEN_HEIGHT * 0.04
+trash_icon.rect.x, trash_icon.rect.y = const.SCREEN_WIDTH * 0.8, const.SCREEN_HEIGHT * 0.04
 
 exit_button = ui_sprites.ExitButton()
-exit_button.rect.x, exit_button.rect.y = SCREEN_WIDTH * 0.91, SCREEN_HEIGHT * 0.03
+exit_button.rect.x, exit_button.rect.y = const.SCREEN_WIDTH * 0.91, const.SCREEN_HEIGHT * 0.03
 
 ui_other_gr = pygame.sprite.Group(user_icon, build_icon, exit_button, plus_icon, trash_icon)
 
 # Level-Variablen
-level_folder = MAIN_LEVELS_FOLDER
+level_folder = const.MAIN_LEVELS_FOLDER
 level_list = os.listdir(level_folder)
 level_nr = 0
 
@@ -118,7 +119,7 @@ def current_level_percentage() -> int:
     :return: Der Prozentsatz
     """
 
-    return save_file.open_sf(SAVE_FILE_PATH).get_level_percent(selected_level())
+    return save_file.open_sf(const.SAVE_FILE_PATH).get_level_percent(selected_level())
 
 
 def sort_level_list_by_difficulty() -> None:
@@ -156,21 +157,21 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if levelname_rect.collidepoint(*pygame.mouse.get_pos()):
                 if len(level_list) != 0:
-                    return PLAY_LEVEL, selected_level()
+                    return const.PLAY_LEVEL, selected_level()
             elif folder_rect.collidepoint(*pygame.mouse.get_pos()):
                 if not level_folder_edit:
                     level_folder_edit = True
                 else:
-                    level_folder = level_folder.replace("Main levels folder", MAIN_LEVELS_FOLDER)
-                    level_folder = level_folder.replace("User levels folder", USER_LEVELS_FOLDER)
+                    level_folder = level_folder.replace("Main levels folder", const.MAIN_LEVELS_FOLDER)
+                    level_folder = level_folder.replace("User levels folder", const.USER_LEVELS_FOLDER)
                     level_folder_edit = False
                 continue
             elif user_icon.rect.collidepoint(*pygame.mouse.get_pos()):
-                return VIEW_SAVE_FILE, None
+                return const.VIEW_SAVE_FILE, None
             elif build_icon.rect.collidepoint(*pygame.mouse.get_pos()):
-                return OPEN_LEVEL_EDITOR, selected_level()
+                return const.OPEN_LEVEL_EDITOR, selected_level()
             elif plus_icon.rect.collidepoint(*pygame.mouse.get_pos()):
-                return NEW_LEVEL, level_folder
+                return const.NEW_LEVEL, level_folder
             elif trash_icon.rect.collidepoint(*pygame.mouse.get_pos()):
                 os.remove(level_folder + "/" + level_list[level_nr])
                 level_nr -= 1
@@ -188,11 +189,11 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
                 prev_level()
             elif event.key == pygame.K_RETURN:
                 if level_folder_edit:
-                    level_folder = level_folder.replace("Main levels folder", MAIN_LEVELS_FOLDER)
-                    level_folder = level_folder.replace("User levels folder", USER_LEVELS_FOLDER)
+                    level_folder = level_folder.replace("Main levels folder", const.MAIN_LEVELS_FOLDER)
+                    level_folder = level_folder.replace("User levels folder", const.USER_LEVELS_FOLDER)
                     level_folder_edit = False
                 else:
-                    return PLAY_LEVEL, selected_level()
+                    return const.PLAY_LEVEL, selected_level()
             elif event.key == pygame.K_BACKSPACE and level_folder_edit:
                 if len(level_folder) > 0:
                     level_folder = level_folder[:-1]
@@ -240,7 +241,7 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
     else:
         levelname_text = fonts.pusab_big.render("Current folder is empty!", True, (255, 200, 0), (25, 0, 12))
 
-    difficulty_text = fonts.aller_normal.render(f'Difficulty: {DIFFICULTY[int(level_info["stars"])]}, '
+    difficulty_text = fonts.aller_normal.render(f'Difficulty: {const.DIFFICULTY[int(level_info["stars"])]}, '
                                                 f'{level_info["stars"]}*', True, (255, 255, 255))
     creator_text = fonts.aller_normal.render(f'Created by: {level_info["creator"]}', True, (255, 255, 255))
     if current_level_percentage() == 100:
@@ -249,9 +250,9 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
         comp_text = fonts.aller_normal.render(f'{current_level_percentage()}% Completed', True, (255, 100, 100))
 
     if not level_folder_edit:
-        if level_folder == MAIN_LEVELS_FOLDER:
+        if level_folder == const.MAIN_LEVELS_FOLDER:
             folder_text = fonts.aller_small.render(f'Current levels folder: Main levels folder', True, (255, 255, 255))
-        elif level_folder == USER_LEVELS_FOLDER:
+        elif level_folder == const.USER_LEVELS_FOLDER:
             folder_text = fonts.aller_small.render(f'Current levels folder: User levels folder', True, (255, 255, 255))
         else:
             folder_text = fonts.aller_small.render(f'Current levels folder: {level_folder}', True, (255, 255, 255))
@@ -259,12 +260,12 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
         folder_text = fonts.aller_small.render(f'Current levels folder: {level_folder}', True,
                                                (0, 255, 0))
 
-    levelname_rect = levelname_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2.7))
-    difficulty_rect = difficulty_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
-    creator_rect = creator_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.8))
-    comp_rect = comp_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.6))
-    folder_rect = folder_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.2))
-    error_rect = error_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.1))
+    levelname_rect = levelname_text.get_rect(center=(const.SCREEN_WIDTH / 2, const.SCREEN_HEIGHT / 2.7))
+    difficulty_rect = difficulty_text.get_rect(center=(const.SCREEN_WIDTH / 2, const.SCREEN_HEIGHT / 2))
+    creator_rect = creator_text.get_rect(center=(const.SCREEN_WIDTH / 2, const.SCREEN_HEIGHT / 1.8))
+    comp_rect = comp_text.get_rect(center=(const.SCREEN_WIDTH / 2, const.SCREEN_HEIGHT / 1.6))
+    folder_rect = folder_text.get_rect(center=(const.SCREEN_WIDTH / 2, const.SCREEN_HEIGHT / 1.2))
+    error_rect = error_text.get_rect(center=(const.SCREEN_WIDTH / 2, const.SCREEN_HEIGHT / 1.1))
 
     if not level_folder_edit and not folder_error:
         screen.blit(levelname_text, levelname_rect)
@@ -278,7 +279,7 @@ def loop_no_exception(screen: pygame.Surface) -> tuple:
 
     ui_other_gr.draw(screen)
 
-    return CONTINUE, selected_level()
+    return const.CONTINUE, selected_level()
 
 
 def loop(screen: pygame.Surface) -> tuple:
@@ -296,7 +297,7 @@ def loop(screen: pygame.Surface) -> tuple:
     try:
         return loop_no_exception(screen)
     except Exception as e:
-        while error_screen.loop(screen, str(e)) != EXIT:
+        while error_screen.loop(screen, str(e)) != const.EXIT:
             pygame.display.update()
-        level_folder = MAIN_LEVELS_FOLDER
+        level_folder = const.MAIN_LEVELS_FOLDER
         return loop_no_exception(screen)

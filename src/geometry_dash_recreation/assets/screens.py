@@ -1,7 +1,7 @@
 """Modul für die Screens, die im Spiel angezeigt werden können."""
 
 import pygame
-from geometry_dash_recreation.constants import *
+from geometry_dash_recreation import constants as const
 
 pygame.init()
 
@@ -14,8 +14,8 @@ def return_pause_screen() -> pygame.Surface:
     """
 
     return pygame.transform.scale(
-        pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/pause_screen.png").convert_alpha(),
-        (SCREEN_WIDTH, SCREEN_HEIGHT)
+        pygame.image.load(f"{const.ASSETS_FOLDER}/textures/ui/pause_screen.png").convert_alpha(),
+        (const.SCREEN_WIDTH, const.SCREEN_HEIGHT)
     )
 
 
@@ -27,8 +27,8 @@ def return_win_screen() -> pygame.Surface:
     """
 
     return pygame.transform.scale(
-        pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/win_screen.png").convert_alpha(),
-        (SCREEN_WIDTH, SCREEN_HEIGHT)
+        pygame.image.load(f"{const.ASSETS_FOLDER}/textures/ui/win_screen.png").convert_alpha(),
+        (const.SCREEN_WIDTH, const.SCREEN_HEIGHT)
     )
 
 
@@ -40,6 +40,6 @@ def return_semi_transparent_screen() -> pygame.Surface:
     """
 
     return pygame.transform.scale(
-        pygame.image.load(f"{ASSETS_FOLDER}/textures/ui/semi_transparent.png").convert_alpha(),
-        (SCREEN_WIDTH, SCREEN_HEIGHT)
+        pygame.image.load(f"{const.ASSETS_FOLDER}/textures/ui/semi_transparent.png").convert_alpha(),
+        (const.SCREEN_WIDTH, const.SCREEN_HEIGHT)
     )

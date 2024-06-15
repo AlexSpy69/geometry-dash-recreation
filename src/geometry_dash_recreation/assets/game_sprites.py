@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 import pygame
 from pygame.sprite import AbstractGroup
-from geometry_dash_recreation.constants import *
+from geometry_dash_recreation import constants as const
 
 pygame.init()
 
@@ -135,15 +135,15 @@ class Gamemode(ABC, HitboxSprite):
         """
 
         super().__init__(*groups)
-        self.original_image = pygame.image.load(f"{ASSETS_FOLDER}/textures/icons/{filename}").convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (UNIT, UNIT))
+        self.original_image = pygame.image.load(f"{const.ASSETS_FOLDER}/textures/icons/{filename}").convert_alpha()
+        self.original_image = pygame.transform.scale(self.original_image, (const.UNIT, const.UNIT))
         self.image = self.original_image
         self.rect = self.image.get_rect()
-        self.rect.right, self.rect.bottom = PLAYER_X, PLAYER_Y
+        self.rect.right, self.rect.bottom = const.PLAYER_X, const.PLAYER_Y
         self.hitbox = self.image.get_rect()
-        self.hitbox.right, self.hitbox.bottom = PLAYER_X, PLAYER_Y
+        self.hitbox.right, self.hitbox.bottom = const.PLAYER_X, const.PLAYER_Y
 
-        self.image_filename = f"{ASSETS_FOLDER}/textures/icons/{filename}"
+        self.image_filename = f"{const.ASSETS_FOLDER}/textures/icons/{filename}"
         self.vel = 0
         self.angle = 0
 
@@ -156,7 +156,7 @@ class Gamemode(ABC, HitboxSprite):
 
         self.angle = 0
         self.vel = 0
-        self.hitbox.right, self.hitbox.bottom = 0, PLAYER_Y
+        self.hitbox.right, self.hitbox.bottom = 0, const.PLAYER_Y
 
     def jump(self, mul: int) -> None:
         """
@@ -166,7 +166,7 @@ class Gamemode(ABC, HitboxSprite):
         :return:
         """
 
-        self.vel = -JUMP_VEL * mul
+        self.vel = -const.JUMP_VEL * mul
 
     def death_touch(self, gravity: int, sprite: pygame.sprite.Sprite) -> bool:
         """
@@ -178,9 +178,9 @@ class Gamemode(ABC, HitboxSprite):
         """
 
         if gravity == 1:
-            return self.hitbox.bottom - DEATH_ACCURACY >= sprite.hitbox.top
+            return self.hitbox.bottom - const.DEATH_ACCURACY >= sprite.hitbox.top
         elif gravity == -1:
-            return self.hitbox.top + DEATH_ACCURACY <= sprite.hitbox.bottom
+            return self.hitbox.top + const.DEATH_ACCURACY <= sprite.hitbox.bottom
 
     @abstractmethod
     def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
@@ -236,23 +236,23 @@ class Cube(Gamemode):
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
                     if sprite.type == "ring":
                         if sprite.color == "cyan":
-                            self.vel = -gravity * JUMP_VEL / 1.5
-                            return CHANGE_GRAVITY
-                        self.jump(gravity * RING_VEL[sprite.color])
+                            self.vel = -gravity * const.JUMP_VEL / 1.5
+                            return const.CHANGE_GRAVITY
+                        self.jump(gravity * const.RING_VEL[sprite.color])
 
         # Einwirkung der Gravitation
-        self.hitbox.y += self.vel * DELTA_TIME * RESIZE
-        self.vel += VEL_ADD * gravity * DELTA_TIME
+        self.hitbox.y += self.vel * const.DELTA_TIME * const.RESIZE
+        self.vel += const.VEL_ADD * gravity * const.DELTA_TIME
 
-        self.angle -= gravity * 7 * DELTA_TIME
+        self.angle -= gravity * 7 * const.DELTA_TIME
 
-        if self.hitbox.y < OUT_OF_BOUNDS:
-            return DEATH
+        if self.hitbox.y < const.OUT_OF_BOUNDS:
+            return const.DEATH
 
         # Landen auf dem Boden
         if self.hitbox.colliderect(ground.rect.move(0, -gravity)):
             if gravity == -1:
-                return DEATH
+                return const.DEATH
             self.angle = round(self.angle / 90) * 90
             self.hitbox.bottom = ground.rect.top
             self.vel = 0
@@ -263,7 +263,7 @@ class Cube(Gamemode):
                 match sprite.type:
                     case "platform":
                         if self.death_touch(gravity, sprite):
-                            return DEATH
+                            return const.DEATH
                         self.angle = round(self.angle / 90) * 90
                         if gravity == 1:
                             self.hitbox.bottom = sprite.hitbox.top
@@ -271,19 +271,19 @@ class Cube(Gamemode):
                             self.hitbox.top = sprite.hitbox.bottom
                         self.vel = 0
                     case "hazard":
-                        return DEATH
+                        return const.DEATH
                     case "pad":
-                        self.jump(gravity * PAD_VEL[sprite.color])
+                        self.jump(gravity * const.PAD_VEL[sprite.color])
                     case "formportal":
                         match sprite.color:
                             case "magenta":
-                                return SHIP_GAMEMODE
+                                return const.SHIP_GAMEMODE
                             case "red":
-                                return BALL_GAMEMODE
+                                return const.BALL_GAMEMODE
 
         self.angle = 0 if self.angle == 360 or self.angle == -360 else self.angle
 
-        return NORMAL
+        return const.NORMAL
 
 
 class Ship(Gamemode):
@@ -318,19 +318,19 @@ class Ship(Gamemode):
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
                     if sprite.type == "ring":
                         if sprite.color == "cyan":
-                            # self.vel = -gravity * JUMP_VEL / 1.5
+                            # self.vel = -gravity * const.JUMP_VEL / 1.5
                             self.flip()
-                            return CHANGE_GRAVITY
-                        self.jump(gravity * RING_VEL[sprite.color])
+                            return const.CHANGE_GRAVITY
+                        self.jump(gravity * const.RING_VEL[sprite.color])
 
         # Einwirkung der Gravitation
-        self.hitbox.y += self.vel * DELTA_TIME * RESIZE
+        self.hitbox.y += self.vel * const.DELTA_TIME * const.RESIZE
 
         # Fliegen
         if ev:
-            self.vel -= VEL_ADD * gravity * DELTA_TIME / 2
+            self.vel -= const.VEL_ADD * gravity * const.DELTA_TIME / 2
         else:
-            self.vel += VEL_ADD * gravity * DELTA_TIME / 2
+            self.vel += const.VEL_ADD * gravity * const.DELTA_TIME / 2
 
         self.vel = -20 if self.vel <= -20 else self.vel
         self.vel = 20 if self.vel >= 20 else self.vel
@@ -361,22 +361,22 @@ class Ship(Gamemode):
                         normal_death = self.death_touch(gravity, sprite)
                         upside_down_death = self.death_touch(-gravity, sprite)
                         if normal_death and upside_down_death:
-                            return DEATH
+                            return const.DEATH
                         self.smooth_angle()
                         if not normal_death or not upside_down_death:
                             self.vel = 0
                     case "hazard":
-                        return DEATH
+                        return const.DEATH
                     case "pad":
-                        self.jump(gravity * PAD_VEL[sprite.color])
+                        self.jump(gravity * const.PAD_VEL[sprite.color])
                     case "formportal":
                         match sprite.color:
                             case "green":
-                                return CUBE_GAMEMODE
+                                return const.CUBE_GAMEMODE
                             case "red":
-                                return BALL_GAMEMODE
+                                return const.BALL_GAMEMODE
 
-        return NORMAL
+        return const.NORMAL
 
 
 class Ball(Gamemode):
@@ -388,7 +388,7 @@ class Ball(Gamemode):
         super().__init__("balls/ball_1.png", *groups)
 
     def jump(self, mul: int) -> None:
-        self.vel = -JUMP_VEL * mul * 0.7
+        self.vel = -const.JUMP_VEL * mul * 0.7
 
     def change_gravity(self, gravity: int) -> int:
         """
@@ -397,8 +397,8 @@ class Ball(Gamemode):
         :param gravity: Gravitationsrichtung
         :return: Konstante CHANGE_GRAVITY
         """
-        self.vel = VEL_ADD * -gravity * 5
-        return CHANGE_GRAVITY
+        self.vel = const.VEL_ADD * -gravity * 5
+        return const.CHANGE_GRAVITY
 
     def controls(self, ev: bool, click: bool, gravity: int, ground: pygame.sprite.Sprite, ceiling: pygame.sprite.Sprite,
                  level_gr: pygame.sprite.Group, level_gr_unconverted: dict) -> int:
@@ -407,19 +407,19 @@ class Ball(Gamemode):
                 if self.hitbox.colliderect(sprite.hitbox.move(0, -gravity)):
                     if sprite.type == "ring":
                         if sprite.color == "cyan":
-                            # self.vel = -gravity * JUMP_VEL / 1.5
+                            # self.vel = -gravity * const.JUMP_VEL / 1.5
                             return self.change_gravity(gravity)
-                        self.jump(gravity * RING_VEL[sprite.color])
+                        self.jump(gravity * const.RING_VEL[sprite.color])
 
         # Einwirkung der Gravitation
-        self.hitbox.y += self.vel * DELTA_TIME * RESIZE
+        self.hitbox.y += self.vel * const.DELTA_TIME * const.RESIZE
 
-        self.vel += VEL_ADD * gravity * DELTA_TIME / 2
+        self.vel += const.VEL_ADD * gravity * const.DELTA_TIME / 2
 
         self.vel = -40 if self.vel <= -40 else self.vel
         self.vel = 40 if self.vel >= 40 else self.vel
 
-        self.angle -= VEL_ADD * gravity * 4 * DELTA_TIME
+        self.angle -= const.VEL_ADD * gravity * 4 * const.DELTA_TIME
 
         # Landen auf dem Boden
         if self.hitbox.colliderect(ground.rect.move(0, -gravity)):
@@ -438,7 +438,7 @@ class Ball(Gamemode):
                 match sprite.type:
                     case "platform":
                         if self.death_touch(gravity, sprite):
-                            return DEATH
+                            return const.DEATH
                         if gravity == 1:
                             self.hitbox.bottom = sprite.hitbox.top
                         else:
@@ -447,19 +447,19 @@ class Ball(Gamemode):
                         if click:
                             return self.change_gravity(gravity)
                     case "hazard":
-                        return DEATH
+                        return const.DEATH
                     case "pad":
-                        self.jump(gravity * PAD_VEL[sprite.color])
+                        self.jump(gravity * const.PAD_VEL[sprite.color])
                     case "formportal":
                         match sprite.color:
                             case "green":
-                                return CUBE_GAMEMODE
+                                return const.CUBE_GAMEMODE
                             case "magenta":
-                                return SHIP_GAMEMODE
+                                return const.SHIP_GAMEMODE
 
         self.angle = 0 if self.angle == 360 or self.angle == -360 else self.angle
 
-        return NORMAL
+        return const.NORMAL
 
 
 # Background-Sprites
@@ -470,10 +470,10 @@ class Ground(pygame.sprite.Sprite):
 
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/bg/ground.jpg").convert()
-        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH + UNIT, SCREEN_HEIGHT))
+        self.image = pygame.image.load(f"{const.ASSETS_FOLDER}/textures/bg/ground.jpg").convert()
+        self.image = pygame.transform.scale(self.image, (const.SCREEN_WIDTH + const.UNIT, const.SCREEN_HEIGHT))
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = -UNIT, GROUND_HEIGHT
+        self.rect.left, self.rect.top = -const.UNIT, const.GROUND_HEIGHT
 
 
 class Background(pygame.sprite.Sprite):
@@ -483,13 +483,14 @@ class Background(pygame.sprite.Sprite):
 
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/bg/background.png").convert()
-        self.image = pygame.transform.scale(self.image, (SCREEN_HEIGHT * 2 * (16 / 9), SCREEN_HEIGHT * 2))
+        self.image = pygame.image.load(f"{const.ASSETS_FOLDER}/textures/bg/background.png").convert()
+        self.image = pygame.transform.scale(self.image, (const.SCREEN_HEIGHT * 2 * (16 / 9),
+                                                         const.SCREEN_HEIGHT * 2))
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT / 4
+        self.rect.left, self.rect.top = 0, -const.SCREEN_HEIGHT / 4
 
     def reset(self):
-        self.rect.left, self.rect.top = 0, -SCREEN_HEIGHT / 4
+        self.rect.left, self.rect.top = 0, -const.SCREEN_HEIGHT / 4
 
 
 class Ceiling(pygame.sprite.Sprite):
@@ -499,8 +500,8 @@ class Ceiling(pygame.sprite.Sprite):
 
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.image = pygame.image.load(f"{ASSETS_FOLDER}/textures/bg/ground.jpg").convert()
-        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.image = pygame.image.load(f"{const.ASSETS_FOLDER}/textures/bg/ground.jpg").convert()
+        self.image = pygame.transform.scale(self.image, (const.SCREEN_WIDTH, const.SCREEN_HEIGHT))
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.bottom = 0, 0
 
@@ -515,11 +516,11 @@ class Ceiling(pygame.sprite.Sprite):
         """
 
         if self.activated:
-            if self.rect.bottom < CEILING_HEIGHT - CEILING_MOVE:
-                self.rect.bottom += CEILING_MOVE
+            if self.rect.bottom < const.CEILING_HEIGHT - const.CEILING_MOVE:
+                self.rect.bottom += const.CEILING_MOVE
         else:
-            if self.rect.bottom > -CEILING_MOVE:
-                self.rect.bottom -= CEILING_MOVE
+            if self.rect.bottom > -const.CEILING_MOVE:
+                self.rect.bottom -= const.CEILING_MOVE
 
 
 # Component-Sprite (für die Hindernisse im Spiel)
@@ -536,7 +537,7 @@ class Component(HitboxSprite):
     :var color: Farbe der Komponente.
     """
 
-    def __init__(self, imgfile=f"{ASSETS_FOLDER}/textures/transparent.png",
+    def __init__(self, imgfile=f"{const.ASSETS_FOLDER}/textures/transparent.png",
                  pos: tuple = None, size: tuple = None, angle=0, hb_mul=1.0, type_="deco", color="yellow",
                  *groups: AbstractGroup) -> None:
         """
@@ -582,14 +583,15 @@ class Component(HitboxSprite):
         """
 
         self.original_image = pygame.image.load(self.image_filename).convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (UNIT * self.size[0], UNIT * self.size[1]))
+        self.original_image = pygame.transform.scale(self.original_image, (const.UNIT * self.size[0],
+                                                                           const.UNIT * self.size[1]))
         self.image = self.original_image
         self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = self.pos[0] * UNIT, self.pos[1] * UNIT  # Position des Komponenten
+        self.rect.x, self.rect.y = self.pos[0] * const.UNIT, self.pos[1] * const.UNIT  # Position des Komponenten
         self.initial_rect = self.image.get_rect()
-        self.initial_rect.x, self.initial_rect.y = self.pos[0] * UNIT, self.pos[1] * UNIT
+        self.initial_rect.x, self.initial_rect.y = self.pos[0] * const.UNIT, self.pos[1] * const.UNIT
         self.hitbox = self.image.get_rect()
-        self.hitbox.x, self.hitbox.y = self.pos[0] * UNIT, self.pos[1] * UNIT
+        self.hitbox.x, self.hitbox.y = self.pos[0] * const.UNIT, self.pos[1] * const.UNIT
         self.hitbox.width, self.hitbox.height = \
             self.rect.width * self.hb_mul, self.rect.height * self.hb_mul
         # Der Hitbox kann um einen bestimmten Faktor vergrößert oder verkleinert werden

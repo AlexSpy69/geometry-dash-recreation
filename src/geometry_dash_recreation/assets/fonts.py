@@ -1,7 +1,7 @@
 """Modul mit den Schriftarten und weiteren Funktionen zu ihnen."""
 
 import pygame
-from geometry_dash_recreation.constants import *
+from geometry_dash_recreation import constants as const
 
 pygame.init()
 pygame.font.init()
@@ -69,12 +69,12 @@ def text_with_outline(text: str, font: pygame.font.Font, outline_size: int = 5,
     return render(text, font, normal_color, outline_color, outline_size)
 
 
-pusab_big = pygame.font.Font(f'{ASSETS_FOLDER}/fonts/Pusab.otf', int(SCREEN_HEIGHT * 0.08))
-pusab_small = pygame.font.Font(f'{ASSETS_FOLDER}/fonts/Pusab.otf', int(SCREEN_HEIGHT * 0.05))
-pusab_smaller = pygame.font.Font(f'{ASSETS_FOLDER}/fonts/Pusab.otf', int(SCREEN_HEIGHT * 0.03))
+pusab_big = pygame.font.Font(f'{const.ASSETS_FOLDER}/fonts/Pusab.otf', int(const.SCREEN_HEIGHT * 0.08))
+pusab_small = pygame.font.Font(f'{const.ASSETS_FOLDER}/fonts/Pusab.otf', int(const.SCREEN_HEIGHT * 0.05))
+pusab_smaller = pygame.font.Font(f'{const.ASSETS_FOLDER}/fonts/Pusab.otf', int(const.SCREEN_HEIGHT * 0.03))
 
-oxygene_big = pygame.font.Font(f'{ASSETS_FOLDER}/fonts/Oxygene 1.ttf', int(SCREEN_HEIGHT * 0.1))
+oxygene_big = pygame.font.Font(f'{const.ASSETS_FOLDER}/fonts/Oxygene 1.ttf', int(const.SCREEN_HEIGHT * 0.1))
 
-aller_normal = pygame.font.Font(f'{ASSETS_FOLDER}/fonts/Aller.ttf', int(SCREEN_HEIGHT * 0.05))
-aller_small = pygame.font.Font(f'{ASSETS_FOLDER}/fonts/Aller.ttf', int(SCREEN_HEIGHT * 0.03))
-aller_smaller = pygame.font.Font(f'{ASSETS_FOLDER}/fonts/Aller.ttf', int(SCREEN_HEIGHT * 0.02))
+aller_normal = pygame.font.Font(f'{const.ASSETS_FOLDER}/fonts/Aller.ttf', int(const.SCREEN_HEIGHT * 0.05))
+aller_small = pygame.font.Font(f'{const.ASSETS_FOLDER}/fonts/Aller.ttf', int(const.SCREEN_HEIGHT * 0.03))
+aller_smaller = pygame.font.Font(f'{const.ASSETS_FOLDER}/fonts/Aller.ttf', int(const.SCREEN_HEIGHT * 0.02))

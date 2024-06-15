@@ -118,15 +118,3 @@ CHANGE_GRAVITY = 13         # Die Grawitationsrichtung soll gewechselt werden.
 CUBE_GAMEMODE = 20          # Das Spiel soll zum Cube-Gamemode wechseln.
 SHIP_GAMEMODE = 21          # Das Spiel soll zum Ship-Gamemode wechseln.
 BALL_GAMEMODE = 22          # Das Spiel soll zum Ball-Gamemode wechseln.
-
-
-def create_all_list() -> list:
-    all_vars = list(globals().keys())
-    to_remove = "screeninfo", "Path", "pkg_resources", "sys", "util", "width", "height", "adapt_res", "create_all_list"
-    for to_remove_element in to_remove:
-        all_vars.remove(to_remove_element)
-
-    return all_vars
-
-
-__all__ = create_all_list()

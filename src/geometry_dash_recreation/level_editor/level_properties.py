@@ -1,7 +1,8 @@
 """Das Modul, das für das Menü zum Bearbeiten der Eigenschaften eines Levels zuständig ist."""
 
+import sys
 import pygame
-from geometry_dash_recreation.constants import *
+from geometry_dash_recreation import constants as const
 from geometry_dash_recreation.assets import fonts, ui_sprites, screens
 from geometry_dash_recreation.level import convert, level_files
 from geometry_dash_recreation.save_file import save_file
@@ -10,22 +11,22 @@ pygame.init()
 pygame.font.init()
 
 exit_button = ui_sprites.ExitButton()
-exit_button.rect.x, exit_button.rect.y = SCREEN_WIDTH * 0.91, SCREEN_HEIGHT * 0.03
+exit_button.rect.x, exit_button.rect.y = const.SCREEN_WIDTH * 0.91, const.SCREEN_HEIGHT * 0.03
 
 name_text = fonts.aller_small.render(f"Level name: ", True, (255, 255, 255))
-name_rect = name_text.get_rect(center=(SCREEN_WIDTH * 0.3, SCREEN_HEIGHT * 0.3))
+name_rect = name_text.get_rect(center=(const.SCREEN_WIDTH * 0.3, const.SCREEN_HEIGHT * 0.3))
 
 creator_text = fonts.aller_small.render(f"Creator: ", True, (255, 255, 255))
-creator_rect = name_text.get_rect(center=(SCREEN_WIDTH * 0.3, SCREEN_HEIGHT * 0.4))
+creator_rect = name_text.get_rect(center=(const.SCREEN_WIDTH * 0.3, const.SCREEN_HEIGHT * 0.4))
 
 stars_text = fonts.aller_small.render(f"Stars: ", True, (255, 255, 255))
-stars_rect = name_text.get_rect(center=(SCREEN_WIDTH * 0.3, SCREEN_HEIGHT * 0.5))
+stars_rect = name_text.get_rect(center=(const.SCREEN_WIDTH * 0.3, const.SCREEN_HEIGHT * 0.5))
 
 gamemode_text = fonts.aller_small.render(f"Starting gamemode: ", True, (255, 255, 255))
-gamemode_rect = name_text.get_rect(center=(SCREEN_WIDTH * 0.3, SCREEN_HEIGHT * 0.6))
+gamemode_rect = name_text.get_rect(center=(const.SCREEN_WIDTH * 0.3, const.SCREEN_HEIGHT * 0.6))
 
 go_text = fonts.pusab_big.render("Create level", True, (255, 255, 255))
-go_rect = go_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.8))
+go_rect = go_text.get_rect(center=(const.SCREEN_WIDTH / 2, const.SCREEN_HEIGHT * 0.8))
 
 transparent_screen = screens.return_semi_transparent_screen()
 
@@ -41,7 +42,7 @@ gamemode = None
 
 
 def loop(screen: pygame.Surface, level_folder: str, mode: str, transparent: bool = False,
-         def_vals: tuple = ("", save_file.open_sf(SAVE_FILE_PATH).playerdata["name"],
+         def_vals: tuple = ("", save_file.open_sf(const.SAVE_FILE_PATH).playerdata["name"],
                             "", "cube"),
          level_gr_unconverted: convert.Level = None) -> int | convert.Level:
     """
@@ -81,7 +82,7 @@ def loop(screen: pygame.Surface, level_folder: str, mode: str, transparent: bool
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if exit_button.rect.collidepoint(*pygame.mouse.get_pos()):
-                return EXIT
+                return const.EXIT
             elif name_rect.collidepoint(*pygame.mouse.get_pos()):
                 name_edit, creator_edit, stars_edit, gamemode_edit = True, False, False, False
             elif creator_rect.collidepoint(*pygame.mouse.get_pos()):
@@ -96,7 +97,7 @@ def loop(screen: pygame.Surface, level_folder: str, mode: str, transparent: bool
                     r["info"]["name"], r["info"]["creator"], r["info"]["stars"], r["data"]["gamemode"] = \
                         name, creator, stars, gamemode.lower()
                     level_files.save_level_data(level_folder + "/" + name, r)
-                    return EXIT
+                    return const.EXIT
                 elif mode == "edit":
                     level_gr_unconverted["info"]["name"], level_gr_unconverted["info"]["creator"], \
                         level_gr_unconverted["info"]["stars"], level_gr_unconverted["data"]["gamemode"] = \
@@ -138,7 +139,7 @@ def loop(screen: pygame.Surface, level_folder: str, mode: str, transparent: bool
 
     go_text = fonts.pusab_big.render("Save new properties" if mode == "edit" else "Create empty level file", True,
                                      (0, 255, 0) if go_rect.collidepoint(*pygame.mouse.get_pos()) else (255, 255, 255))
-    go_rect = go_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.8))
+    go_rect = go_text.get_rect(center=(const.SCREEN_WIDTH / 2, const.SCREEN_HEIGHT * 0.8))
 
     if transparent:
         screen.blit(transparent_screen, (0, 0))
@@ -152,4 +153,4 @@ def loop(screen: pygame.Surface, level_folder: str, mode: str, transparent: bool
 
     screen.blit(exit_button.image, exit_button.rect)
 
-    return CONTINUE
+    return const.CONTINUE
