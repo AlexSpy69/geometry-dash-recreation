@@ -5,6 +5,7 @@ import pygame
 from geometry_dash_recreation import constants as const
 from geometry_dash_recreation.assets import fonts
 from geometry_dash_recreation.save_file import save_file
+from geometry_dash_recreation.level import level_files
 
 pygame.init()
 pygame.font.init()
@@ -33,20 +34,48 @@ def save_name(sf: save_file.SaveFile, name: str) -> None:
     save_file.save_sf(sf, const.SAVE_FILE_PATH)
 
 
-def render_level_list(txt: str, ypos: int, screen: pygame.Surface) -> None:
+def render_level_list_element(txt: str, ypos: int, screen: pygame.Surface, color: pygame.Color) -> None:
     """
     Zeichnet ein Element der Level-Liste auf den Bildschirm.
 
-    :param txt: Der Textabschnitt, der angezeigt werden soll
+    :param txt: Der Inhalt der Textzeile, die angezeigt werden soll
     :param ypos: y-Position des Textes zu SCREEN_HEIGHT * 0.67 (vordefinierte Position des Starts der Levelliste)
         (wird mit SCREEN_HEIGHT * 0.04 multipliziert)
     :param screen: pygame.Surface, auf das der Text gezeichnet werden soll
+    :param color: Die Farbe der Zeile, die angzeigt werden soll
     :return:
     """
 
-    render = fonts.aller_smaller.render(txt, True, (255, 255, 255))
+    render = fonts.aller_smaller.render(txt, True, color)
     screen.blit(render, render.get_rect(center=(const.SCREEN_WIDTH * 0.5, const.SCREEN_HEIGHT * 0.67 +
                                                 const.SCREEN_HEIGHT * 0.04 * ypos)))
+
+
+def create_level_list_element_text(level_path: str, player_save_file: save_file.SaveFile) -> str:
+    """
+    Erstellt den Inhalt eines Level-Listen-Elements.
+
+    :param level_path: Der Pfad des Levels
+    :param player_save_file: Der Save-File des Spielers
+    :return String mit dem Inhalt des zugehörigen Level-Listen-Elements
+    """
+
+    if level_path.startswith(const.MAIN_LEVELS_FOLDER):
+        return (f'Main levels/{level_path.split("/")[-1]}, '
+                f'{level_files.open_level_data(level_path)["info"]["stars"]}*, '
+                f'{player_save_file.lvldict[level_path]}%')
+    elif level_path.startswith(const.USER_LEVELS_FOLDER):
+        return (f'User levels/{level_path.split("/")[-1]}, '
+                f'{level_files.open_level_data(level_path)["info"]["stars"]}*, '
+                f'{player_save_file.lvldict[level_path]}%')
+    elif level_path.startswith(const.HOME_FOLDER):
+        return (f'Home folder/{level_path.split("/")[-1]}, '
+                f'{level_files.open_level_data(level_path)["info"]["stars"]}*, '
+                f'{player_save_file.lvldict[level_path]}%')
+    else:
+        return (f'{level_path}, '
+                f'{level_files.open_level_data(level_path)["info"]["stars"]}, '
+                f'{player_save_file.lvldict[level_path]}%')
 
 
 def loop(screen: pygame.Surface, sf: save_file.SaveFile) -> int:
@@ -87,7 +116,7 @@ def loop(screen: pygame.Surface, sf: save_file.SaveFile) -> int:
         exit_text = fonts.pusab_small.render('Exit', True, (255, 200, 0), (25, 0, 12))
     else:
         exit_text = fonts.pusab_small.render('Exit', True, (0, 255, 0))
-    
+
     pdtext = fonts.aller_normal.render('Player Data', True, (255, 255, 255))
     pdrect = pdtext.get_rect(center=(const.SCREEN_WIDTH * 0.2, const.SCREEN_HEIGHT * 0.3))
 
@@ -105,7 +134,7 @@ def loop(screen: pygame.Surface, sf: save_file.SaveFile) -> int:
 
     lotext = fonts.aller_normal.render(const.SAVE_FILE_PATH, True, (255, 255, 255))
     lorect = lotext.get_rect(center=(const.SCREEN_WIDTH * 0.5, const.SCREEN_HEIGHT * 0.1))
-    
+
     screen.fill((50, 0, 25))
     screen.blit(exit_text, exit_rect)
     screen.blit(pdtext, pdrect)
@@ -117,18 +146,17 @@ def loop(screen: pygame.Surface, sf: save_file.SaveFile) -> int:
 
     counter = 0
     for lvlname in sf.lvldict.keys():
-        if lvlname.startswith(const.MAIN_LEVELS_FOLDER):
-            txt = f'Main levels/{lvlname.split("/")[-1]}, {sf.lvldict[lvlname]}%'
-        elif lvlname.startswith(const.USER_LEVELS_FOLDER):
-            txt = f'User levels/{lvlname.split("/")[-1]}, {sf.lvldict[lvlname]}%'
-        elif lvlname.startswith(const.HOME_FOLDER):
-            txt = f'{lvlname.strip(const.HOME_FOLDER)}, {sf.lvldict[lvlname]}%'
-        else:
-            txt = f'{lvlname}, {sf.lvldict[lvlname]}%'
-        render_level_list(txt, counter, screen)
+        red_color = False
+        try:
+            txt = create_level_list_element_text(lvlname, sf)
+        except FileNotFoundError:
+            txt = f'Deleted level: {lvlname}, {sf.lvldict[lvlname]}%'
+            red_color = True
+        render_level_list_element(txt, counter, screen,
+                                  pygame.Color(255, 100, 100) if red_color else pygame.Color(255, 255, 255))
         counter += 1
 
     if counter == 0:
-        render_level_list("None", 0, screen)
+        render_level_list_element("None", 0, screen, pygame.Color(255, 255, 255))
 
     return const.CONTINUE
