@@ -58,20 +58,23 @@ FPS = 60                        # Bilder pro Sekunde
 DELTA_TIME = 60 / FPS           # Abstand zwischen zwei Frames in Sekunden multipliziert mit 60
 SCREEN_WIDTH = width            # Fensterbreite
 SCREEN_HEIGHT = height          # Fensterhöhe
-RESIZE = SCREEN_HEIGHT/1080
-UNIT = SCREEN_HEIGHT * 0.08     # Einheit
+RESIZE = SCREEN_HEIGHT/1080     # Verhältnis zwischen der aktuellen Bildschirmgröße in Pixeln und 1080 Pixeln
+UNIT = SCREEN_HEIGHT * 0.08     # Einheit / Seitenlänge eines Blocks
 GROUND_HEIGHT = UNIT * 10       # Höhe des Bodens
 CEILING_HEIGHT = UNIT * 1       # Höhe der Decke
+# Bewegungsgeschwindigkeit der Decke während dem Wechsel von Cube zu Ship / Ball und zurück
 CEILING_MOVE = CEILING_HEIGHT/5
-PLAYER_X = UNIT * 7             # Ursprüngliche Position des Spielers auf dem Bildschirm
+# Ursprüngliche Position des Spielers auf dem Bildschirm
+PLAYER_X = UNIT * 7
 PLAYER_Y = GROUND_HEIGHT
 VEL_ADD = 2                     # Stärke der Einwirkung der Gravitation
 JUMP_VEL = 27                   # Stärke des Sprungs des Spielers
 LEVEL_SCROLL_SPEED = DELTA_TIME*13*RESIZE  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
 BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE  # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
+# Tolerierter Abweichungsraum der Spielerposition zur Position der Plattform, auf die er springt
 DEATH_ACCURACY = UNIT / 2
-OUT_OF_BOUNDS = -6000
-ATTEMPT_COUNT_POS = (SCREEN_WIDTH * 0.35, SCREEN_HEIGHT * 0.4)
+OUT_OF_BOUNDS = -6000           # Höhe der Spielwelt
+ATTEMPT_COUNT_POS = (SCREEN_WIDTH * 0.35, SCREEN_HEIGHT * 0.4)  # Position des Versuchszählers
 
 # Mögliche Level-Komponenten-Eigenschaften
 COMPONENT_IMGFILE_LIST = tuple(sorted(util.list_files(ASSETS_FOLDER + "/textures/components", ".png")))
