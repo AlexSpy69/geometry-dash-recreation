@@ -24,9 +24,13 @@ def adapt_res(w: int, h: int) -> tuple:
     return w, h
 
 
+# Ist der Vollbildschirmmodus eingeschaltet?
 FULLSCREEN = None
+
+# Die Indexzahl des Monitors, dessen Größe für die Fenstergröße im Fullscreen-Modus verwendet werden soll
 MONITOR_NR = None
 
+# Bestimmung von FULLSCREEN und MONITOR_NR
 try:
     width, height = map(int, sys.argv[1:3])
     FULLSCREEN = False
@@ -62,17 +66,22 @@ RESIZE = SCREEN_HEIGHT/1080     # Verhältnis zwischen der aktuellen Bildschirmg
 UNIT = SCREEN_HEIGHT * 0.08     # Einheit / Seitenlänge eines Blocks
 GROUND_HEIGHT = UNIT * 10       # Höhe des Bodens
 CEILING_HEIGHT = UNIT * 1       # Höhe der Decke
+
 # Bewegungsgeschwindigkeit der Decke während dem Wechsel von Cube zu Ship / Ball und zurück
 CEILING_MOVE = CEILING_HEIGHT/5
+
 # Ursprüngliche Position des Spielers auf dem Bildschirm
 PLAYER_X = UNIT * 7
 PLAYER_Y = GROUND_HEIGHT
+
 VEL_ADD = 2                     # Stärke der Einwirkung der Gravitation
 JUMP_VEL = 27                   # Stärke des Sprungs des Spielers
 LEVEL_SCROLL_SPEED = DELTA_TIME*13*RESIZE  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
 BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE  # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
+
 # Tolerierter Abweichungsraum der Spielerposition zur Position der Plattform, auf die er springt
 DEATH_ACCURACY = UNIT / 2
+
 OUT_OF_BOUNDS = -6000           # Höhe der Spielwelt
 ATTEMPT_COUNT_POS = (SCREEN_WIDTH * 0.35, SCREEN_HEIGHT * 0.4)  # Position des Versuchszählers
 
@@ -98,8 +107,8 @@ DIFFICULTY = ("", "Auto", "Easy", "Normal", "Hard", "Hard",
 SAVE_FILE_PATH = HOME_FOLDER + "/Documents/gdr_savefile"
 
 # Level-Editor
-EDITOR_LEVEL_MOVEMENT = LEVEL_SCROLL_SPEED * 2
-EDITOR_BACKGROUND_MOVEMENT = BACKGROUND_SCROLL_SPEED * 2
+EDITOR_LEVEL_MOVEMENT = LEVEL_SCROLL_SPEED * 2              # Bewegungsgeschwindigkeit der Level-Komponenten im Editor
+EDITOR_BACKGROUND_MOVEMENT = BACKGROUND_SCROLL_SPEED * 2    # Bewegungsgeschwindigkeit des Hintergrunds im Editor
 
 # Exit Codes für Funktionen im Spiel
 
