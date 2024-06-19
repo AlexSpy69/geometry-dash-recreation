@@ -105,7 +105,7 @@ def data_to_sprite(data: CompSprite) -> game_sprites.Component:
     :return: Komponenten-Objekt
     """
 
-    return game_sprites.Component(imgfile=data["imgfile"], pos=data["pos"],
+    return game_sprites.Component(imgfile=ASSETS_FOLDER + data["imgfile"], pos=data["pos"],
                                   size=data["size"], angle=data["angle"], hb_mul=data["hb_mul"],
                                   type_=data["type"], color=data["color"])
 
@@ -133,7 +133,7 @@ def sprite_to_data(sprite: game_sprites.Component, use_initial_rect: bool = Fals
     :return: Komponentendaten-Dictionary (gdr.level.convert.CompSprite)
     """
 
-    return CompSprite(imgfile=sprite.image_filename,
+    return CompSprite(imgfile=sprite.image_filename[len(ASSETS_FOLDER)::],
                       pos=round_position([sprite.rect.x/UNIT, sprite.rect.y/UNIT] if not use_initial_rect else
                                          [sprite.initial_rect.x/UNIT, sprite.initial_rect.y/UNIT], sprite.type),
                       size=round_size([sprite.rect.width/UNIT, sprite.rect.height/UNIT], sprite.type),

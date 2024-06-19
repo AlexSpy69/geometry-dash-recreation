@@ -69,7 +69,7 @@ VEL_ADD = 2                     # Stärke der Einwirkung der Gravitation
 JUMP_VEL = 27                   # Stärke des Sprungs des Spielers
 LEVEL_SCROLL_SPEED = DELTA_TIME*13*RESIZE  # Die Geschwindigkeit, mit der die Objekte in einem Level nach links scrollen
 BACKGROUND_SCROLL_SPEED = DELTA_TIME*3*RESIZE  # Die Geschwindigkeit, mit der der Hintergrund nach links scrollt
-DEATH_ACCURACY = UNIT / 4
+DEATH_ACCURACY = UNIT / 2
 OUT_OF_BOUNDS = -6000
 ATTEMPT_COUNT_POS = (SCREEN_WIDTH * 0.35, SCREEN_HEIGHT * 0.4)
 
